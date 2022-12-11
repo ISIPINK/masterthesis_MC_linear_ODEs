@@ -25,6 +25,8 @@ stopping criteria.
 
 To test that recursive Brownian simulation works.
 We tested last example against (regular Brownian motion simulations).
+
+
 ![comparison](./plots/para_comparison.png)
 
 
