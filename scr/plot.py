@@ -1,17 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from math import sqrt
 from plotnine import *
-
-def load_objects():
-    file_samples= "../objects/samples_exit.csv"
-    file_samples2= "../objects/samples_exit2.csv"
-    file_samples_recursive= "../objects/samples_exit_recursive.csv"
-    df_samples = pd.read_csv(file_samples)
-    df_samples2 = pd.read_csv(file_samples2)
-    df_samples_recursive = pd.read_csv(file_samples_recursive)
-    return df_samples, df_samples2, df_samples_recursive
-
 
 def plt_exit_points(df_samples):
     plot = (ggplot(df_samples, aes(x = "pos", y ="time"))
@@ -20,27 +11,23 @@ def plt_exit_points(df_samples):
 
 def plt_exit_pos(df_samples):
     plot = (ggplot(df_samples, aes(x = "pos"))
-            + geom_density())
+            + geom_histogram(bins=len(df_samples)//10 +5))
     print(plot)
 
 def plt_exit_pos_compare(df_samples,df_samples2):
     plot = (ggplot(df_samples, aes(x = "pos"))
-            + geom_density()
-            + geom_density(data = df_samples2, color = "red"))
+            + geom_histogram(alpha = 0.5, bins =100)
+            + geom_histogram(data = df_samples2, fill = "red",alpha = 0.5,bins=100))
     print(plot)
     
-def plt_exit_pos_compare_abs(df_samples,df_samples2):
-    df_samples["abspos"]=abs(df_samples["pos"])
-    df_samples2["abspos"]=abs(df_samples2["pos"])
-    plot = (ggplot(df_samples, aes(x = "abspos"))
-            + geom_density()
-            + geom_density(data = df_samples2, color = "red"))
-    print(plot)
+def para_comparison():
+    para_samples_recursive = pd.read_csv("../objects/para_samples_recursive.csv")
+    para_samples_euler = pd.read_csv("../objects/para_samples_euler.csv")
+    plot = (ggplot(para_samples_euler, aes(x = "pos"))
+            + geom_histogram(alpha = 0.5, bins =100)
+            + geom_histogram(data = para_samples_recursive, fill = "red",alpha = 0.5,bins=100)
+            + ggtitle("distribution of exit pos, Euler vs Recursive"))
+    plot.save("../plots/para_comparison.png")
 
 if __name__ == "__main__":
-    np.random.seed(42)
-    df_samples, df_samples2, df_samples_recursive = load_objects()
-    plt_exit_pos_compare(df_samples,df_samples2)
-    plt_exit_pos_compare_abs(df_samples,df_samples_recursive)
-
-    
+    para_comparison()
