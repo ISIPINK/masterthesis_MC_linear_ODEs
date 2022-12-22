@@ -8,7 +8,6 @@
 - time dependent boundaries (see walk on moving spheres and linear time dependent boundaries)
 
 ## unsorted
-- shorting quadrature
 - independence trick
 - point coordination (approx)
 - scale coordination (exact) 
@@ -17,9 +16,10 @@
 - impossible speedup (probably isn't possible)
 - smart start 
 - fake boundary trick (fusing methods)
-- solving over a line
+- solving over a line (difference P)
 - full Brownian motion (approx)
 - special path dependence
+- shorting quadrature
 
 ## financial
 - American options
