@@ -41,5 +41,5 @@ time dependent boundary with as base a cone.
 
 For reference the same paths but with Euler discretisation.
 
-![pathseuler](./plots/paths_euler.png.png)
+![pathseuler](./plots/paths_euler.png)
 
