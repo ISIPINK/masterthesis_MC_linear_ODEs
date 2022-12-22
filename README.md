@@ -30,5 +30,16 @@ We tested last example against (regular Brownian motion simulations).
 ![comparison](./plots/para_comparison.png)
 
 
+## same example but with whole paths
+We added code to visualize this for whole paths, note that in practice
+you could only calculate the part of the path you actually need and
+the exit point of each recursion.
 
+This is recursive full Brownian motion with parabolic
+time dependent boundary with as base a cone.
+![pathsrec](./plots/paths_recursive_full_brownian.png)
+
+For reference the same paths but with Euler discretisation.
+
+![pathseuler](./plots/paths_euler.png.png)
 
