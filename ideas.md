@@ -1,4 +1,15 @@
-## propagators
+RMC = recursive monte carlo
+## examples
+- RMC for ODE IVPs
+- RMC for y = y'' (with different boundary conditions)
+
+## favorites
+- full Brownian motion (approx)
+- basis for boundary conditions + green function = RMC solver linear PDEs
+- RMC for heat equation with (smooth u(0,x) condition)
+- RMC for y = y'
+
+## propagators = basis for dirichlet
 - composition property + function optimization = propagator (uniqueness?)
 - filled propagators (look Walk on Rectangles)
 - reject + method of images = more propagators
@@ -17,9 +28,10 @@
 - smart start 
 - fake boundary trick (fusing methods)
 - solving over a line (difference P)
-- full Brownian motion (approx)
 - special path dependence
 - shorting quadrature
 
 ## financial
 - American options
+
+
