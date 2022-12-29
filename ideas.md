@@ -14,15 +14,6 @@ RMC = recursive monte carlo
 - RMC for difference equations
 - RMC for systems of linear equations 
 
-## propagators =~ dirchlet basis for diffusion equations
-- composition property + function optimization = propagator (uniqueness?, Fredholm integral equations)
-- propagators for path information (e.g. average)
-- full propagators (look Walk on Rectangles)
-- reject + method of images = more propagators
-- propagation in jumped space
-- propagation in moving space (Girsanov also does the job I think)
-- balancing problem  (not an idea)
-- time dependent boundaries (see walk on moving spheres and linear time dependent boundaries)
 
 ## unsorted
 - function control variate + fitting
@@ -37,7 +28,19 @@ RMC = recursive monte carlo
 
 ## financial
 - American options
-- special path dependence
+- special path dependence -> PDE (only linear types pls)
+- compressing paths (think before and after transfo)
+
+
+## propagators =~ dirchlet basis for diffusion equations (less important)
+- composition property + function optimization = propagator (uniqueness?, Fredholm integral equations)
+- propagators for path information (e.g. average)
+- full propagators (look Walk on Rectangles)
+- reject + method of images = more propagators
+- propagation in jumped space
+- propagation in moving space (Girsanov also does the job I think)
+- balancing problem  (not an idea)
+- time dependent boundaries (see walk on moving spheres and linear time dependent boundaries)
 
 ## obsolete
 - solving over a line (difference P) 
