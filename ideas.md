@@ -1,3 +1,5 @@
+I still need to test/proof most of these ideas.
+
 RMC = recursive monte carlo
 ## favorites
 - E-trick
