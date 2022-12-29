@@ -14,6 +14,7 @@ RMC = recursive monte carlo
 - RMC for difference equations
 - RMC for systems of linear equations 
 - RMC for integral equations (volterra, fredholm theory)
+- RMC for linear integro-differential equations
 
 ## unsorted
 - function control variate + fitting
