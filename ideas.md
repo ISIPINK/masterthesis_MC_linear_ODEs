@@ -14,7 +14,7 @@ RMC = recursive monte carlo
 - RMC for difference equations
 - RMC for systems of linear equations 
 
-## propagators =~ dirchlet basis for difussion equations
+## propagators =~ dirchlet basis for diffusion equations
 - composition property + function optimization = propagator (uniqueness?, Fredholm integral equations)
 - propagators for path information (e.g. average)
 - full propagators (look Walk on Rectangles)
