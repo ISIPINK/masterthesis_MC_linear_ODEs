@@ -13,7 +13,7 @@ RMC = recursive monte carlo
 - RMC for heat equation with (smooth u(0,x) condition)
 - RMC for difference equations
 - RMC for systems of linear equations 
-
+- RMC for integral equations (volterra, fredholm theory)
 
 ## unsorted
 - function control variate + fitting
