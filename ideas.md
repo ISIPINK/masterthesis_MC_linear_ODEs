@@ -17,6 +17,7 @@ RMC = recursive monte carlo
 - RMC for linear integro-differential equations
 
 ## unsorted
+- getting linear functionals of the solution (e.g greeks)
 - function control variate + fitting
 - independence trick (symmetry in green)
 - Ways to control the distribution of step sizes? (see Off-centered WOS)
