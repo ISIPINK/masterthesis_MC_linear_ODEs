@@ -32,7 +32,7 @@ RMC = recursive monte carlo
 - American options
 - special path dependence -> PDE (only linear types pls)
 - compressing paths (think before and after transfo)
-
+- bridging (with constraints)
 
 ## propagators =~ dirchlet basis for diffusion equations (less important)
 - composition property + function optimization = propagator (uniqueness?, Fredholm integral equations)
