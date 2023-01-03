@@ -8,7 +8,7 @@ a time independent space boundary.
 
 In the next plot you can see how recursive Brownian simulation
 simulates exit points with stopping criteria a time-space parabola boundary
-and as base a triangular time-space boundary.
+and as base a triangular time-space boundary. (we also call this the dirichlet boundary green function for the heat equation)
 ![example_recursive_brownian_motion](./plots/example_recursive_brownian.png)
 
 The way recursive Brownian simulation works is by recursively sampling
