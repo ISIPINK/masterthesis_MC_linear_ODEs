@@ -5,7 +5,8 @@
 - explaining problems/solutions for stiff problems
 - figuring out what implicit stochastic gradient descent is 
 
-- spectral RMC for ODEs 
+- example $2$nd order (in $DT$) RRMC for ODEs 
+- example spectral (in sequential nsim) RMC for ODEs
 
 - optimizing SALT
 - complexity analysis/tests of SALT
