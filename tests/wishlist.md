@@ -1,4 +1,5 @@
 - clean variance analysis of RMC on y'=y
+- clean variance analysis of RRMC on y'=y
 - bounds on variance reduction for MC control variates with RMC 
 - bounds on variance reduction for modded russian roulette with RMC 
 - homotopy method for dealing with big nonlinearity in RMC 
