@@ -1,12 +1,11 @@
-- clean variance analysis of RMC on y'=y
-- clean variance analysis of RRMC on y'=y
-- bounds on variance reduction for MC control variates with RMC 
-- bounds on variance reduction for modded russian roulette with RMC 
-- homotopy method for dealing with big nonlinearity in RMC 
+# reached
+- example $2$nd order (in $DT$) RRMC for ODEs (see period 4)
+
+# open
+- homotopy/linearization method for dealing with big nonlinearity in RMC 
 - explaining problems/solutions for stiff problems
 - figuring out what implicit stochastic gradient descent is 
 
-- example $2$nd order (in $DT$) RRMC for ODEs 
 - example spectral (in sequential nsim) RMC for ODEs
 
 - optimizing SALT
@@ -25,3 +24,8 @@
 - organizing literature (and figuring out how)
 
 - unbiased estimates of  ito integrals (https://en.wikipedia.org/wiki/Stochastic_differential_equation)
+
+# dropped
+- clean variance analysis of RMC on y'=y
+- clean variance analysis of RRMC on y'=y
+- bounds on variance reduction for MC control variates with RMC 
