@@ -1,3 +1,5 @@
+see README in latex main paper for what we are focusing on
+
 # reached
 
 - example $2$nd order (in $DT$) RRMC for ODEs (see period 4) (well 2.5 actually)
