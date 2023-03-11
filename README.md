@@ -1,12 +1,7 @@
 # what is where
 
-## tests
-
-Our notes for our masterthesis
-
-## latex
-
-The latex for the main paper that will be submitted.
+- tests: our notes for our masterthesis
+- latex: latex for the main paper
 
 # Remarks
 
