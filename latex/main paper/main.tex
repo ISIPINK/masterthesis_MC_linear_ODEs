@@ -1,0 +1,107 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{comment}
+
+% Customize page margins
+\usepackage[top=1in,bottom=1in,left=1.5in,right=1in]{geometry}
+
+% Set line spacing to double
+\usepackage{setspace}
+\doublespacing
+
+\input{environments.tex}
+
+
+% Define command for bold vectors
+\newcommand{\vect}[1]{\boldsymbol{#1}}
+
+% Begin document
+\begin{document}
+
+% Title page
+\title{Unbiased Monte Carlo for Recursive Integrals}
+\author{Isidoor Pinillo Esquivel}
+\maketitle
+
+
+\begin{abstract}
+    We will write this at the end.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+Follows $y'=y$ example + modifications
+This introduces recursive Monte Carlo and important Monte Carlo techniques used extensively later.
+
+\section{Essentials}
+
+\begin{example}[non-linearity]
+    $y'=y^{2}$
+\end{example}
+
+\begin{example}[analytic functions]
+    $e^{E[X]}$
+\end{example}
+
+\begin{example}[half variance phenomenon]
+    randomized trapezium rule for introduction of the half variance phenomenon and an argument
+    by integrating a polynomial for intuition
+\end{example}
+
+\begin{technique}[tail recursion]
+    discuss problems with implementing recursion and solutions
+\end{technique}
+
+\begin{example}[coupled recursion]
+    example with $y'=y$
+\end{example}
+
+\begin{example}[recursion in recursion]
+    maybe induction in induction proof example
+\end{example}
+
+\section{$1$D Recursive Integrals}
+
+\begin{example}[general linear recursive integral]
+    We have algo in mind for this case based on coupled recursion on disjunct sets.
+\end{example}
+
+\begin{theorem}[green functions]
+    green function stuff that we will be needing, we aren't sure in how much detail we're going to go.
+\end{theorem}
+
+\begin{example}[IVP]
+    An IVP example probably using DRRMC maybe compare it to parareal. Maybe also non-linear algo
+\end{example}
+
+\begin{example}[BVP]
+    A BVP example using yet another algo that hopefully has the half variance phenomenon.
+\end{example}
+
+\section{Higher D Recursive Integrals}
+
+\begin{example}[problems with geometry]
+    $2$D integral that is difficult because of its geometry
+\end{example}
+
+\begin{example}[numerical green functions]
+    There will be probably some green functions that we need
+    that don't have an analytic expression yet.
+\end{example}
+
+\begin{example}[recursive Brownian motion]
+    WoS like way to simulate Brownian motion wich is related to the green function
+    of the heat equation
+\end{example}
+
+\begin{example}[heat equation]
+    a geometric robust way to solve the heat equation and a higher order method to solve
+    the heat equation
+\end{example}
+
+\section{Appendix}
+Derivation of the green functions and some expressions.
+
+\end{document}

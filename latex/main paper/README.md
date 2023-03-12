@@ -15,16 +15,6 @@ This introduces recursive Monte Carlo and important Monte Carlo techniques used 
 - coupled recursion
 - recursion in recursion (next flight)
 
-## Side Examples
-
-- recursion on $y'$
-- random ODEs
-- bad RMC example
-- optimization example (SALT)
-- sensitivity of RVs
-- inverse problem
-- linear problem ?
-
 ## 1D Recursive Integrals
 
 - general linear recursive integral equations, Volterra, Fredholm (coupled domains? + CVs)
@@ -44,3 +34,13 @@ This introduces recursive Monte Carlo and important Monte Carlo techniques used 
 ## Appendix
 
 - derivation of green function
+
+## Side Examples (probably for a separate notebook)
+
+- recursion on $y'$
+- random ODEs
+- bad RMC example
+- optimization example (SALT)
+- sensitivity of RVs
+- inverse problem
+- linear problem ?
