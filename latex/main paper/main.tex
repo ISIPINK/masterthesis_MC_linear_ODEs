@@ -1,105 +1,130 @@
-\documentclass[12pt]{article}
+\documentclass[a4paper,12pt,fleqn]{article}
+
+\setlength{\textwidth}{15.0cm}
+\setlength{\textheight}{24.0cm}
+\setlength{\topmargin}{0cm}
+\setlength{\headsep}{0cm}
+\setlength{\headheight}{0cm}
+\pagestyle{plain}
+
+\usepackage[dvips]{epsfig}
+\usepackage{tikz}
+\usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{comment}
 
-% Customize page margins
-\usepackage[top=1in,bottom=1in,left=1.5in,right=1in]{geometry}
-
-% Set line spacing to double
-\usepackage{setspace}
-\doublespacing
-
 \input{environments.tex}
 
-
-% Define command for bold vectors
-\newcommand{\vect}[1]{\boldsymbol{#1}}
-
-% Begin document
 \begin{document}
 
-% Title page
+\begin{comment}
 \title{Unbiased Monte Carlo for Recursive Integrals}
 \author{Isidoor Pinillo Esquivel}
 \maketitle
+\end{comment}
 
+\input{titelblad_MP.tex}
+
+\newpage
+\tableofcontents
+\newpage
 
 \begin{abstract}
     We will write this at the end.
 \end{abstract}
 
-\tableofcontents
-
 \section{Introduction}
 
-Follows $y'=y$ example + modifications
-This introduces recursive Monte Carlo and important Monte Carlo techniques used extensively later.
+\subsection{Introductory Example}
+Follows $y'=y$ example. This introduces recursive Monte Carlo and
+highlight some advantages and problems of that example.
 
-\section{Essentials}
+\subsection{Contributions}
+We will write this at the end.
 
-\begin{example}[non-linearity]
-    $y'=y^{2}$
+\subsection{Related Work}
+work on
+\begin{itemize}
+    \item alternative methods for recursive integrals
+    \item MC work on ODEs
+    \item MC work on PDEs
+    \item WoS
+\end{itemize}
+This is just to give a general overview we probably reference specific ideas when we first introduce them.
+
+\section{Background}
+\subsection{Modifying Monte Carlo}
+Introduces Russian roulette, splitting, control variates, importance sampling and maybe quasi Monte Carlo with the
+$y'=y$ example.
+
+\subsection{Monte Carlo Trapezoidal Rule}
+comparing normal vs Monte Carlo trapezoidal rule and highlighting the "half variance phenomenon".
++ maybe integrating polynomials for intuition
+
+\subsection{Unbiased Non-Linearity}
+\begin{example}[$y'=y^{2}$]
+    see python note book
 \end{example}
 
-\begin{example}[analytic functions]
-    $e^{E[X]}$
+\begin{example}[$e^{E[X]}$]
+    see python note book
 \end{example}
 
-\begin{example}[half variance phenomenon]
-    randomized trapezium rule for introduction of the half variance phenomenon and an argument
-    by integrating a polynomial for intuition
-\end{example}
-
-\begin{technique}[tail recursion]
-    discuss problems with implementing recursion and solutions
-\end{technique}
+\subsection{Recursion}
 
 \begin{example}[coupled recursion]
-    example with $y'=y$
+    example with $y'=y$ (I need to redo this example)
 \end{example}
 
 \begin{example}[recursion in recursion]
     maybe induction in induction proof example
 \end{example}
 
-\section{$1$D Recursive Integrals}
-
-\begin{example}[general linear recursive integral]
-    We have algo in mind for this case based on coupled recursion on disjunct sets.
+\begin{example}[tail recursion]
+    discuss problems with implementing recursion and solutions.  \\
+    inverse problem example
 \end{example}
 
-\begin{theorem}[green functions]
-    green function stuff that we will be needing, we aren't sure in how much detail we're going to go.
-\end{theorem}
-
-\begin{example}[IVP]
-    An IVP example probably using DRRMC maybe compare it to parareal. Maybe also non-linear algo
-\end{example}
-
-\begin{example}[BVP]
-    A BVP example using yet another algo that hopefully has the half variance phenomenon.
-\end{example}
-
-\section{Higher D Recursive Integrals}
-
-\begin{example}[problems with geometry]
-    $2$D integral that is difficult because of its geometry
-\end{example}
+\subsection{Green Functions}
+green function stuff that we will be needing, we aren't sure in how much detail we're going to go.
 
 \begin{example}[numerical green functions]
     There will be probably some green functions that we need
     that don't have an analytic expression yet.
 \end{example}
 
-\begin{example}[recursive Brownian motion]
-    WoS like way to simulate Brownian motion wich is related to the green function
-    of the heat equation
+\section{$1$-Dimensional Recursive Integrals}
+
+\subsection{Linear Recursive Integrals}
+We have algo in mind for this case based on coupled recursion on disjunct sets.
+
+
+\subsection{IVPs ODEs}
+An IVP example probably using DRRMC maybe compare it to parareal. Maybe also non-linear algo
+
+\subsection{BVPs ODEs}
+A BVP example using yet another algo that hopefully has the half variance phenomenon.
+
+\section{Higher Dimensional Recursive Integrals}
+\subsection{Complicated Geometry}
+\begin{example}[nasty $2$D integral]
+    $2$D integral that is difficult because of its geometry
 \end{example}
 
-\begin{example}[heat equation]
-    a geometric robust way to solve the heat equation and a higher order method to solve
-    the heat equation
+\subsection{Recursive Brownian Motion}
+WoS like way to simulate Brownian motion which is related to the green function
+of the heat equation
+
+\begin{example}[recursive Brownian motion]
+    see period5
 \end{example}
+
+\subsection{Heat Equation}
+a geometric robust way to solve the heat equation and maybe a higher order method to solve
+the heat equation
+
+\subsection{Wave Equation}
+probably won't get to it
 
 \section{Appendix}
 Derivation of the green functions and some expressions.
