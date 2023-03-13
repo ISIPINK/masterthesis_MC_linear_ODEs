@@ -1,0 +1,33 @@
+% Define custom colors for Python syntax highlighting
+\definecolor{codebackground}{RGB}{242, 242, 242}
+\definecolor{codecomment}{RGB}{106, 153, 85}
+\definecolor{codekeyword}{RGB}{0, 0, 255}
+\definecolor{codestring}{RGB}{170, 55, 241}
+
+% Define custom Python style for syntax highlighting
+\lstdefinestyle{custompython}{
+    language=Python,
+    backgroundcolor=\color{codebackground},
+    basicstyle=\ttfamily\footnotesize,
+    commentstyle=\color{codecomment}\itshape,
+    keywordstyle=\color{codekeyword}\bfseries,
+    stringstyle=\color{codestring},
+    showstringspaces=false,
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=4,
+    frame=tb,
+    framesep=4pt,
+    framerule=0.5pt,
+    numbers=left,
+    numbersep=10pt,
+    numberstyle=\footnotesize\color{gray},
+    xleftmargin=15pt,
+    xrightmargin=5pt,
+    aboveskip=5pt,
+    belowskip=5pt,
+    captionpos=b
+}
+
+\newcommand{\pythoncode}[1]
+{\lstinputlisting[style=custompython]{#1}}

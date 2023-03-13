@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt,fleqn]{article}
+\documentclass[a4paper,12pt]{article}
 
 \setlength{\textwidth}{15.0cm}
 \setlength{\textheight}{24.0cm}
@@ -9,11 +9,15 @@
 
 \usepackage[dvips]{epsfig}
 \usepackage{tikz}
-\usepackage[margin=1in]{geometry}
-\usepackage{amsmath,amssymb,amsthm}
-\usepackage{comment}
 
+\usepackage{amsmath,amssymb,amsthm}
 \input{environments.tex}
+
+\usepackage{comment}
+\usepackage{listings}
+\input{custom commands.tex}
+
+\setlength{\parindent}{0pt}
 
 \begin{document}
 
@@ -36,11 +40,54 @@
 \section{Introduction}
 
 \subsection{Introductory Example}
-Follows $y'=y$ example. This introduces recursive Monte Carlo and
-highlight some advantages and problems of that example.
+To get familiar with Monte Carlo for estimating recursive integrals
+we demonstrate it on following problem:
+
+\begin{equation} \label{ydy}
+    y'=y, y(0)=1.
+\end{equation}
+
+By integrating both sides of (\ref{ydy}) following integral equation can be derived:
+
+\begin{equation} \label{Integral ydy}
+    y(t) = 1 + \int_{0}^{t} y(s) ds.
+\end{equation}
+
+Equation (\ref{Integral ydy}) is a recursive integral equation or to be more specific
+a linear Volterra integral equation of the second type. By naively using Monte
+Carlo on the recursive integral of equation (\ref{Integral ydy}) one derives following estimator:
+
+\[
+    Y(t) = 1 + t y(Ut)
+    .\]
+
+where $U=\text{Uniform}(0,1)$. If $y$ is well behaved then $E[Y(t)]=y(t)$ but we can't
+calculate $Y(t)$ without accesses to $y(s),s<t$. Notice that we can replace $y$ by a
+unbiased estimator of it without changing $E[Y(t)]=y(t)$ by the law of total expectance
+($E[X] = E[E[X|Z]]$). By replacing $y$ by $Y$ itself we obtain a recursive expression for $Y$:
+
+\begin{equation}\label{recursive RV}
+    Y(t) = 1 + tY(Ut).
+\end{equation}
+
+Equation (\ref{recursive RV}) is a recursive random variable equation. If you would implement equation
+(\ref{recursive RV}) with recursion it will run indefinitely. A biased way of around this is by approximating
+$Y(t) \approx 1$ near $t = 0$. Later we discuss Russian roulette (ref{Russian  roulette}) which
+can be used as an unbiased stopping mechanism. \\
+
+\begin{python}[implementation of (\ref{recursive RV})] \label{python eps ydy}
+    \pythoncode{python code/eps_ydy.py}
+\end{python}
+
+An issue with (\ref{python eps ydy}) is that the variance explodes when $t$ increases. Which we
+later solve in the section on ODEs. Note that (\ref{python eps ydy}) keeps desirable properties
+from unbiased Monte Carlo methods such as: being embarrassingly parallel,
+robustness and simple error estimates.
+
+
 
 \subsection{Contributions}
-We will write this at the end.
+We write this at the end.
 
 \subsection{Related Work}
 work on
