@@ -144,8 +144,7 @@ sometimes.
 \end{example}
 
 Maybe this wasn't the best example because you could also estimate the expectance of the
-$2$ terms of $Z$ separately. In following example we demonstrate
-that Russian roulette a invaluable tool is for simulating RRVEs.
+$2$ terms of $Z$ separately.
 
 \begin{example}[Russian roulette on (\ref{recursive RV})]
     Russian roulette can fix the indefinite recursion issue of
@@ -203,17 +202,33 @@ This gets discussed in \cite{giles_multilevel_2013}.
         .\]
 \end{definition}
 Control variates are a special case of $2$-level MC. Usually $\tilde{f}$ is an approximation
-of $f$ to reduce variace.
+of $f$ to reduce variance.
 
 \begin{example}[control variate on (\ref{recursive RV})]
     To make a control variate for (\ref{recursive RV}) that reduces variance
-    we need an approximation of $y(t) \approx 1+t$.
+    we use following approximation of $y(t) \approx 1+t$:
+    \[
+        Y(t)= 1+t+\frac{t^{2}}{2} + t(Y(Ut)-1-Ut)
+        .\]
+    Notice that we can cancel the constant term of the control variate
+    but that would affect the Russian roulette negatively.
 \end{example}
 
+\begin{python}
+    \pythoncode{python code/CVRR_ydy.py}
+\end{python}
+
+\begin{comment}
 Introduces Russian roulette, splitting, control variates, importance sampling and maybe quasi Monte Carlo with the
-$y'=y$ example.
+$y'=y$ example. We are missing importance sampling and quasi MC
+\end{comment}
+
 
 \subsection{Monte Carlo Trapezoidal Rule}
+The Monte Carlo trapezoidal rule has some interesting convergence
+behavior \cite{wu_randomised_2020}.
+
+We aren't yet comfortable with our understanding of the randomized trapezoidal rule. \\
 comparing normal vs Monte Carlo trapezoidal rule and highlighting the "half variance phenomenon".
 + maybe integrating polynomials for intuition
 
