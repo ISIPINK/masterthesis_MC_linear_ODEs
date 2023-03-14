@@ -76,9 +76,9 @@ unbiased estimator of it without changing $E[Y(t)]=y(t)$ by the law of total exp
     Y(t) = 1 + tY(Ut).
 \end{equation}
 
-Equation (\ref{recursive RV}) is a recursive random variable equation. If you would implement equation
+Equation (\ref{recursive RV}) is a recursive random variable equation (RRVE). If you would implement equation
 (\ref{recursive RV}) with recursion it will run indefinitely. A biased way of around this is by approximating
-$Y(t) \approx 1$ near $t = 0$. Later we discuss Russian roulette (ref{Russian  roulette}) which
+$Y(t) \approx 1$ near $t = 0$. Later we discuss Russian roulette (\ref{Russian roulette}) which
 can be used as an unbiased stopping mechanism. \\
 
 \begin{python}[implementation of (\ref{recursive RV})] \label{python eps ydy}
@@ -106,11 +106,109 @@ This is just to give a general overview we probably reference specific ideas whe
 
 \section{Background}
 \subsection{Modifying Monte Carlo}
-Once we have a recursive random variable equation it is possible the transform it
-to have more desirable properties. All techniques available to classic Monte Carlo
-my be used to modify recursive random variable equations without affecting the
-unbiasedness. Our favorite work that discusses these techniques is \cite{veach_robust_nodate}.
+Once we have a RRVE it is possible to modify it
+to have more desirable properties.
+Our favorite work that discusses these techniques is \cite{veach_robust_nodate}.
 % need to fix veach refrence see bibliography
+
+
+\begin{definition}[Russian roulette] \label{Russian roulette}
+    Define Russian roulette on $X$ with free parameters
+    $Y_{1},Y_{2}: E[Y_{1}] = E[Y_{2}]$, $p \in [0,1]$ and $U$
+    independent of $Y_{1},Y_{2},X$ the following way:
+    \[
+        X \rightarrow \begin{cases}
+            \frac{1}{p}(X- (1-p)Y_{1}) & \text{ if } U<p \\
+            Y_{2}                      & \text{ else }
+        \end{cases}
+        .\]
+\end{definition}
+The idea behind Russian roulette is replacing $X$ with a cheaper approximation $Y_{2}$
+sometimes.
+
+\begin{example}
+    Say that we are interested in estimating $E[Z]$ with $Z$
+    defined in the following way:
+    \[
+        Z = U + \frac{f(U)}{1000}
+        .\]
+    where $f:\mathbb{R} \rightarrow [0,1]$ expensive to compute.
+    Estimating $Z$ directly would require calling $f$ each
+    simulation. We can modify $Z$ to
+    \[
+        \tilde{Z} = U + B\left(\frac{1}{100}\right)\frac{f(U)}{10}
+        .\]
+    where $B(\frac{1}{100}) \sim \text{Bernouli}(\frac{1}{100})$. Now $\tilde{Z}$
+    just requires calling $f$ on average once every $100$ simulations with the variance
+    only increasing slightly compared to $Z$.
+\end{example}
+
+Maybe this wasn't the best example because you could also estimate the expectance of the
+$2$ terms of $Z$ separately. In following example we demonstrate
+that Russian roulette a invaluable tool is for simulating RRVEs.
+
+\begin{example}[Russian roulette on (\ref{recursive RV})]
+    Russian roulette can fix the indefinite recursion issue of
+    equation (\ref{recursive RV}) by approximating $Y$ near $t = 0$ with $1$. Concretely
+    we replace the $t$ in front of the recursive term with $B(t) = \text{Bernouli(t)}$
+    when $t<1$.
+\end{example}
+
+\vspace{0.2cm}
+
+\begin{python}[Russian roulette on (\ref{recursive RV})]
+    \pythoncode{python code/RR_ydy.py}
+\end{python}
+
+\begin{definition}[splitting]
+    Splitting $X$ means using multiple $X_{j} \sim X$ not independent per se to
+    lower variance by averaging them:
+    \[
+        \bar{X}= \frac{1}{N} \sum_{j=1}^{N} X_{j}
+        .\]
+\end{definition}
+
+Splitting the recursive term in a RRVE can lead to (additive) branching recursion.
+Extra care should be taken that all branches get terminated with probability $1$. This can be
+achieved by termination strategies already discussed and later we discuss coupled recursion for
+alleviating additive branching recursion in RRVEs.
+
+\begin{example}[splitting on (\ref{recursive RV})]
+    We can "split" the recursive term of  (\ref{recursive RV}) in $2$:
+    \[
+        Y(t) = 1 + \frac{t}{2}(Y_{1}(Ut)+Y_{2}(Ut))
+        .\]
+    with $Y_{1}(t),Y_{2}(t)$ i.i.d. $Y(t)$.
+\end{example}
+
+\vspace{0.2cm}
+
+\begin{python}[splitting on (\ref{recursive RV})]
+    \pythoncode{python code/SRR_ydy.py}
+\end{python}
+
+\begin{definition}[$2$-level MC] \label{2 level}
+    $2$-level MC on $X$ with parameters $\tilde{X}, Y: E[\tilde{X}]=E[Y]$:
+    \[
+        X \rightarrow X-\tilde{X} + Y
+        .\]
+\end{definition}
+
+This gets discussed in \cite{giles_multilevel_2013}.
+
+\begin{definition}[control variates] \label{CV}
+    Control variate on $f(X)$ is
+    \[
+        f(X) \rightarrow f(X)-\tilde{f}(X) + E[\tilde{f}(X)]
+        .\]
+\end{definition}
+Control variates are a special case of $2$-level MC. Usually $\tilde{f}$ is an approximation
+of $f$ to reduce variace.
+
+\begin{example}[control variate on (\ref{recursive RV})]
+    To make a control variate for (\ref{recursive RV}) that reduces variance
+    we need an approximation of $y(t) \approx 1+t$.
+\end{example}
 
 Introduces Russian roulette, splitting, control variates, importance sampling and maybe quasi Monte Carlo with the
 $y'=y$ example.
