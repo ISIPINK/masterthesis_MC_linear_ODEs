@@ -10,6 +10,11 @@
 \usepackage[dvips]{epsfig}
 \usepackage{tikz}
 
+\usepackage[
+backend=biber,
+style=alphabetic,
+]{biblatex}
+
 \usepackage{amsmath,amssymb,amsthm}
 \input{environments.tex}
 
@@ -17,6 +22,7 @@
 \usepackage{listings}
 \input{custom commands.tex}
 
+\addbibresource{bibliography.bib} 
 \setlength{\parindent}{0pt}
 
 \begin{document}
@@ -79,11 +85,10 @@ can be used as an unbiased stopping mechanism. \\
     \pythoncode{python code/eps_ydy.py}
 \end{python}
 
-An issue with (\ref{python eps ydy}) is that the variance explodes when $t$ increases. Which we
+An issue with (\ref{python eps ydy}) is that the variance increases rapidly when $t$ increases. Which we
 later solve in the section on ODEs. Note that (\ref{python eps ydy}) keeps desirable properties
 from unbiased Monte Carlo methods such as: being embarrassingly parallel,
-robustness and simple error estimates.
-
+robustness and having simple error estimates.
 
 
 \subsection{Contributions}
@@ -101,6 +106,12 @@ This is just to give a general overview we probably reference specific ideas whe
 
 \section{Background}
 \subsection{Modifying Monte Carlo}
+Once we have a recursive random variable equation it is possible the transform it
+to have more desirable properties. All techniques available to classic Monte Carlo
+my be used to modify recursive random variable equations without affecting the
+unbiasedness. Our favorite work that discusses these techniques is \cite{veach_robust_nodate}.
+% need to fix veach refrence see bibliography
+
 Introduces Russian roulette, splitting, control variates, importance sampling and maybe quasi Monte Carlo with the
 $y'=y$ example.
 
@@ -173,7 +184,10 @@ the heat equation
 \subsection{Wave Equation}
 probably won't get to it
 
+\newpage
+\printbibliography
+\newpage
+
 \section{Appendix}
 Derivation of the green functions and some expressions.
-
 \end{document}
