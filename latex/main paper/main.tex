@@ -79,7 +79,9 @@ unbiased estimator of it without changing $E[Y(t)]=y(t)$ by the law of total exp
 Equation (\ref{recursive RV}) is a recursive random variable equation (RRVE). If you would implement equation
 (\ref{recursive RV}) with recursion it will run indefinitely. A biased way of around this is by approximating
 $Y(t) \approx 1$ near $t = 0$. Later we discuss Russian roulette (\ref{Russian roulette}) which
-can be used as an unbiased stopping mechanism. \\
+can be used as an unbiased stopping mechanism.
+
+\vspace*{0.2cm}
 
 \begin{python}[implementation of (\ref{recursive RV})] \label{python eps ydy}
     \pythoncode{python code/eps_ydy.py}
@@ -92,7 +94,7 @@ robustness and having simple error estimates.
 
 
 \subsection{Contributions}
-We write this at the end.
+We write this at the end. Probably a lot of conjectures.
 
 \subsection{Related Work}
 work on
@@ -149,8 +151,15 @@ $2$ terms of $Z$ separately.
 \begin{example}[Russian roulette on (\ref{recursive RV})]
     Russian roulette can fix the indefinite recursion issue of
     equation (\ref{recursive RV}) by approximating $Y$ near $t = 0$ with $1$. Concretely
-    we replace the $t$ in front of the recursive term with $B(t) = \text{Bernouli(t)}$
+    we replace the $t$ in front of the recursive term with $B(t) \sim \text{Bernouli(t)}$
     when $t<1$.
+    \[
+        Y(t) =
+        \begin{cases}
+            1 + B(t)Y(Ut) & \text{ if } t<1 \\
+            1 + tY(Ut)    & \text{ else}
+        \end{cases}
+        .\]
 \end{example}
 
 \vspace{0.2cm}
@@ -214,7 +223,8 @@ of $f$ to reduce variance.
     but that would affect the Russian roulette negatively.
 \end{example}
 
-\begin{python}
+\vspace*{0.2cm}
+\begin{python}[control variate on (\ref{recursive RV})]
     \pythoncode{python code/CVRR_ydy.py}
 \end{python}
 
@@ -233,19 +243,126 @@ comparing normal vs Monte Carlo trapezoidal rule and highlighting the "half vari
 + maybe integrating polynomials for intuition
 
 \subsection{Unbiased Non-Linearity}
+At first sight it looks only possible to deal with linear problems in an unbiased way but by using
+independent samples it possible to deal with polynomial non-linearity's which practically extend
+to any continuos functions by the Weierstrass approximation theorem. A similar approach to
+non-linearity can be found in \cite{ermakov_monte_2019}. It is not always easy to
+transform non-linearity into polynomials but it is not difficult to come up with
+biased alternative approaches based on linearization or approximate polynomial non-linearity.
+
+
 \begin{example}[$y'=y^{2}$]
-    see python note book
+    Let's do following example:
+    \begin{equation} \label{dyy2}
+        y'= y^2.
+    \end{equation}
+    with $y(1)=-1$. This has solution $-\frac{1}{t}$. Integrate both sides of
+    equation (\ref{dyy2}) to arrive at following integral equation:
+    \begin{equation} \label{Integral dyy2}
+        y(t) = -1 + \int_{1}^{t} y(s) y(s) ds .
+    \end{equation}
+    To estimate the recursive integral in equation (\ref{Integral ydy}) we use $2$
+    independent estimators $Y_{1},Y_{2}$ of $y$:
+    \[
+        Y(t) = -1 + (t-1) Y_{1}(S) Y_{2}(S)
+        .\]
+    With $S \sim \text{Uniform}(1,t)$. This is a branching RRVE this is
+    typical when dealing with non-linearity.
 \end{example}
+
+\vspace*{0.2cm}
+\begin{python}[$y'=y^{2}$]
+    \pythoncode{python code/dyy2.py}
+\end{python}
+
 
 \begin{example}[$e^{E[X]}$]
-    see python note book
+    $e^{\int x(s)ds}$ is common expression encountered when studying ODEs.
+    In this example we demonstrate how you can generate unbiased estimates of
+    $e^{E[X]}$ with simulations of $X$. The taylor series of $e^{x}$ is:
+    \begin{align}
+        e^{E[X]} & = \sum_{n=0}^{\infty} \frac{E^{n}[X]}{n!}     \\
+                 & = 1 + \frac{1}{1}E[X]\left(1+ \frac{1}{2}E[X]
+        \left(1+\frac{1}{3}E[X]\left(1+ ...\right)\right)\right). \label{taylor e}
+    \end{align}
+    Change the fractions of equation (\ref{taylor e}) to Bernoulli processes
+    and replace all $X$ with independent $X_j$ with $E[X]=E[X_{i}]$.
+    \begin{align*}
+        e^{E[X]} & = E
+        \left[1 + B\left(\frac{1}{1}\right)E[X_1]
+        \left(1+ B\left(\frac{1}{2}\right)E[X_2]
+        \left(1+B\left(\frac{1}{3}\right)E[X_3]
+        \left(1+ ...\right)
+        \right)
+        \right)
+        \right]              \\
+                 & = E\left[
+            1 + B\left(\frac{1}{1}\right)X_1
+            \left(1+ B\left(\frac{1}{2}\right)X_2
+            \left(1+B\left(\frac{1}{3}\right)X_3
+            \left(1+ ...\right)
+            \right)
+            \right)
+        \right]              \\
+    \end{align*}
+    What is inside the expectation is something that we can simulate with simulations of $X_{j}$.
 \end{example}
+
+\vspace{0.2cm}
+\begin{python}[$e^{E[X]}$]
+    The following python code estimates $e^{\int_{0}^{t} s^{2}ds}$:
+    \vspace*{0.4cm}
+    \pythoncode{python code/expX.py}
+    %}
+\end{python}
 
 \subsection{Recursion}
+In this section we discuss recursion related techniques.
+
+\begin{technique}[coupled recursion]
+    The idea behind coupled recursion is sharing recursion calls of
+    multiple RVVEs for simulation. This does make them dependent.
+    This is like assuming $2$ induction hypotheses at the same
+    time and proving both inductions steps at the same time vs
+    doing separate induction proofs. Which should be easier
+    because you have accesses to more assumptions at the same time.
+\end{technique}
 
 \begin{example}[coupled recursion]
-    example with $y'=y$ (I need to redo this example)
+    Lets say you are interested in calculating the
+    sensitivity of the solution of an ODE to a
+    parameter $a$:
+    \begin{align}
+        y'             & =ay,y(0)=1 \Rightarrow \label{couple recu ex1} \\
+        \partial_{a}y' & = y + a \partial_{a}y' \label{couple recu ex2}
+    \end{align}
+    Turn (\ref{couple recu ex1}) and (\ref{couple recu ex2}) into RRVEs.
+    To emphasize that they are coupled, that they should
+    recurse together we write them in a matrix equation:
+    \begin{equation} \label{coupled mat}
+        \begin{bmatrix}
+            Y(t) \\
+            \partial_{a}Y(t)
+        \end{bmatrix}=
+        \begin{bmatrix}
+            1 \\
+            0
+        \end{bmatrix}+
+        t \begin{bmatrix}
+            a & 0 \\
+            1 & a
+        \end{bmatrix}
+        \begin{bmatrix}
+            Y(Ut) \\
+            \partial_{a}Y(Ut)
+        \end{bmatrix}.
+    \end{equation}
+
 \end{example}
+
+\begin{python} [implementation of (\ref{coupled mat})]
+    \pythoncode{python code/coupled_mat.py}
+\end{python}
 
 \begin{example}[recursion in recursion]
     maybe induction in induction proof example
