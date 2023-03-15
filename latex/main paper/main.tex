@@ -83,9 +83,9 @@ can be used as an unbiased stopping mechanism.
 
 \vspace*{0.2cm}
 
-\begin{python}[implementation of (\ref{recursive RV})] \label{python eps ydy}
+\begin{pythonn}[implementation of (\ref{recursive RV})] \label{python eps ydy}
     \pythoncode{python code/eps_ydy.py}
-\end{python}
+\end{pythonn}
 
 An issue with (\ref{python eps ydy}) is that the variance increases rapidly when $t$ increases. Which we
 later solve in the section on ODEs. Note that (\ref{python eps ydy}) keeps desirable properties
@@ -164,9 +164,9 @@ $2$ terms of $Z$ separately.
 
 \vspace{0.2cm}
 
-\begin{python}[Russian roulette on (\ref{recursive RV})]
+\begin{pythonn}[Russian roulette on (\ref{recursive RV})]
     \pythoncode{python code/RR_ydy.py}
-\end{python}
+\end{pythonn}
 
 \begin{definition}[splitting]
     Splitting $X$ means using multiple $X_{j} \sim X$ not independent per se to
@@ -191,9 +191,9 @@ alleviating additive branching recursion in RRVEs.
 
 \vspace{0.2cm}
 
-\begin{python}[splitting on (\ref{recursive RV})]
+\begin{pythonn}[splitting on (\ref{recursive RV})]
     \pythoncode{python code/SRR_ydy.py}
-\end{python}
+\end{pythonn}
 
 \begin{definition}[$2$-level MC] \label{2 level}
     $2$-level MC on $X$ with parameters $\tilde{X}, Y: E[\tilde{X}]=E[Y]$:
@@ -224,9 +224,9 @@ of $f$ to reduce variance.
 \end{example}
 
 \vspace*{0.2cm}
-\begin{python}[control variate on (\ref{recursive RV})]
+\begin{pythonn}[control variate on (\ref{recursive RV})]
     \pythoncode{python code/CVRR_ydy.py}
-\end{python}
+\end{pythonn}
 
 \begin{comment}
 Introduces Russian roulette, splitting, control variates, importance sampling and maybe quasi Monte Carlo with the
@@ -271,10 +271,9 @@ biased alternative approaches based on linearization or approximate polynomial n
 \end{example}
 
 \vspace*{0.2cm}
-\begin{python}[$y'=y^{2}$]
+\begin{pythonn}[$y'=y^{2}$]
     \pythoncode{python code/dyy2.py}
-\end{python}
-
+\end{pythonn}
 
 \begin{example}[$e^{E[X]}$]
     $e^{\int x(s)ds}$ is common expression encountered when studying ODEs.
@@ -309,12 +308,12 @@ biased alternative approaches based on linearization or approximate polynomial n
 \end{example}
 
 \vspace{0.2cm}
-\begin{python}[$e^{E[X]}$]
+\begin{pythonn}[$e^{E[X]}$]
     The following python code estimates $e^{\int_{0}^{t} s^{2}ds}$:
     \vspace*{0.4cm}
     \pythoncode{python code/expX.py}
     %}
-\end{python}
+\end{pythonn}
 
 \subsection{Recursion}
 In this section we discuss recursion related techniques.
@@ -360,18 +359,57 @@ In this section we discuss recursion related techniques.
 
 \end{example}
 
-\begin{python} [implementation of (\ref{coupled mat})]
+\begin{pythonn} [implementation of (\ref{coupled mat})]
     \pythoncode{python code/coupled_mat.py}
-\end{python}
+\end{pythonn}
+
+\begin{technique}[recursion in recursion]
+    Recursion in recursion is what is sound like. This is like proving a induction
+    step of an induction proof with induction. The next flight variant of WoS
+    is a beautiful example of recursion in recursion described in
+    \cite{sawhney_grid-free_2022}.
+\end{technique}
 
 \begin{example}[recursion in recursion]
-    maybe induction in induction proof example
+    maybe induction in induction proof example or a reference to ODE solvers later.
 \end{example}
 
-\begin{example}[tail recursion]
-    discuss problems with implementing recursion and solutions.  \\
-    inverse problem example
-\end{example}
+\begin{technique}[non-branching tail recursion]
+    Most programming languages support recursion but this comes with restrictions
+    like maximum recursion depth and performance issues. If tail recursion solve those
+    issues when possible. Tail recursion is reordering all operations in a way that
+    no operation needs to happen after the recursion call such that when reaching
+    the last recursion call we can return the answer. \\
+    All non-branching recursion
+    in this paper can be implemented straight forwardly. This can easily be seen because
+    all of the operations are associative ($(xy)z = x(yz)$). \\
+    Tail recursion is not always desirable because we lose the intermediate values of the
+    recursion calls. It is also possible to combine tail recursion with normal recursion.
+\end{technique}
+
+\begin{pythonn}[tail recursion on (\ref{coupled mat})]
+    We implement (\ref{coupled mat}) but this time with tail recurion.
+    We collect addition operations in a vector sol and multiplication
+    in a matrix $W$.
+    \vspace{0.3cm}
+    \pythoncode{python code/tailrecu.py}
+\end{pythonn}
+
+
+\begin{technique}[branching tail recursion]
+    Branching tail recursion is hard. There  are multiple ways to
+    do branching tail recursion with each their advantages and disadvantages.
+    We found following blog on this topic: \url{https://jeroenvanwijgerden.me/post/recursion-1/}.
+    \\
+    In the context of recursive Monte Carlo there is some work done in rendering
+    \cite{vicini_path_2021}. We think that the techniques they describe for
+    their non-branching recursion are overkill but can be applied to branching
+    recursion in a meaningful way. The $2$ main ideas are that you can reconstruct
+    the random generated tree with a seed and you can invert operations and work backward
+    in the recursion tree. We think that these ideas make it possible to make a constant memory and
+    depth times leafs time algorithm to simulate branching RRVEs. The problem with
+    this algorithm is that it would be difficult to implement.
+\end{technique}
 
 \subsection{Green Functions}
 green function stuff that we will be needing, we aren't sure in how much detail we're going to go.
