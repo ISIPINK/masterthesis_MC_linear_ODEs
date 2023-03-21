@@ -109,10 +109,10 @@ This is just to give a general overview we probably reference specific ideas whe
 \section{Background}
 \subsection{Modifying Monte Carlo}
 Once we have a RRVE it is possible to modify it
-to have more desirable properties.
-Our favorite work that discusses these techniques is \cite{veach_robust_nodate}.
-% need to fix veach refrence see bibliography
+to have more desirable properties. \\
 
+Russian roulette is a Monte Carlo technique widely used in rendering. The idea behind
+Russian roulette is replacing a random variable with a cheaper approximation sometimes.
 
 \begin{definition}[Russian roulette] \label{Russian roulette}
     Define Russian roulette on $X$ with free parameters
@@ -125,8 +125,6 @@ Our favorite work that discusses these techniques is \cite{veach_robust_nodate}.
         \end{cases}
         .\]
 \end{definition}
-The idea behind Russian roulette is replacing $X$ with a cheaper approximation $Y_{2}$
-sometimes.
 
 \begin{example}
     Say that we are interested in estimating $E[Z]$ with $Z$
@@ -168,6 +166,10 @@ $2$ terms of $Z$ separately.
     \pythoncode{python code/RR_ydy.py}
 \end{pythonn}
 
+Splitting is a technique that has almost the reverse effect as Russian roulette.
+The idea behind splitting is to reduce variance in certain places by using more
+samples.
+
 \begin{definition}[splitting]
     Splitting $X$ means using multiple $X_{j} \sim X$ not independent per se to
     lower variance by averaging them:
@@ -202,8 +204,6 @@ alleviating additive branching recursion in RRVEs.
         .\]
 \end{definition}
 
-This gets discussed in \cite{giles_multilevel_2013}.
-
 \begin{definition}[control variates] \label{CV}
     Control variate on $f(X)$ is
     \[
@@ -233,12 +233,57 @@ Introduces Russian roulette, splitting, control variates, importance sampling an
 $y'=y$ example. We are missing importance sampling and quasi MC
 \end{comment}
 
+\begin{related}
+    Our favorite work that discusses these techniques is \cite{veach_robust_nodate}.
+    More interesting works can be found on Monte Carlo techniques in rendering.
+    $2$-level gets discussed in \cite{giles_multilevel_2013}.
+\end{related}
+% need to fix veach refrence see bibliography
 
 \subsection{Monte Carlo Trapezoidal Rule}
-The Monte Carlo trapezoidal rule has some interesting convergence
-behavior \cite{wu_randomised_2020}.
+We present here a Monte Carlo trapezoidal rule with similar convergence behavior to
+methods discussed later. The Monte Carlo trapezoidal rule will just be
+regular Monte Carlo control variated with the normal trapezoidal rule.
 
-We aren't yet comfortable with our understanding of the randomized trapezoidal rule. \\
+\begin{definition}[MC trapezoidal rule]
+    Define the MC trapezoidal rule for $f$ on $[x,x+dx]$ the following
+    way:
+    \begin{equation}
+        \int_{x}^{x+dx} f(s)ds \approx
+        \frac{f(x)+f(x+dx)}{2} + f(S_{x})-f(x)-\frac{S_{x}-x}{dx}(f(x+dx)-f(x))
+    \end{equation}
+    with $S_{x} = \text{Uniform}(x,x+dx)$.
+\end{definition}
+
+
+Defining the composite MC trapezoidal rule as
+the sum of MC trapezoidal rules on equally divided intervals
+is possible but expensive. Every interval would add a function call
+compared to the normal composite MC trapezoidal rule. Instead
+you can aggressively Russian roulette into the normal trapezoidal rule
+such that the increase in functions calls is arbitrarily small.
+
+\begin{definition}[composite MC trapezoidal rule]
+    Define the composite MC trapezoidal rule for $f$ on $[a,b]$ with
+    $n$ intervals and a Russian roulette rate $l$ the following way:
+    \begin{align}
+         & \int_{a}^{b} f(s)ds \approx        \\
+         & \sum_{x}  \frac{f(x)+f(x+dx)}{2} +
+        l B \left(\frac{1}{l} \right)
+        \left(f(S_{x})-f(x)-\frac{S_{x}-x}{dx}(f(x+dx)-f(x)) \right)
+    \end{align}
+
+    with $S_{x} = \text{Uniform}(x,x+dx)$.
+
+\end{definition}
+
+
+\begin{related}
+    Optimal theoritcal bounds on randomized algorithms can be found in:
+    (see literature randomized trapezoidal rule)
+    \cite{wu_randomised_2020}.
+\end{related}
+
 comparing normal vs Monte Carlo trapezoidal rule and highlighting the "half variance phenomenon".
 + maybe integrating polynomials for intuition
 
@@ -395,22 +440,32 @@ In this section we discuss recursion related techniques.
     \pythoncode{python code/tailrecu.py}
 \end{pythonn}
 
+Branching tail recursion is hard. There  are multiple ways to
+do branching tail recursion with each their advantages and disadvantages. \\
+In the context of recursive Monte Carlo there are $2$ main ideas that
+stand out:
+
+\begin{technique}[tree regenerating]
+    The structure of branching recursion can be captured by a tree. Generating
+    the tree and storing it in memory can be expensive. Because in recursion
+    you only need to retrace steps $1$ by $1$ it
+\end{technique}
 
 \begin{technique}[branching tail recursion]
-    Branching tail recursion is hard. There  are multiple ways to
-    do branching tail recursion with each their advantages and disadvantages.
-    We found following blog on this topic: \url{https://jeroenvanwijgerden.me/post/recursion-1/}.
-    \\
-    In the context of recursive Monte Carlo there is some work done in rendering
-    \cite{vicini_path_2021}. We think that the techniques they describe for
-    their non-branching recursion are overkill but can be applied to branching
-    recursion in a meaningful way. The $2$ main ideas are that you can reconstruct
     the random generated tree with a seed and you can invert operations and work backward
     in the recursion tree. We think that these ideas make it possible to make a constant memory and
     depth times leafs time algorithm to simulate branching RRVEs. The problem with
     this algorithm is that it would be difficult to implement.
 \end{technique}
 
+\begin{related}
+    This blog discusses branching tail recursion:
+    \url{https://jeroenvanwijgerden.me/post/recursion-1/}.
+    We found our main ideas for branching tail recursion back in \cite{vicini_path_2021}.
+    They applied on a non-branching estimator, which we think was overkill.
+
+
+\end{related}
 \subsection{Green Functions}
 green function stuff that we will be needing, we aren't sure in how much detail we're going to go.
 
