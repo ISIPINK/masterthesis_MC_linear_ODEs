@@ -263,7 +263,7 @@ compared to the normal composite MC trapezoidal rule. Instead
 you can aggressively Russian roulette into the normal trapezoidal rule
 such that the increase in functions calls is arbitrarily small.
 
-\begin{definition}[composite MC trapezoidal rule]
+\begin{definition}[composite MC trapezoidal rule] \label{MCtrap}
     Define the composite MC trapezoidal rule for $f$ on $[a,b]$ with
     $n$ intervals and a Russian roulette rate $l$ the following way:
     \begin{align}
@@ -277,6 +277,25 @@ such that the increase in functions calls is arbitrarily small.
 
 \end{definition}
 
+\begin{pythonn}[implementation of (\ref{MCtrap})]
+    We implement (\ref{MCtrap}) for $\int_{0}^{1}e^{s}ds$.
+    \vspace*{0.5cm}
+    \pythoncode{python code/trap1.py}
+\end{pythonn}
+
+What is surprising about this MC composite rule is that
+under the right smoothness conditions it adds $0.5$
+for every dimension order of convergence over the normal
+composite rule.
+
+\begin{lemma}[half variance phenomenon]
+    Maybe a lemma about MC integrating a polynomial
+    with proof and this becomes a theorem
+\end{lemma}
+
+\begin{proof}
+    Also a maybe, maybe just a numerical example.
+\end{proof}
 
 \begin{related}
     Optimal theoritcal bounds on randomized algorithms can be found in:
@@ -290,8 +309,7 @@ comparing normal vs Monte Carlo trapezoidal rule and highlighting the "half vari
 \subsection{Unbiased Non-Linearity}
 At first sight it looks only possible to deal with linear problems in an unbiased way but by using
 independent samples it possible to deal with polynomial non-linearity's which practically extend
-to any continuos functions by the Weierstrass approximation theorem. A similar approach to
-non-linearity can be found in \cite{ermakov_monte_2019}. It is not always easy to
+to any continuos functions by the Weierstrass approximation theorem.  It is not always easy to
 transform non-linearity into polynomials but it is not difficult to come up with
 biased alternative approaches based on linearization or approximate polynomial non-linearity.
 
@@ -360,6 +378,12 @@ biased alternative approaches based on linearization or approximate polynomial n
     %}
 \end{pythonn}
 
+\begin{related}
+    A similar approach to non-linearity can be found in \cite{ermakov_monte_2019}.
+    We have more papers on how to deal with non-linearity stashed, no idea if they are
+    worth mentioning.
+\end{related}
+
 \subsection{Recursion}
 In this section we discuss recursion related techniques.
 
@@ -419,18 +443,21 @@ In this section we discuss recursion related techniques.
     maybe induction in induction proof example or a reference to ODE solvers later.
 \end{example}
 
+Most programming languages support recursion but this comes with restrictions
+like maximum recursion depth and performance issues. Tail recursion solve those
+issues when possible.
+
 \begin{technique}[non-branching tail recursion]
-    Most programming languages support recursion but this comes with restrictions
-    like maximum recursion depth and performance issues. If tail recursion solve those
-    issues when possible. Tail recursion is reordering all operations in a way that
-    no operation needs to happen after the recursion call such that when reaching
-    the last recursion call we can return the answer. \\
-    All non-branching recursion
-    in this paper can be implemented straight forwardly. This can easily be seen because
-    all of the operations are associative ($(xy)z = x(yz)$). \\
-    Tail recursion is not always desirable because we lose the intermediate values of the
-    recursion calls. It is also possible to combine tail recursion with normal recursion.
+    Tail recursion is reordering all operations in a way that
+    almost no operation needs to happen after the recursion call such that when reaching
+    the last recursion call we can return the answer without retracing all steps.
 \end{technique}
+
+All non-branching recursion
+in this paper can be implemented straight forwardly. This can easily be seen because
+all of the operations are associative ($(xy)z = x(yz)$). \\
+Tail recursion is not always desirable because we lose the intermediate values of the
+recursion calls. It is also possible to combine tail recursion with normal recursion.
 
 \begin{pythonn}[tail recursion on (\ref{coupled mat})]
     We implement (\ref{coupled mat}) but this time with tail recurion.
@@ -442,27 +469,30 @@ In this section we discuss recursion related techniques.
 
 Branching tail recursion is hard. There  are multiple ways to
 do branching tail recursion with each their advantages and disadvantages. \\
-In the context of recursive Monte Carlo there are $2$ main ideas that
+In the context of recursive Monte Carlo there are $2$ techniques that
 stand out:
 
-\begin{technique}[tree regenerating]
-    The structure of branching recursion can be captured by a tree. Generating
-    the tree and storing it in memory can be expensive. Because in recursion
-    you only need to retrace steps $1$ by $1$ it
+\begin{technique}[tree regrowing]
+    The structure of branching recursion can be captured by a tree. Storing that tree
+    in memory can be expensive. In recursion you only need to retrace steps
+    $1$ by $1$ therefore you only need local parts of the recursion tree. Tree
+    regrowing tries to alleviate memory issues by instead storing the whole
+    tree only storing seeds (of the random generator) of parts of the
+    tree and growing them when needed.
 \end{technique}
 
-\begin{technique}[branching tail recursion]
-    the random generated tree with a seed and you can invert operations and work backward
-    in the recursion tree. We think that these ideas make it possible to make a constant memory and
-    depth times leafs time algorithm to simulate branching RRVEs. The problem with
-    this algorithm is that it would be difficult to implement.
+\begin{technique}[backward tail recursion]
+    One way of doing branching tail recursion is by using operation buffers for
+    all leafs which is not memory friendly. In backward tail recursion you retrace
+    steps and do all operations in reverse to recover the buffer needed.
 \end{technique}
+
 
 \begin{related}
     This blog discusses branching tail recursion:
     \url{https://jeroenvanwijgerden.me/post/recursion-1/}.
-    We found our main ideas for branching tail recursion back in \cite{vicini_path_2021}.
-    They applied on a non-branching estimator, which we think was overkill.
+    The techniques for tail recursion  gets discussed in \cite{vicini_path_2021}.
+    They applied it on a non-branching estimator, which we think is overkill.
 
 
 \end{related}
