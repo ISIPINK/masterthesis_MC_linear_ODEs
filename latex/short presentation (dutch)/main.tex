@@ -8,10 +8,11 @@
 \usepackage{xcolor}
 \usepackage[dutch]{babel}
 \usepackage{sansmathaccent}
+\usepackage{graphicx}
 
 \pdfmapfile{+sansmathaccent.map}
 
-\title{Monte Carlo voor Recursieve Integraal Vergelijkingen}
+\title{Recursieve Monte Carlo}
 \author{Isidoor Pinillo Esquivel }
 \usetheme{Madrid}
 
@@ -23,25 +24,45 @@
 
 
 \begin{frame}
-    \frametitle{Focus}
+    \frametitle{focus}
     \begin{itemize}
+        \item recursieve integraal vergelijkingen
         \item ODEs
         \item PDEs
     \end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Voorbeeld 1}
+    \frametitle{voorbeeld}
     \vspace{-2cm}
     \action<+->{}
     \begin{align}
         \action<+->{y'   & =y  }                        \\
         \action<+->{y(t) & =y(0)+ \int_{0}^{t} y(s)ds } \\
-        \action<+->{Y(t) & =y(0)+tY(S) }
+        \action<+->{Y(t) & =y(0)+tY(S) } \label{RRVE}
     \end{align}
 
     \action<+->{$S \sim \text{Uniform}(0,t)$}
 \end{frame}
 
-\end{document}
+\begin{frame}
+    \frametitle{voorbeeld}
+    \vspace{-2cm}
+    \action<+->{}
+    (\ref{RRVE})+
+    \begin{itemize}
+        \action<+->{\item recursie in recursie}
+              \action<+->{\item (lineaire) control variates }
+              \action<+->{\item Russische roulette}
+    \end{itemize}
+\end{frame}
 
+\begin{frame}
+    \frametitle{loglog plot}
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{llplot.png}
+    \end{center}
+\end{frame}
+
+
+\end{document}
