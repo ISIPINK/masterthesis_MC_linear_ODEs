@@ -434,14 +434,17 @@ In this section we discuss recursion related techniques.
 
 \begin{technique}[recursion in recursion]
     Recursion in recursion is what is sound like. This is like proving a induction
-    step of an induction proof with induction. The next flight variant of WoS
-    is a beautiful example of recursion in recursion described in
-    \cite{sawhney_grid-free_2022}.
-\end{technique}
+    step of an induction proof with induction. \end{technique}
 
 \begin{example}[recursion in recursion]
     maybe induction in induction proof example or a reference to ODE solvers later.
 \end{example}
+
+\begin{related}[recursion in recursion]
+    The next flight variant of WoS
+    is a beautiful example of recursion in recursion described in
+    \cite{sawhney_grid-free_2022}.
+\end{related}
 
 Most programming languages support recursion but this comes with restrictions
 like maximum recursion depth and performance issues. Tail recursion solve those
@@ -460,7 +463,7 @@ Tail recursion is not always desirable because we lose the intermediate values o
 recursion calls. It is also possible to combine tail recursion with normal recursion.
 
 \begin{pythonn}[tail recursion on (\ref{coupled mat})]
-    We implement (\ref{coupled mat}) but this time with tail recurion.
+    We implement (\ref{coupled mat}) but this time with tail recursion.
     We collect addition operations in a vector sol and multiplication
     in a matrix $W$.
     \vspace{0.3cm}
@@ -488,7 +491,7 @@ stand out:
 \end{technique}
 
 
-\begin{related}
+\begin{related}[branching recursion]
     This blog discusses branching tail recursion:
     \url{https://jeroenvanwijgerden.me/post/recursion-1/}.
     The techniques for tail recursion  gets discussed in \cite{vicini_path_2021}.
