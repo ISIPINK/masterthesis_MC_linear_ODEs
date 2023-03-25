@@ -12,7 +12,7 @@ $$
 
 where $\lambda$ is a large negative constant. The solution exhibits rapid decay, and the problem is considered stiff when $\lambda$ is very large. The performance of a solver on this problem can be used to evaluate its ability to handle stiffness.
 
-    Van der Pol oscillator:
+Van der Pol oscillator:
 
 The problem is defined by the equation:
 
@@ -28,8 +28,8 @@ The system is defined by the equations:
 
 $$
 \begin{aligned}
-\frac{dx}{dt} &= \sigma (y - x) \
-\frac{dy}{dt} &= x (\rho - z) - y \
+\frac{dx}{dt} &= \sigma (y - x) \\
+\frac{dy}{dt} &= x (\rho - z) - y \\
 \frac{dz}{dt} &= x y - \beta z
 \end{aligned}
 $$
@@ -42,7 +42,7 @@ The system is defined by the equations:
 
 $$
 \begin{aligned}
-\frac{\partial u}{\partial t} &= 1 + u^2 v - (B+1)u + A \nabla^2 u \
+\frac{\partial u}{\partial t} &= 1 + u^2 v - (B+1)u + A \nabla^2 u \\
 \frac{\partial v}{\partial t} &= Bu - u^2 v + D \nabla^2 v
 \end{aligned}
 $$
