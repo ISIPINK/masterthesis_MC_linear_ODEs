@@ -164,6 +164,15 @@ $2$ terms of $Z$ separately.
 
 \begin{pythonn}[Russian roulette on (\ref{recursive RV})]
     \pythoncode{python code/RR_ydy.py}
+    An intrestring property of this algorithm is that $Y(t) \in \mathbb{N}$.
+    A way to visualize this is by plotting every recursion call $(t,Y(t))$.
+    \begin{figure}[h!]
+        \begin{center}
+            \includegraphics[width=0.8\textwidth]{plots/russian roulette example.pdf}
+        \end{center}
+        \label{plt russian roulette}
+    \end{figure}
+
 \end{pythonn}
 
 Splitting is a technique that has almost the reverse effect as Russian roulette.
@@ -434,7 +443,8 @@ In this section we discuss recursion related techniques.
 
 \begin{technique}[recursion in recursion]
     Recursion in recursion is what is sound like. This is like proving a induction
-    step of an induction proof with induction. \end{technique}
+    step of an induction proof with induction.
+\end{technique}
 
 \begin{example}[recursion in recursion]
     maybe induction in induction proof example or a reference to ODE solvers later.
