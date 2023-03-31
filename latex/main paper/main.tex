@@ -28,7 +28,7 @@ style=alphabetic,
 \begin{document}
 
 \begin{comment}
-\title{Unbiased Monte Carlo for Recursive Integrals}
+\title{Recursive Monte Carlo}
 \author{Isidoor Pinillo Esquivel}
 \maketitle
 \end{comment}
@@ -67,7 +67,7 @@ Carlo on the recursive integral of equation (\ref{Integral ydy}) one derives fol
     Y(t) = 1 + t y(Ut)
     .\]
 
-where $U=\text{Uniform}(0,1)$. If $y$ is well behaved then $E[Y(t)]=y(t)$ but we can't
+If $y$ is well behaved then $E[Y(t)]=y(t)$ but we can't
 calculate $Y(t)$ without accesses to $y(s),s<t$. Notice that we can replace $y$ by a
 unbiased estimator of it without changing $E[Y(t)]=y(t)$ by the law of total expectance
 ($E[X] = E[E[X|Z]]$). By replacing $y$ by $Y$ itself we obtain a recursive expression for $Y$:
@@ -107,6 +107,28 @@ work on
 This is just to give a general overview we probably reference specific ideas when we first introduce them.
 
 \section{Background}
+
+\subsection{Notation}
+Notations used in this thesis include:
+
+\begin{itemize}
+    \item $U \sim \text{Uniform}(0,1)$:
+          A uniform distribution with parameters (0,1), used
+          to model situations where each value within a certain
+          range is equally likely to occur.
+    \item $B(p) \sim \text{Bernoulli}(p)$:
+          A Bernoulli distribution used to model
+          situations where there are only two possible outcomes, and
+          the parameter $p$ represents the probability of one of those outcomes occurring.
+    \item RV (random variable):
+          A variable whose value is subject to uncertainty,
+          often represented by capital letters such as $X,Y,Z$.
+    \item RRVE (recursive RV equation): An equation that defines a
+          family of random variables in terms of its self.
+    \item MC (Monte Carlo)
+\end{itemize}
+
+
 \subsection{Modifying Monte Carlo}
 Once we have a RRVE it is possible to modify it
 to have more desirable properties. \\
@@ -126,7 +148,7 @@ Russian roulette is replacing a random variable with a cheaper approximation som
         .\]
 \end{definition}
 
-\begin{example}
+\begin{example}[Russian roulette]
     Say that we are interested in estimating $E[Z]$ with $Z$
     defined in the following way:
     \[
@@ -138,7 +160,7 @@ Russian roulette is replacing a random variable with a cheaper approximation som
     \[
         \tilde{Z} = U + B\left(\frac{1}{100}\right)\frac{f(U)}{10}
         .\]
-    where $B(\frac{1}{100}) \sim \text{Bernouli}(\frac{1}{100})$. Now $\tilde{Z}$
+    Now $\tilde{Z}$
     just requires calling $f$ on average once every $100$ simulations with the variance
     only increasing slightly compared to $Z$.
 \end{example}
@@ -149,7 +171,7 @@ $2$ terms of $Z$ separately.
 \begin{example}[Russian roulette on (\ref{recursive RV})]
     Russian roulette can fix the indefinite recursion issue of
     equation (\ref{recursive RV}) by approximating $Y$ near $t = 0$ with $1$. Concretely
-    we replace the $t$ in front of the recursive term with $B(t) \sim \text{Bernouli(t)}$
+    we replace the $t$ in front of the recursive term with $B(t)$
     when $t<1$.
     \[
         Y(t) =
@@ -162,14 +184,17 @@ $2$ terms of $Z$ separately.
 
 \vspace{0.2cm}
 
-\begin{pythonn}[Russian roulette on (\ref{recursive RV})]
+\begin{pythonn}[Russian roulette on (\ref{recursive RV})] \label{RRpython}
     \pythoncode{python code/RR_ydy.py}
-    An intrestring property of this algorithm is that $Y(t) \in \mathbb{N}$.
-    A way to visualize this is by plotting every recursion call $(t,Y(t))$.
+    Interestingly, $Y(t)$ is constrained to take on only integer values.
+    This is visually evident on figure \ref{plt russian roulette}.
     \begin{figure}[h!]
+        \vspace*{-1cm}
         \begin{center}
             \includegraphics[width=0.8\textwidth]{plots/russian roulette example.pdf}
         \end{center}
+        \vspace*{-1cm}
+        \caption{Recursive calls $(t,Y(t))$ of (\ref{RRpython}) }
         \label{plt russian roulette}
     \end{figure}
 
@@ -188,7 +213,8 @@ samples.
 \end{definition}
 
 Splitting the recursive term in a RRVE can lead to (additive) branching recursion.
-Extra care should be taken that all branches get terminated with probability $1$. This can be
+Extra care should be taken that branches get terminated quickly avoiding exponential increase
+of computation power. This can be
 achieved by termination strategies already discussed and later we discuss coupled recursion for
 alleviating additive branching recursion in RRVEs.
 
@@ -307,7 +333,7 @@ composite rule.
 \end{proof}
 
 \begin{related}
-    Optimal theoritcal bounds on randomized algorithms can be found in:
+    Optimal theoretical bounds on randomized algorithms can be found in:
     (see literature randomized trapezoidal rule)
     \cite{wu_randomised_2020}.
 \end{related}
@@ -398,7 +424,7 @@ In this section we discuss recursion related techniques.
 
 \begin{technique}[coupled recursion]
     The idea behind coupled recursion is sharing recursion calls of
-    multiple RVVEs for simulation. This does make them dependent.
+    multiple RRVEs for simulation. This does make them dependent.
     This is like assuming $2$ induction hypotheses at the same
     time and proving both inductions steps at the same time vs
     doing separate induction proofs. Which should be easier
@@ -469,7 +495,7 @@ issues when possible.
 All non-branching recursion
 in this paper can be implemented straight forwardly. This can easily be seen because
 all of the operations are associative ($(xy)z = x(yz)$). \\
-Tail recursion is not always desirable because we lose the intermediate values of the
+Tail recursion may not be desirable because we lose the intermediate values of the
 recursion calls. It is also possible to combine tail recursion with normal recursion.
 
 \begin{pythonn}[tail recursion on (\ref{coupled mat})]
@@ -485,42 +511,302 @@ do branching tail recursion with each their advantages and disadvantages. \\
 In the context of recursive Monte Carlo there are $2$ techniques that
 stand out:
 
-\begin{technique}[tree regrowing]
-    The structure of branching recursion can be captured by a tree. Storing that tree
-    in memory can be expensive. In recursion you only need to retrace steps
-    $1$ by $1$ therefore you only need local parts of the recursion tree. Tree
-    regrowing tries to alleviate memory issues by instead storing the whole
-    tree only storing seeds (of the random generator) of parts of the
-    tree and growing them when needed.
-\end{technique}
-
-\begin{technique}[backward tail recursion]
-    One way of doing branching tail recursion is by using operation buffers for
-    all leafs which is not memory friendly. In backward tail recursion you retrace
-    steps and do all operations in reverse to recover the buffer needed.
-\end{technique}
+%\begin{technique}[tree regrowing]
+%    The structure of branching recursion can be captured by a tree. Storing that tree
+%    in memory can be expensive. In recursion you only need to retrace steps
+%    $1$ by $1$ therefore you only need local parts of the recursion tree. Tree
+%    regrowing tries to alleviate memory issues by instead storing the whole
+%    tree only storing seeds (of the random generator) of parts of the
+%    tree and growing them when needed.
+%\end{technique}
+%
+%\begin{technique}[backward tail recursion]
+%    One way of doing branching tail recursion is by using operation buffers for
+%    all leafs which is not memory friendly. In backward tail recursion you retrace
+%    steps and do all operations in reverse to recover the buffer needed.
+%\end{technique}
 
 
 \begin{related}[branching recursion]
     This blog discusses branching tail recursion:
     \url{https://jeroenvanwijgerden.me/post/recursion-1/}.
     The techniques for tail recursion  gets discussed in \cite{vicini_path_2021}.
-    They applied it on a non-branching estimator, which we think is overkill.
 \end{related}
 
-\subsection{Green Functions}
-green function stuff that we will be needing, we aren't sure in how much detail we're going to go.
+
+\section{ODEs}
+
+%\subsection{Linear Recursive Integrals}
+%We have algo in mind for this case based on coupled recursion on disjunct sets.
+%
+%\begin{definition}[Volterra equation of the second kind]
+%    A Volterra equation of the second kind for $x$  is of the following form:
+%    $$
+%        x(t)=f(t)+\int_a^t K(t, s) x(s) ds.
+%    $$
+%    Given the kernel  $K(t, s)$  and  $ f(t)$.
+%\end{definition}
+%
+%\begin{definition}[Fredholm equation of the second kind]
+%    A Fredholm equation of the second kind for $\varphi$  is of the following form:
+%    $$
+%        \varphi(t)=f(t)+\lambda \int_a^b K(t, s) \varphi(s) ds.
+%    $$
+%    Given the kernel  $K(t, s)$  and  $ f(t)$.
+%\end{definition}
+
+
+\subsection{From ODEs to Integral Equations}
+In this section we discuss informally how to turn ODEs into integral equations.
+
+From ODEs to Integral Equations (continuation)
+We continue our discussion on how to turn ODEs into integral equations.
+Let's start from following form:
+$$
+    L(y)= f
+$$
+where $L$ is a linear operator, $f$ be generic for now and some initial/boundary condition
+for $y$. All the methods we have in mind are some kind of integral transform:
+$$
+    y(t) = \int_{\Omega} \varphi(x) K(t,x)dx
+$$
+where the integral may also be a summation and we may chose $K(t,x), \Omega$ and let $\varphi(x)$ be our new unknown. Note that we don't know that such representation exist or even is well defined but we continue and fix this in the future (hopefully). If you sub this into the first equation you obtain the following:
+
+\begin{align*}
+    L \left(\int_{\Omega} \varphi(x) K(t,x)dx \right) & = f \Leftrightarrow \\
+    \int_{\Omega} \varphi(x) L \left(K(t,x) \right)dx & = f
+\end{align*}
+
+this is a Fredholm integral equation of the first type in $\varphi(x)$
+\url{https://en.wikipedia.org/wiki/Fredholm_integral_equation}
+if we had
+let $\Omega$ depend on $t$ in a certain way we would have obtained a Voltera integral
+equation of the second kind
+\url{https://en.wikipedia.org/wiki/Volterra_integral_equation}.
+
+Let's derive the method of source green functions in this framework
+\url{https://en.wikipedia.org/wiki/Green%27s_function}. 
+This can be done by choosing the free things in a way something nice happens:
+$$
+    L \left(K(t,x) \right) = \delta(t-x)
+$$
+
+with the same  domain and initial/boundary conditions such that the ones of $y$ hold.
+Choosing the initial/boundary conditions that way is easy but not trivial.
+
+For a dirichlet boundary condition in $s$ the following can be done:
+
+\begin{align*}
+    y(s)   & = \int_{\Omega} \varphi(x) K(s,x)dx \Leftarrow                      \\
+    K(s,x) & = \frac{y(s) l(x)}{\varphi(x)} \text{ and } 1 = \int_{\Omega}l(x)dx
+\end{align*}
+
+For a Neumann boundary condition in $s$ the following can be done:
+
+\begin{align*}
+    y'(s)   & = \int_{\Omega} \varphi(x) K'(s,x)dx \Leftarrow                      \\
+    K'(s,x) & = \frac{y'(s) l(x)}{\varphi(x)} \text{ and } 1 = \int_{\Omega}l(x)dx
+\end{align*}
+
+with $l$ arbitrary. Linear type of initial/boundary conditions are very similar to this.
+The $\varphi = f$ in the initial/boundary condition is annoying but can be avoided
+by making the original initial/boundary condition $0$ by splitting explained in period1.\\
+
+Going back because of our choice the following thing can be derived
+
+\begin{align*}
+    \int_{\Omega} \varphi(x) L \left(K(t,x) \right)dx & = f \Leftrightarrow \\
+    \int_{\Omega} \varphi(x) \delta(t-x)dx            & = f \Leftrightarrow \\
+    \varphi(t)                                        & = f
+\end{align*}
+
+Boundary Green functions deals with boundary conditions like how source Green functions deals with the source. The intuition behind them is the same as the solutions of a linear homogenous ODE that span a vector space.
+
+$$
+    y(t)= \int_{\partial B} \varphi(x) K(t,x) dx
+$$
+
+If you impose $L(y(t)) = 0$ on this you get the following:
+
+\begin{align*}
+    \int_{\partial B} \varphi(x) L(K(t,x)) dx & = 0 \Leftarrow \\
+    L(K(t,x))                                 & = 0
+\end{align*}
+
+Again the initial conditions on $K(t,x)$ come from the original problem:
+
+For a dirichlet boundary condition in $s$ the following can be done:
+
+\begin{align*}
+    y(s)   & = \int_{\partial \Omega} \varphi(x) K(s,x)dx \Leftarrow \\
+    K(s,x) & = \delta(x-s) \text{ and } \varphi(s)= y(s)
+\end{align*}
+
+Other linear type initial/boundary conditions are very similar.
+
+In the Green function method we searched an integral transform with a certain property
+related to the equation that we were solving. Certain classes of integral
+transformations have nice properties for a big class of equations.
+A classic integral transform used for ODEs is the Fourier transform
+\url{https://en.wikipedia.org/wiki/Fourier_transform}.
+But we haven't figured
+out how to deal with boundary conditions in this case.
+
+The discrete version of an integral transform is a series transform,
+in which you transfer information about the function to $\varphi_n$.
+$$
+    y(t) = \sum_{n=0}^{\infty} \varphi_n e_n(t)
+$$
+our original equation with this becomes:
+\begin{align*}
+    L \left(\sum_{n=0}^{\infty} \varphi_n e_n(t) \right) & = f \Leftrightarrow \\
+    \sum_{n=0}^{\infty} \varphi_n L (e_n(t))             & = f
+\end{align*}
+Again there a lot of tricks you can pull of with this.
+A convenient thing is when $L(e_{n}(t)) = \phi_{n}$ (and $e_{n}$
+spans the space of functions which follow the initial/boundary conditions)
+is bi-orthogonal basis against some $\psi_n$
+$\left(\langle \phi_j \mid \psi_{k} \rangle= \delta_{jk}\right)$ .
+
+\begin{align*}
+    \sum_{n=0}^{\infty} \varphi_n \phi_{n}                                            & = f \Rightarrow                                   \\
+    \left \langle \sum_{n=0}^{\infty} \varphi_n \phi_{n}\mid \psi_{j}  \right \rangle & =  \langle f\mid \psi_{j} \rangle \Leftrightarrow \\
+    \sum_{n=0}^{\infty} \varphi_n \left \langle \phi_{n}\mid \psi_{j}  \right \rangle & =  \langle f\mid \psi_{j} \rangle \Leftrightarrow \\
+    \sum_{n=0}^{\infty} \varphi_n \delta_{nj}                                         & =  \langle f\mid \psi_{j} \rangle \Leftrightarrow \\
+    \varphi_j                                                                         & =  \langle f\mid \psi_{j} \rangle
+\end{align*}
+This means we have following expression for the solution:
+\begin{align*}
+    y(t) & = \sum_{n=0}^{\infty} \langle f(x)\mid \psi_{n}(x) \rangle e_{n}(t)  \Leftrightarrow \\
+    y(t) & = \left\langle f(x)\mid  \sum_{n=0}^{\infty} \psi_{n}(x)e_{n}(t)  \right \rangle
+\end{align*}
+this expression in some cases depending on how the inner product is defined corresponds
+with the Green function $G(t,x) =\sum_{n=0}^{\infty} \psi_{n}(x)e_{n}(t)$.
+
+Related wikipedia page :
+\url{https://en.wikipedia.org/wiki/Spectral_theory_of_ordinary_differential_equations}
+
+This is probably not the only way to turn ODEs into integral equations. The Feynman-Kac formula
+\url{https://en.wikipedia.org/wiki/Feynman%E2%80%93Kac_formula} 
+is derived in an other way but still kind of obeys the general form we have given.
+
+There are multiple ways to turn problems into integral equations for Monte Carlo methods
+but not all those integral equations gives you Monte Carlo methods with the same properties.
+Things like: the type of the domain chosen, stochastic approximations made, what gets thrown
+to the source term and what needs to be recursed on determine the properties of the Monte
+Carlo method obtained.\\
+
+Each Monte Carlo method doesn't have to be limited to $1$ integral equation.
+One may use a different integral equation for each recursion step made in combination
+with the different modifications discussed in period1. This makes for a big search space
+of possible Monte Carlo algorithms. \\
+
+
+Another thing to take in consideration is that finding Green functions is difficult a way
+around that is by throwing everything in the source term but by doing this you probably
+lose good properties. This approach is taken for example in Grid-Free Monte Carlo for
+PDEs with Spatially Varying Coefficients. \\
+
+To test that boundary Green functions work for ODEs we work out following example:
+$$
+    y'' = y, y(0) = 1, y'(1)=e
+$$
+with solution $y(t) = e^{t}$. We chose the splitting Green function method with
+$\Omega = [-1,1],f = y$ as discussed as before. \\
+
+Let's create integral representation of the boundary and source terms separately:
+
+$$
+    y''_{s} = f \text{ with } y_s(0)=0, y'_s(1)=0
+$$
+And the equation for the corresponding Green function:
+$$
+    G''(t,x) = \delta(t-x) \text{ with } G(0,x)=0, G'(1,x)=0
+$$
+$G$ must be something continuos piecewise linear with a jump of $1$ in the derivative
+at $t = x$. By some algebra we find following solution:
+$$
+    G(t,x) =
+    \begin{cases}
+        -t & \text{if } t <  x   \\
+        -x & \text{if } t \ge  x
+    \end{cases}
+$$
+Write out the solution for $y_{s}(t)$:
+$$
+    y_{s}(t) = \int_{0}^{1} y(x) G(t,x) dx.
+$$
+
+We still have some problems to fix with the boundary Green functions ... \\
+The boundary in for ODEs is discrete $\partial \Omega = \{0,1\}$.
+So instead of an integral we have sum and Green function also splits into $2$...
+
+$$
+    y''_{b} = 0 \text{ with } y_{s}(0)=1, y'_{s}(1)= e
+$$
+Let's call the boundary function $K$ so that we don't confuse it with $G$.
+So we have $K(t,0)$ and $K(t,1)$.The solution for these are easily found:
+
+\begin{align*}
+    K''(t,0) & = 0 \text{ with } K(0,0)=1, K'(0,1)=0 \Rightarrow \\
+    K(t,0)   & =1
+\end{align*}
+
+\begin{align*}
+    K''(t,1) & =0 \text{ with } K(1,0)=0, K'(1,1)=1 \Rightarrow \\
+    K(t,1)   & =t
+\end{align*}
+
+Write out the solution for $y_{b}(t)$:
+$$
+    y_{b}(t) = 1 + e t
+$$
+
+If you put everything together you get:
+$$
+    y(t) = 1+et +\int_{0}^{1} y(x) G(t,x)dx.
+$$
+In the implementation we use Russian Roulette  with probability $1-\frac{1}{1.3}$ always for stopping.
+In code this looks like:
+
+
+
+\begin{definition}[boundary green function]
+    The boundary green function of a linear differential problem with linear boundary
+    conditions.
+\end{definition}
+
+\begin{definition}[source green function]
+    For
+    \[
+        L(y(z)) = f
+        .\]
+    with $L$ a linear differential operator, $z$ a point in the input space of $y$
+    ,$f$ arbitrary and linear boundary conditions.
+    We define the source green function $G(z,s)$ with following property
+    \[
+        L(G(z,s))=\delta(z-s).
+        .\]
+    and null boundary conditions.
+\end{definition}
+
+
+The IVPs that we covered so far were easily transformed into integral equations.
+This is not the case anymore for BVPs.
+\begin{example}[$y''=y$]
+    Lets look at following BVP:
+    \begin{equation}
+        y''=y, y(0)=1, y'(1)=e.
+    \end{equation}
+    with $y(t)= e^{t}$ as solution. We will be using
+    the green functions of $y''$ to turn this into an integral equation.
+\end{example}
+
 
 \begin{example}[numerical green functions]
     There will be probably some green functions that we need
     that don't have an analytic expression yet.
 \end{example}
-
-\section{$1$-Dimensional Recursive Integrals}
-
-\subsection{Linear Recursive Integrals}
-We have algo in mind for this case based on coupled recursion on disjunct sets.
-
 
 \subsection{IVPs ODEs}
 An IVP example probably using DRRMC maybe compare it to parareal. Maybe also non-linear algo
