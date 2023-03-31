@@ -192,12 +192,12 @@ with a less computationally expensive approximation sometimes.
 \begin{pythonn}[Russian roulette on (\ref{recursive RV})] \label{RRpython}
     \pythoncode{python code/RR_ydy.py}
     Interestingly, $Y(t)$ is constrained to take on only integer values.
-    This is visually evident on figure \ref{plt russian roulette}.
+    This is visually evident on figure \ref{fig:russian roulette}.
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/russian roulette example.png}
         \caption{Recursive calls $(t,Y(t))$ of (\ref{RRpython}) }
-        \label{plt russian roulette}
+        \label{fig:russian roulette}
     \end{figure}
 
 \end{pythonn}
@@ -569,13 +569,69 @@ to combine tail recursion with normal recursion.
 
 
 \subsection{From ODEs to Integral Equations}
-In this subsection we discuss informally how to turn ODEs into integral equations. \\
+In this subsection we discuss informally how to turn ODEs into integral equations.
+Our main tool for this are green functions. Before defining green functions
+we do some examples.  \\
+
+\begin{example}[$y'=y$]
+    Let's solve
+    \begin{equation} \label{ydy int}
+        y'=y.
+    \end{equation}
+    but this time with the following condition:
+    \[
+        \int_{0}^{1} y(s) ds = e-1
+        .\]
+    This still has solution $y(t)=e^{t}$. \\
+    The corresponding source
+    green function $G(t,x)$ for this problem is defined as follows:
+    \[
+        G'= \delta(x-t), \int_{0}^{1}G(s,x)ds = e -1
+        .\]
+    Solving this obtains:
+    \[
+        G(t,x) = H(t-x) +x-1
+        .\]
+    with
+    \[
+        H(x) = \begin{cases}
+            0 & \text{ if } x<0 \\
+            1 & \text{ else }
+        \end{cases}
+        .\]
+    It shouldn't be clear from this point but with this green
+    function we form following integral equation for (\ref{ydy int}):
+    \begin{equation} \label{int ydy int}
+        y(t)= e -1 + \int_{0}^{1}G(t,s)y(s)ds.
+    \end{equation}
+    Turning equation (\ref{int ydy int}) into a RRVE with recursive MC gives:
+
+    \begin{equation}\label{RRVE ydy int}
+        Y(t)= e-1 + 2B\left(\frac{1}{2} \right)Y(S)(H(t-S)+S-1) .
+    \end{equation}
+
+    We will be skipping over the python implementation of equation (\ref{RRVE ydy int}).
+    Instead we plot realizations of equation (\ref{RRVE ydy int}) in Figure \ref{fig:ydy int}.
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.8\textwidth]{plots/ydy int.png}
+        \caption{Recursive calls of (\ref{RRVE ydy int}) when
+            calling $Y(0.5)$ $300$ times. There accumulate points
+            on the green line because of Russian roulette and on $t=0.5$
+            because it is the start value.
+        }
+        \label{fig:ydy int}
+    \end{figure}
+
+\end{example}
+
 
 Let's start from following form:
 $$
     L(y)= f
 $$
-where $L$ is a linear operator, $f$ be generic for now and some initial/boundary condition
+where $L$ is a linear operator, $f$ be generic for now and some linear condition
 for $y$. All the methods we have in mind are some kind of integral transform:
 $$
     y(t) = \int_{\Omega} \varphi(x) K(t,x)dx
