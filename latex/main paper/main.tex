@@ -40,34 +40,33 @@ style=alphabetic,
 \newpage
 
 \begin{abstract}
-    We will write this at the end.
+    We will write this at the end. Also need a dutch abstract
 \end{abstract}
 
 \section{Introduction}
 
 \subsection{Introductory Example}
-To get familiar with Monte Carlo for estimating recursive integrals
-we demonstrate it on following problem:
+In this section we introduce recursive  Monte Carlo with following problem:
 
 \begin{equation} \label{ydy}
     y'=y, y(0)=1.
 \end{equation}
 
-By integrating both sides of (\ref{ydy}) following integral equation can be derived:
+Integrating both sides of (\ref{ydy}) obtains:
 
 \begin{equation} \label{Integral ydy}
     y(t) = 1 + \int_{0}^{t} y(s) ds.
 \end{equation}
 
 Equation (\ref{Integral ydy}) is a recursive integral equation or to be more specific
-a linear Volterra integral equation of the second type. By naively using Monte
-Carlo on the recursive integral of equation (\ref{Integral ydy}) one derives following estimator:
+a linear Volterra integral equation of the second type. By estimating the recursive integral
+of equation (\ref{Integral ydy}) with Monte Carlo one derives following estimator:
 
 \[
     Y(t) = 1 + t y(Ut)
     .\]
 
-If $y$ is well behaved then $E[Y(t)]=y(t)$ but we can't
+With $U \sim \text{Uniform}(0,1)$. If $y$ is well behaved then $E[Y(t)]=y(t)$ but we can't
 calculate $Y(t)$ without accesses to $y(s),s<t$. Notice that we can replace $y$ by a
 unbiased estimator of it without changing $E[Y(t)]=y(t)$ by the law of total expectance
 ($E[X] = E[E[X|Z]]$). By replacing $y$ by $Y$ itself we obtain a recursive expression for $Y$:
@@ -85,12 +84,22 @@ can be used as an unbiased stopping mechanism.
 
 \begin{pythonn}[implementation of (\ref{recursive RV})] \label{python eps ydy}
     \pythoncode{python code/eps_ydy.py}
+    To gain insight into realizations of RRVEs, it can be helpful to plot
+    all recursive calls $(t,Y(t))$, as shown in Figure \ref{fig:intro example}
+    for this implementation.
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.8\textwidth]{plots/intro example.png}
+        \caption{Recursive calls of (\ref{python eps ydy})}
+        \label{fig:intro example}
+    \end{figure}
 \end{pythonn}
 
-An issue with (\ref{python eps ydy}) is that the variance increases rapidly when $t$ increases. Which we
-later solve in the section on ODEs. Note that (\ref{python eps ydy}) keeps desirable properties
-from unbiased Monte Carlo methods such as: being embarrassingly parallel,
-robustness and having simple error estimates.
+An issue with (\ref{python eps ydy}) is that the variance increases rapidly when $t$ increases. Later
+this is issue gets resolved in the section on ODEs. Note that (\ref{python eps ydy}) keeps desirable properties
+from unbiased Monte Carlo methods such as being embarrassingly parallel and
+having simple error estimates.
 
 
 \subsection{Contributions}
@@ -112,29 +121,23 @@ This is just to give a general overview we probably reference specific ideas whe
 Notations used in this thesis include:
 
 \begin{itemize}
-    \item $U \sim \text{Uniform}(0,1)$:
-          A uniform distribution with parameters (0,1), used
-          to model situations where each value within a certain
-          range is equally likely to occur.
-    \item $B(p) \sim \text{Bernoulli}(p)$:
-          A Bernoulli distribution used to model
-          situations where there are only two possible outcomes, and
-          the parameter $p$ represents the probability of one of those outcomes occurring.
-    \item RV (random variable):
-          A variable whose value is subject to uncertainty,
-          often represented by capital letters such as $X,Y,Z$.
+    \item $U \sim \text{Uniform}(0,1)$
+    \item $B(p) \sim \text{Bernoulli}(p)$
+    \item RV = random variable
     \item RRVE (recursive RV equation): An equation that defines a
           family of random variables in terms of its self.
-    \item MC (Monte Carlo)
+    \item MC = Monte Carlo
 \end{itemize}
 
 
 \subsection{Modifying Monte Carlo}
-Once we have a RRVE it is possible to modify it
-to have more desirable properties. \\
+In this subsection, we discuss techniques for modifying RRVEs
+in a way that preserves the expected value of the solution while
+acquiring more desirable properties. \\
 
-Russian roulette is a Monte Carlo technique widely used in rendering. The idea behind
-Russian roulette is replacing a random variable with a cheaper approximation sometimes.
+Russian roulette is a MC technique commonly used in rendering.
+The main idea behind Russian roulette is to replace a random variable
+with a less computationally expensive approximation sometimes.
 
 \begin{definition}[Russian roulette] \label{Russian roulette}
     Define Russian roulette on $X$ with free parameters
@@ -189,11 +192,8 @@ $2$ terms of $Z$ separately.
     Interestingly, $Y(t)$ is constrained to take on only integer values.
     This is visually evident on figure \ref{plt russian roulette}.
     \begin{figure}[h!]
-        \vspace*{-1cm}
-        \begin{center}
-            \includegraphics[width=0.8\textwidth]{plots/russian roulette example.pdf}
-        \end{center}
-        \vspace*{-1cm}
+        \centering
+        \includegraphics[width=0.8\textwidth]{plots/russian roulette example.png}
         \caption{Recursive calls $(t,Y(t))$ of (\ref{RRpython}) }
         \label{plt russian roulette}
     \end{figure}
@@ -270,15 +270,15 @@ $y'=y$ example. We are missing importance sampling and quasi MC
 
 \begin{related}
     Our favorite work that discusses these techniques is \cite{veach_robust_nodate}.
-    More interesting works can be found on Monte Carlo techniques in rendering.
+    More interesting works can be found on MC techniques in rendering.
     $2$-level gets discussed in \cite{giles_multilevel_2013}.
 \end{related}
 % need to fix veach refrence see bibliography
 
-\subsection{Monte Carlo Trapezoidal Rule}
-We present here a Monte Carlo trapezoidal rule with similar convergence behavior to
-methods discussed later. The Monte Carlo trapezoidal rule will just be
-regular Monte Carlo control variated with the normal trapezoidal rule.
+\subsection{MC Trapezoidal Rule}
+We present here a MC trapezoidal rule with similar convergence behavior to
+methods discussed later. The MC trapezoidal rule will just be
+regular MC control variated with the normal trapezoidal rule.
 
 \begin{definition}[MC trapezoidal rule]
     Define the MC trapezoidal rule for $f$ on $[x,x+dx]$ the following
@@ -338,7 +338,7 @@ composite rule.
     \cite{wu_randomised_2020}.
 \end{related}
 
-comparing normal vs Monte Carlo trapezoidal rule and highlighting the "half variance phenomenon".
+comparing normal vs MC trapezoidal rule and highlighting the "half variance phenomenon".
 + maybe integrating polynomials for intuition
 
 \subsection{Unbiased Non-Linearity}
@@ -425,7 +425,7 @@ In this section we discuss recursion related techniques.
 \begin{technique}[coupled recursion]
     The idea behind coupled recursion is sharing recursion calls of
     multiple RRVEs for simulation. This does make them dependent.
-    This is like assuming $2$ induction hypotheses at the same
+    It is like assuming $2$ induction hypotheses at the same
     time and proving both inductions steps at the same time vs
     doing separate induction proofs. Which should be easier
     because you have accesses to more assumptions at the same time.
@@ -468,13 +468,13 @@ In this section we discuss recursion related techniques.
 \end{pythonn}
 
 \begin{technique}[recursion in recursion]
-    Recursion in recursion is what is sound like. This is like proving a induction
+    Recursion in recursion is what is sounds like. It is like proving an induction
     step of an induction proof with induction.
 \end{technique}
 
-\begin{example}[recursion in recursion]
-    maybe induction in induction proof example or a reference to ODE solvers later.
-\end{example}
+%\begin{example}[recursion in recursion]
+%    maybe induction in induction proof example or a reference to ODE solvers later.
+%\end{example}
 
 \begin{related}[recursion in recursion]
     The next flight variant of WoS
@@ -487,29 +487,34 @@ like maximum recursion depth and performance issues. Tail recursion solve those
 issues when possible.
 
 \begin{technique}[non-branching tail recursion]
-    Tail recursion is reordering all operations in a way that
-    almost no operation needs to happen after the recursion call such that when reaching
-    the last recursion call we can return the answer without retracing all steps.
+    Tail recursion involves reordering all operations
+    so that almost no operation needs to happen after
+    the recursion call. This allows us to return the
+    answer without retracing all steps when we reach
+    the last recursion call, and it can achieve similar
+    speeds to a forward implementation.
 \end{technique}
 
-All non-branching recursion
-in this paper can be implemented straight forwardly. This can easily be seen because
-all of the operations are associative ($(xy)z = x(yz)$). \\
-Tail recursion may not be desirable because we lose the intermediate values of the
-recursion calls. It is also possible to combine tail recursion with normal recursion.
+The non-branching recursion presented in the RRVEs of this paper
+can be implemented straightforwardly due to the associativity of
+all operations ($(xy)z = x(yz)$) involved. However, tail recursion
+may not always be desirable as it discards intermediate values of
+the recursion calls which may be of interest. To retain these intermediate
+values while still partly optimizing for performance, it is possible
+to combine tail recursion with normal recursion.
 
 \begin{pythonn}[tail recursion on (\ref{coupled mat})]
     We implement (\ref{coupled mat}) but this time with tail recursion.
-    We collect addition operations in a vector sol and multiplication
+    We collect addition operations in a vector $sol$ and multiplication
     in a matrix $W$.
     \vspace{0.3cm}
     \pythoncode{python code/tailrecu.py}
 \end{pythonn}
 
-Branching tail recursion is hard. There  are multiple ways to
-do branching tail recursion with each their advantages and disadvantages. \\
-In the context of recursive Monte Carlo there are $2$ techniques that
-stand out:
+%Branching tail recursion is hard. There  are multiple ways to
+%do branching tail recursion with each their advantages and disadvantages. \\
+%In the context of recursive MC there are $2$ techniques that
+%stand out:
 
 %\begin{technique}[tree regrowing]
 %    The structure of branching recursion can be captured by a tree. Storing that tree
@@ -690,7 +695,7 @@ This is probably not the only way to turn ODEs into integral equations. The Feyn
 \url{https://en.wikipedia.org/wiki/Feynman%E2%80%93Kac_formula} 
 is derived in an other way but still kind of obeys the general form we have given.
 
-There are multiple ways to turn problems into integral equations for Monte Carlo methods
+There are multiple ways to turn problems into integral equations for MC methods
 but not all those integral equations gives you Monte Carlo methods with the same properties.
 Things like: the type of the domain chosen, stochastic approximations made, what gets thrown
 to the source term and what needs to be recursed on determine the properties of the Monte
