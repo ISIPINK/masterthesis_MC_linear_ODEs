@@ -121,12 +121,13 @@ This is just to give a general overview we probably reference specific ideas whe
 Notations used in this thesis include:
 
 \begin{itemize}
-    \item $U \sim \text{Uniform}(0,1)$
-    \item $B(p) \sim \text{Bernoulli}(p)$
-    \item RV = random variable
+    \item $U \sim \text{Uniform}(0,1)$.
+    \item $B(p) \sim \text{Bernoulli}(p)$.
+    \item RV = random variable.
+    \item RVs will be denoted with capital letters, e.g., $X,Y$ or $Z$.
     \item RRVE (recursive RV equation): An equation that defines a
           family of random variables in terms of its self.
-    \item MC = Monte Carlo
+    \item MC = Monte Carlo.
 \end{itemize}
 
 
@@ -158,22 +159,23 @@ with a less computationally expensive approximation sometimes.
         Z = U + \frac{f(U)}{1000}
         .\]
     where $f:\mathbb{R} \rightarrow [0,1]$ expensive to compute.
-    Estimating $Z$ directly would require calling $f$ each
+    Estimating $E[Z]$ directly would require calling $f$ each
     simulation. We can modify $Z$ to
     \[
         \tilde{Z} = U + B\left(\frac{1}{100}\right)\frac{f(U)}{10}
         .\]
     Now $\tilde{Z}$
     just requires calling $f$ on average once every $100$ simulations with the variance
-    only increasing slightly compared to $Z$.
-\end{example}
+    only increasing slightly compared to $Z$. \\
 
-Maybe this wasn't the best example because you could also estimate the expectance of the
-$2$ terms of $Z$ separately.
+    In this example it is also possible to estimate the expectance of the $2$
+    terms of $Z$ separately.
+\end{example}
 
 \begin{example}[Russian roulette on (\ref{recursive RV})]
     Russian roulette can fix the indefinite recursion issue of
-    equation (\ref{recursive RV}) by approximating $Y$ near $t = 0$ with $1$. Concretely
+    equation (\ref{recursive RV}) by approximating $Y$ near $t = 0$ with $1$
+    sometimes. Concretely
     we replace the $t$ in front of the recursive term with $B(t)$
     when $t<1$.
     \[
@@ -200,9 +202,10 @@ $2$ terms of $Z$ separately.
 
 \end{pythonn}
 
-Splitting is a technique that has almost the reverse effect as Russian roulette.
-The idea behind splitting is to reduce variance in certain places by using more
-samples.
+Splitting is a technique that has almost the reverse effect of Russian roulette.
+Instead of reducing the number of simulations of a RV as Russian roulette does,
+we increase it by using more samples (i.e., splitting the samples) which
+reduces the variance.
 
 \begin{definition}[splitting]
     Splitting $X$ means using multiple $X_{j} \sim X$ not independent per se to
@@ -212,11 +215,12 @@ samples.
         .\]
 \end{definition}
 
-Splitting the recursive term in a RRVE can lead to (additive) branching recursion.
-Extra care should be taken that branches get terminated quickly avoiding exponential increase
-of computation power. This can be
-achieved by termination strategies already discussed and later we discuss coupled recursion for
-alleviating additive branching recursion in RRVEs.
+Splitting the recursive term in a RRVE can lead to (additive) branching recursion,
+which requires extra care to ensure that the branches get terminated quickly to avoid
+an exponential increase in computational complexity. This can be achieved by employing
+termination strategies that have already been discussed. Later on, we will discuss
+the use of coupled recursion as a technique for alleviating additive branching
+recursion in RRVEs.
 
 \begin{example}[splitting on (\ref{recursive RV})]
     We can "split" the recursive term of  (\ref{recursive RV}) in $2$:
@@ -318,10 +322,9 @@ such that the increase in functions calls is arbitrarily small.
     \pythoncode{python code/trap1.py}
 \end{pythonn}
 
-What is surprising about this MC composite rule is that
-under the right smoothness conditions it adds $0.5$
-for every dimension order of convergence over the normal
-composite rule.
+We conjecture that this MC composite rule adds $0.5$ order of
+convergence over the normal composite rule under the
+right smoothness conditions.
 
 \begin{lemma}[half variance phenomenon]
     Maybe a lemma about MC integrating a polynomial
@@ -338,13 +341,11 @@ composite rule.
     \cite{wu_randomised_2020}.
 \end{related}
 
-comparing normal vs MC trapezoidal rule and highlighting the "half variance phenomenon".
-+ maybe integrating polynomials for intuition
-
 \subsection{Unbiased Non-Linearity}
-At first sight it looks only possible to deal with linear problems in an unbiased way but by using
-independent samples it possible to deal with polynomial non-linearity's which practically extend
-to any continuos functions by the Weierstrass approximation theorem.  It is not always easy to
+In this subsection we introduce techniques to deal with non-linearity.
+At first it may looks only possible to deal with linear problems in an unbiased way but by using
+independent samples it possible to deal with polynomial non-linearity's (which theoretically extend
+to any continuos functions by the Weierstrass approximation theorem).  It is not always easy to
 transform non-linearity into polynomials but it is not difficult to come up with
 biased alternative approaches based on linearization or approximate polynomial non-linearity.
 
@@ -352,24 +353,27 @@ biased alternative approaches based on linearization or approximate polynomial n
 \begin{example}[$y'=y^{2}$]
     Let's do following example:
     \begin{equation} \label{dyy2}
-        y'= y^2.
+        y'= y^2,y(1)=-1.
     \end{equation}
-    with $y(1)=-1$. This has solution $-\frac{1}{t}$. Integrate both sides of
+    This has solution $-\frac{1}{t}$. Integrate both sides of
     equation (\ref{dyy2}) to arrive at following integral equation:
     \begin{equation} \label{Integral dyy2}
         y(t) = -1 + \int_{1}^{t} y(s) y(s) ds .
     \end{equation}
     To estimate the recursive integral in equation (\ref{Integral ydy}) we use $2$
     independent $Y_{1},Y_{2}\sim Y$ :
-    \[
-        Y(t) = -1 + (t-1) Y_{1}(S) Y_{2}(S)
-        .\]
+
+    \begin{equation} \label{RRVE yy2}
+        Y(t) = -1 + (t-1) Y_{1}(S) Y_{2}(S).
+    \end{equation}
+
     With $S \sim \text{Uniform}(1,t)$. This is a branching RRVE this is
     typical when dealing with non-linearity.
 \end{example}
 
 \vspace*{0.2cm}
 \begin{pythonn}[$y'=y^{2}$]
+    %important note while implementing equation (\ref{RRVE yy2})  
     \pythoncode{python code/dyy2.py}
 \end{pythonn}
 
@@ -420,7 +424,7 @@ biased alternative approaches based on linearization or approximate polynomial n
 \end{related}
 
 \subsection{Recursion}
-In this section we discuss recursion related techniques.
+In this subsection we discuss recursion related techniques.
 
 \begin{technique}[coupled recursion]
     The idea behind coupled recursion is sharing recursion calls of
@@ -437,7 +441,7 @@ In this section we discuss recursion related techniques.
     parameter $a$:
     \begin{align}
         y'             & =ay,y(0)=1 \Rightarrow \label{couple recu ex1} \\
-        \partial_{a}y' & = y + a \partial_{a}y' \label{couple recu ex2}
+        \partial_{a}y' & = y + a \partial_{a}y \label{couple recu ex2}
     \end{align}
     Turn (\ref{couple recu ex1}) and (\ref{couple recu ex2}) into RRVEs.
     To emphasize that they are coupled, that they should
@@ -460,6 +464,8 @@ In this section we discuss recursion related techniques.
             \partial_{a}Y(Ut)
         \end{bmatrix}.
     \end{equation}
+    Notice how this gets rid of the additive branching
+    recursion of equation (\ref{couple recu ex2}).
 
 \end{example}
 
@@ -483,8 +489,9 @@ In this section we discuss recursion related techniques.
 \end{related}
 
 Most programming languages support recursion but this comes with restrictions
-like maximum recursion depth and performance issues. Tail recursion solve those
-issues when possible.
+like maximum recursion depth and performance issues. When possible tail recursion is
+a way to implement recursion that solves those
+issues.
 
 \begin{technique}[non-branching tail recursion]
     Tail recursion involves reordering all operations
@@ -495,11 +502,11 @@ issues when possible.
     speeds to a forward implementation.
 \end{technique}
 
-The non-branching recursion presented in the RRVEs of this paper
+The non-branching recursion presented in the RRVEs
 can be implemented straightforwardly due to the associativity of
 all operations ($(xy)z = x(yz)$) involved. However, tail recursion
 may not always be desirable as it discards intermediate values of
-the recursion calls which may be of interest. To retain these intermediate
+the recursion calls which may be of interest. To retain some of these intermediate
 values while still partly optimizing for performance, it is possible
 to combine tail recursion with normal recursion.
 
@@ -535,7 +542,7 @@ to combine tail recursion with normal recursion.
 \begin{related}[branching recursion]
     This blog discusses branching tail recursion:
     \url{https://jeroenvanwijgerden.me/post/recursion-1/}.
-    The techniques for tail recursion  gets discussed in \cite{vicini_path_2021}.
+    Interesting techniques  like tail recursion  gets discussed in \cite{vicini_path_2021}.
 \end{related}
 
 
@@ -562,10 +569,8 @@ to combine tail recursion with normal recursion.
 
 
 \subsection{From ODEs to Integral Equations}
-In this section we discuss informally how to turn ODEs into integral equations.
+In this subsection we discuss informally how to turn ODEs into integral equations. \\
 
-From ODEs to Integral Equations (continuation)
-We continue our discussion on how to turn ODEs into integral equations.
 Let's start from following form:
 $$
     L(y)= f
