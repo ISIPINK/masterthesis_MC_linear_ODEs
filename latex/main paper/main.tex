@@ -280,7 +280,7 @@ $y'=y$ example. We are missing importance sampling and quasi MC
 \end{related}
 % need to fix veach refrence see bibliography
 
-\subsection{MC Trapezoidal Rule}
+\subsection{Monte Carlo Trapezoidal Rule}
 We present in this subsection a MC trapezoidal rule with similar convergence behavior to
 methods discussed later. The MC trapezoidal rule will just be
 regular MC control variated with the normal trapezoidal rule.
@@ -727,39 +727,107 @@ we do some examples.  \\
 \end{example}
 
 The examples of ODEs up to this point all suffer from exploding variance
-with increasing the domain.
+with increasing the domain. (instability)
+
+\begin{example}[coupled split]
+    A coupled split that alleviate instability  .
+\end{example}
+
+explaining that coupled split is cool for global problems but for
+ODEs and PDEs we are interested in exploiting locality.
 
 \subsection{IVPs ODEs}
 In this subsection we do some IVPs examples.
 
 \begin{example}[RRMC $y'=y$]
-
+    intro example of RRMC + convergence result
 \end{example}
-An IVP example probably using DRRMC maybe compare it to parareal. Maybe also non-linear algo
+
+talk about how to get higher order convergence with
+control variates
+
+\begin{example}[control RRMC $y'=y$]
+    example of control variated RRMC
+\end{example}
+
+talk about non-linearity and bias, Newton (linearized in time) and maybe
+how other methods deal with nonlinearity and a fix by special CVs strategies.
+
+\begin{example}[nonlinear RRMC]
+
+    We made an example to show that RRMC works for non linear problems but it is biased.
+    The inner recursions are correlated because they use the same info from the outer
+    recursions, this doesn't mean that reducing variance by splitting doesn't work
+    , you just have to be careful with the bias. (see statistical learning they have
+    a whole set of tools to estimate performance when considering bias vs variance)
+
+    Consider:
+    $$
+        y' = y^{2} - t^{4} +2t,y(0)=0.
+    $$
+    with solution: $y(t)=t^{2}$. With integral equation:
+    $$
+        y(t)= y(T) + \int_{T}^{t} y^{2}(s) ds - \frac{t^{5}-T^{5}}{5} +(t^{2}-T^{2}) .
+    $$
+    control variating $y^{2}(s)$ up to second order:
+    \begin{align*}
+        y^{2}(t) & \approx y^{2}(T) + 2(t-T)y(T)y'(T) + ((t-T)y'(T))^{2} + O((t-T)^{2}) \\
+                 & \approx y^{2}(T) + 2(t-T)y(T)y'(T)+ O((t-T)^{2})
+    \end{align*}
+
+    we could have kept the third term we think it would be more accurate but we're lazy. Then we have to integrate the control variate:
+
+    \begin{align*}
+        \int_{T}^{t} & y^{2}(T) + 2(s-T)y(T)y'(T) ds                                          \\
+                     & = (t-T)y^{2}(T)+ 2\left(\frac{t^{2}-T^{2}}{2} -T(t-T) \right)y(T)y'(T)
+    \end{align*}
+    .
+\end{example}
+
+talk about stability and then conjecture a solution DRRMC
+
+\begin{example}[DRRMC]
+    diagonal RRMC
+\end{example}
+
+talk about performance stability and maybe comparison to parareal
+(critical path and how to measure performance)
+
 
 \subsection{BVPs ODEs}
-A BVP example using yet another algo that hopefully has the half variance phenomenon.
 
-\section{Higher Dimensional Recursive Integrals}
-\subsection{Complicated Geometry}
-\begin{example}[nasty $2$D integral]
-    $2$D integral that is difficult because of its geometry
+\begin{example}[local BVP]
+    a RRMC algo for dirichlet see period 5
 \end{example}
+
+discuss getting higher order
+
+\begin{example}[higher order local BVP]
+    a higher order RRMC algo + convergence
+\end{example}
+
+
+\section{Recursive Brownian Motion}
+
+\subsection{Brownian Motion}
+introduces Brownian motion
+
+\subsection{Boundary Green Function Of The Heat Equation}
+introduce with $1$D case, numerically calculating it
 
 \subsection{Recursive Brownian Motion}
 WoS like way to simulate Brownian motion which is related to the green function
-of the heat equation
+of the heat equation, this
 
-\begin{example}[recursive Brownian motion]
-    see period5
-\end{example}
+\begin{related}[recursive Brownian motion]
+    see Brownian motion tag in zotero
+\end{related}
 
 \subsection{Heat Equation}
 a geometric robust way to solve the heat equation and maybe a higher order method to solve
 the heat equation
 
-\subsection{Wave Equation}
-probably won't get to it
+
 
 \newpage
 \printbibliography
