@@ -281,7 +281,7 @@ $y'=y$ example. We are missing importance sampling and quasi MC
 % need to fix veach refrence see bibliography
 
 \subsection{MC Trapezoidal Rule}
-We present here a MC trapezoidal rule with similar convergence behavior to
+We present in this subsection a MC trapezoidal rule with similar convergence behavior to
 methods discussed later. The MC trapezoidal rule will just be
 regular MC control variated with the normal trapezoidal rule.
 
@@ -683,10 +683,10 @@ we do some examples.  \\
 
     Equation (\ref{int ddyy}) looks like:
     \begin{equation} \label{RRVE ddyy}
-        Y(t) = 1 + te + l B\left(\frac{1}{l}\right)(G(t,S)Y(S)).
+        Y(t) = 1 + te + l B\left(\frac{1}{l}\right)G(t,S)Y(S).
     \end{equation}
     With $S \sim U$ and $l>1 \in  \mathbb{R}$. We visualize equation (\ref{RRVE ddyy}) on
-    Figure (\ref{fig:ddyy}).
+    Figure \ref{fig:ddyy}.
 
     \begin{figure}[h!]
         \centering
@@ -726,7 +726,15 @@ we do some examples.  \\
     that don't have an analytic expression yet.
 \end{example}
 
+The examples of ODEs up to this point all suffer from exploding variance
+with increasing the domain.
+
 \subsection{IVPs ODEs}
+In this subsection we do some IVPs examples.
+
+\begin{example}[RRMC $y'=y$]
+
+\end{example}
 An IVP example probably using DRRMC maybe compare it to parareal. Maybe also non-linear algo
 
 \subsection{BVPs ODEs}
