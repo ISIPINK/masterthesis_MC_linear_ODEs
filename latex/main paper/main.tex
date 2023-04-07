@@ -290,7 +290,7 @@ regular MC control variated with the normal trapezoidal rule.
     way:
     \begin{equation}
         \int_{x}^{x+dx} f(s)ds \approx
-        \frac{f(x)+f(x+dx)}{2} + f(S_{x})-f(x)-\frac{S_{x}-x}{dx}(f(x+dx)-f(x))
+        \frac{f(x)+f(x+dx)}{2} + f(S_{x})-f(x)-\frac{S_{x}-x}{dx} \left(f(x+dx)-f(x)\right)
     \end{equation}
     with $S_{x} = \text{Uniform}(x,x+dx)$.
 \end{definition}
@@ -321,11 +321,20 @@ such that the increase in functions calls is arbitrarily small.
     We implement (\ref{MCtrap}) for $\int_{0}^{1}e^{s}ds$.
     \vspace*{0.5cm}
     \pythoncode{python code/trap1.py}
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.8\textwidth]{plots/MCtrap.png}
+        \caption{Log-log plot of (\ref{MCtrap}).
+            %There are some artifacts of floating-point arithmetic.  
+        }
+        \label{fig:MCtrap}
+    \end{figure}
 \end{pythonn}
 
 We conjecture that this MC composite rule adds $0.5$ order of
-convergence over the normal composite rule under the
-right smoothness conditions.
+convergence over the normal composite rule for every dimension
+under the right smoothness conditions.
 
 \begin{lemma}[half variance phenomenon]
     Maybe a lemma about MC integrating a polynomial
