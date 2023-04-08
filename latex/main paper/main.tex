@@ -370,8 +370,8 @@ is equivalent to the standard deviation:
 \begin{related}
     Optimal theoretical bounds on randomized algorithms can be found in:
     (see literature randomized trapezoidal rule)
-    \cite{wu_randomised_2020}. The half order convergence that randomized 
-    gains over determinstic isn't the same gain we consider.
+    \cite{wu_randomised_2020}. The half order convergence that randomized
+    gains over determinstic isn't the same gain we consider
 \end{related}
 
 \subsection{Unbiased Non-Linearity}
@@ -601,8 +601,9 @@ to combine tail recursion with normal recursion.
 %\end{definition}
 
 
-\subsection{From ODEs to Integral Equations}
-In this subsection we discuss informally how to turn ODEs into integral equations.
+\subsection{Introduction}
+In this subsection we discuss informally how to turn ODEs into integral equations mainly
+by example.
 Our main tool for this are green functions. Before defining green functions
 we do some examples.  \\
 
@@ -731,35 +732,70 @@ we do some examples.  \\
 \end{example}
 
 
-\begin{definition}[boundary green function]
-    we write this later
-    %   The boundary green function of a linear differential problem with linear boundary
-    %   conditions.
+%\begin{definition}[boundary green function]
+%    we write this later
+%    %   The boundary green function of a linear differential problem with linear boundary
+%    %   conditions.
+%\end{definition}
+%
+%\begin{definition}[source green function]
+%    we write this later
+%    %    For
+%    %    \[
+%    %        L(y(z)) = f
+%    %        .\]
+%    %    with $L$ a linear differential operator, $z$ a point in the input space of $y$
+%    %    ,$f$ arbitrary and linear boundary conditions.
+%    %    We define the source green function $G(z,s)$ with following property
+%    %    \[
+%    %        L(G(z,s))=\delta(z-s).
+%    %        .\]
+%    %    and null boundary conditions.
+%\end{definition}
+%
+%
+%\begin{example}[numerical green functions]
+%    There will be probably some green functions that we need
+%    that don't have an analytic expression yet.
+%\end{example}
+
+% Green's function vs green function (check chatgpt for the answer)
+\begin{definition}[green function]
+    Vaguely speaking we define the green function as a type of kernel function that we use
+    to solve linear problems with linear conditions. The Green's function is the kernel that
+    we need to put in front of  the linear conditions or the source term that we integrate
+    over and to obtain the solution  and the green function has the property that it satisfies
+    either null linear conditions and a Dirac delta source term, or vice versa.
 \end{definition}
 
-\begin{definition}[source green function]
-    we write this later
-    %    For
-    %    \[
-    %        L(y(z)) = f
-    %        .\]
-    %    with $L$ a linear differential operator, $z$ a point in the input space of $y$
-    %    ,$f$ arbitrary and linear boundary conditions.
-    %    We define the source green function $G(z,s)$ with following property
-    %    \[
-    %        L(G(z,s))=\delta(z-s).
-    %        .\]
-    %    and null boundary conditions.
-\end{definition}
+% maybe an example of difference equation
 
 
-\begin{example}[numerical green functions]
-    There will be probably some green functions that we need
-    that don't have an analytic expression yet.
-\end{example}
+\subsection{Fredholm Integral Equations}
 
 The examples of ODEs up to this point all suffer from exploding variance
 with increasing the domain. (instability)
+
+\begin{example}[Dirichlet $y''=y$]
+    The following problem will be the main testing example for
+    boundary value problems:
+    \begin{equation} \label{eq:main dirichlet}
+        y''=y, y(b_{0}),y(b_{1}).
+    \end{equation}
+    The green functions corresponding to $y''$ and Dirichlet conditions are:
+
+    \begin{align*}
+        P(t,x) & = \begin{cases}
+                       \frac{b_{1}-t}{b_{1}-b_{0}} & \text{if } x = b_{0} \\
+                       \frac{t-b_{0}}{b_{1}-b_{0}} & \text{if } x = b_{1}
+                   \end{cases}       \\
+        G(t,s) & = \begin{cases}
+                       -\frac{(b_{1}-t)(s-b_{0})}{b_{1}-b_{0}} & \text{if } s<t \\
+                       -\frac{(b_{1}-s)(t-b_{0})}{b_{1}-b_{0}} & \text{if } t<s
+                   \end{cases}.
+    \end{align*}
+
+\end{example}
 
 \begin{example}[coupled split]
     A coupled split that alleviate instability  .
