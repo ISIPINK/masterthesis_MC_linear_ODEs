@@ -50,6 +50,3 @@ $$
 where $A$, $B$, and $D$ are parameters that control the behavior of the system. This problem can be used to test the solver's ability to handle spatiotemporal dynamics.
 
 These test problems are widely used in the numerical ODE community and can be used to compare the performance of different solvers on a common set of problems. However, it is important to note that the choice of test problem depends on the specific application and problem being solved, and that other test problems may be more appropriate for some applications.
-
-- 2D Vb: just the heat equation
-- Numerieke green functions
