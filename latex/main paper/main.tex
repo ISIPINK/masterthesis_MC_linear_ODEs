@@ -325,30 +325,53 @@ such that the increase in functions calls is arbitrarily small.
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/MCtrap.png}
-        \caption{Log-log plot of (\ref{MCtrap}).
-            %There are some artifacts of floating-point arithmetic.  
+        \caption{Log-log plot of (\ref{MCtrap}) for
+        $\int_{0}^{1}e^{s}ds$ with $l=100$.
+        %There are some artifacts of floating-point arithmetic.  
         }
         \label{fig:MCtrap}
     \end{figure}
 \end{pythonn}
 
-We conjecture that this MC composite rule adds $0.5$ order of
-convergence over the normal composite rule for every dimension
-under the right smoothness conditions.
+We postulate that this MC composite rule enhances the convergence
+rate by $0.5$ orders compared to the standard composite rule for each dimension,
+provided that the appropriate conditions of smoothness are met.
+To substantiate this conjecture, we shall outline our rationale concerning
+the accumulation of unbiased polynomial errors.\\
 
-\begin{lemma}[half variance phenomenon]
-    Maybe a lemma about MC integrating a polynomial
-    with proof and this becomes a theorem
-\end{lemma}
+For the sake of simplicity, we reduce the study of the local truncation error
+to the following expression: $\int_{0}^{h} s^{2}ds = O(h^{3})$. \\
 
-\begin{proof}
-    Also a maybe, maybe just a numerical example.
-\end{proof}
+In the standard composite rule, we would drop this term, but in
+the MC version, we eliminate the bias. As a result,
+the local truncation error behaves like:
+
+\[
+    \int_{0}^{h} s^{2}ds- h(hU)^{2} = \int_{0}^{h} s^{2}ds- h^{3}U^{2} = O(h^{3})
+    .\]
+
+The main distinction between the standard and MC rule lies in how they
+accumulate local truncation errors into global truncation error. In the standard
+case, there is a loss of one order. When measuring the error of randomized algorithms
+, the root mean square error is typically used, which, in the unbiased case,
+is equivalent to the standard deviation:
+
+\begin{align*}
+    \sqrt{\text{Var}\left(\sum_{j=1}^{n} \int_{0}^{h} s^{2}ds- h^{3}U_{j}^{2}\right)}
+     & =\sqrt{\text{Var}\left(\sum_{j=1}^{n} h^{3}U_{j}^{2}\right)}   \\
+     & =h^{3} \sqrt{\text{Var}\left( \sum_{j=1}^{n} U_{j}^{2}\right)} \\
+     & =h^{3} \sqrt{ \sum_{j=1}^{n}\text{Var} (U_{j}^{2})}            \\
+     & =h^{3} \sqrt{ n \text{Var}(U^{2})}                             \\
+     & =h^{3} \sqrt{n} \sqrt{ \text{Var}(U^{2})}                      \\
+     & = O(h^{2.5}).
+\end{align*}
+
 
 \begin{related}
     Optimal theoretical bounds on randomized algorithms can be found in:
     (see literature randomized trapezoidal rule)
-    \cite{wu_randomised_2020}.
+    \cite{wu_randomised_2020}. The half order convergence that randomized 
+    gains over determinstic isn't the same gain we consider.
 \end{related}
 
 \subsection{Unbiased Non-Linearity}
