@@ -655,9 +655,10 @@ we do some examples.  \\
         \centering
         \includegraphics[width=0.8\textwidth]{plots/ydy int.png}
         \caption{Recursive calls of (\ref{RRVE ydy int}) when
-            calling $Y(0.5)$ $300$ times. There accumulate points
-            on the green line because of Russian roulette and on $t=0.5$
-            because it is the start value.
+            calling $Y(0.5)$ $300$ times. Points accumulate on
+            the green line due to the Russian roulette,
+            and at  $t=0.5$ because it is the starting
+            value of the simulation.
         }
         \label{fig:ydy int}
     \end{figure}
@@ -794,6 +795,10 @@ with increasing the domain. (instability)
                        -\frac{(b_{1}-s)(t-b_{0})}{b_{1}-b_{0}} & \text{if } t<s
                    \end{cases}.
     \end{align*}
+    Straight from these green functions you get following integral equation:
+    \begin{equation} \label{eq:main dirichlet}
+    y(t) = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1}) + \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds .
+    \end{equation}
 
 \end{example}
 
