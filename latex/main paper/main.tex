@@ -592,13 +592,6 @@ to combine tail recursion with normal recursion.
 %    Given the kernel  $K(t, s)$  and  $ f(t)$.
 %\end{definition}
 %
-%\begin{definition}[Fredholm equation of the second kind]
-%    A Fredholm equation of the second kind for $\varphi$  is of the following form:
-%    $$
-%        \varphi(t)=f(t)+\lambda \int_a^b K(t, s) \varphi(s) ds.
-%    $$
-%    Given the kernel  $K(t, s)$  and  $ f(t)$.
-%\end{definition}
 
 
 \subsection{Introduction}
@@ -750,7 +743,7 @@ we do some examples.  \\
 %    %    We define the source green function $G(z,s)$ with following property
 %    %    \[
 %    %        L(G(z,s))=\delta(z-s).
-%    %        .\]
+%    %        .\C
 %    %    and null boundary conditions.
 %\end{definition}
 %
@@ -771,13 +764,14 @@ we do some examples.  \\
 
 % maybe an example of difference equation
 
+\subsection{Convergence}
 
-\subsection{Fredholm Integral Equations}
+The ODE examples we have seen so far exhibit rapidly increasing variance as the domain increases,
+some cases this leads to non-convergence. However, we have not yet discussed convergence
+criteria for recursive Monte Carlo. Rather than delving deeply into variance
+or convergence analysis, we will suggest potential solutions in this subsection.
 
-The examples of ODEs up to this point all suffer from exploding variance
-with increasing the domain. (instability)
-
-\begin{example}[Dirichlet $y''=y$]
+\begin{example}[Dirichlet $y''=y$] \label{main dirichlet}
     The following problem will be the main testing example for
     boundary value problems:
     \begin{equation} \label{eq:main dirichlet}
@@ -795,12 +789,78 @@ with increasing the domain. (instability)
                        -\frac{(b_{1}-s)(t-b_{0})}{b_{1}-b_{0}} & \text{if } t<s
                    \end{cases}.
     \end{align*}
-    Straight from these green functions you get following integral equation:
-    \begin{equation} \label{eq:main dirichlet}
-    y(t) = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1}) + \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds .
-    \end{equation}
+    Straight from these green functions you get following integral equation and RRVE:
+    \begin{align} \label{eq:main dirichlet}
+        y(t) & = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1}) + \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds \\
+        Y(t) & = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1})
+        + l B\left(\frac{1}{l} \right)(b_{1}-b_{0}) G(t,S)y(S) . \label{RRVE:main dirichlet}
+    \end{align}
+    With $l \in \mathbb{R}$ the Russian roulette rate and $S \sim \text{Uniform}(b_{1},b_{0})$.
 
 \end{example}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plots/mainD explosion.png}
+    \caption{The logarithmic percentage error of $Y(0)$ for
+    (\ref{RRVE:main dirichlet}), with $l=1.2$ and initial conditions
+    $y(-k)=e^{-k}$ and $y(k)=e^{k}$, displays an exponential
+    increase until approximately $k=1.5$, beyond which additional
+    simulations fail to reduce the error, indicating that the variance
+    doesn't exist.}
+    \label{fig:plots mainD explosion}
+\end{figure}
+
+\begin{definition}[Fredholm equation of the second kind]
+    A Fredholm equation of the second kind for $\varphi$  is of the following form:
+    $$
+        \varphi(t)=f(t)+\lambda \int_a^b K(t, s) \varphi(s) ds.
+    $$
+    Given the kernel  $K(t, s)$  and  $ f(t)$.
+\end{definition}
+
+% comes straight from wikipedia
+% \begin{definition}[Liouville–Neumann series]
+%     The Liouville–Neumann series for a Fredholm equation of the second kind
+%     is defined as
+%     \begin{equation}
+%         \phi(x)=\sum_{n=0}^{\infty} \lambda^n \phi_n(x).
+%     \end{equation}
+
+%     If the $n$th iterated kernel is defined as $n-1$ nested integrals of $n$ operators $K$,
+
+%     $$
+%         K_n(x, z)=\iint \cdots \int K\left(x, y_1\right) K\left(y_1, y_2\right)
+%         \cdots K\left(y_{n-1}, z\right) d y_1 d y_2 \cdots d y_{n-1}
+%     $$
+%     $K_0$ may be taken to be $\delta(x-z)$.
+
+%     then
+
+%     $$
+%         \phi_n(x)=\int K_n(x, z) f(z) d z
+%     $$
+
+%     With
+
+%     $$
+%         \phi_0(x)=f(x),
+%     $$
+
+%     so
+% \end{definition}
+
+If both $K$ and $f$ are nice, then for sufficiently small $\lambda$,
+it is straightforward to establish the existence and uniqueness of solutions
+for Fredholm equations of the second kind using a fix point argument. \\
+
+We conjecture that splitting combined with coupling (a coupled split) can achieve
+convergence if a fix point argument is possible.
+
+We would like to have MC algorithm that converges in that case. Our best guess is
+a combination of splitting and coupling.
+
+
 
 \begin{example}[coupled split]
     A coupled split that alleviate instability  .
