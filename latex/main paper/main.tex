@@ -193,7 +193,7 @@ with a less computationally expensive approximation sometimes.
 \begin{pythonn}[Russian roulette on (\ref{recursive RV})] \label{RRpython}
     \pythoncode{python code/RR_ydy.py}
     Interestingly, $Y(t)$ is constrained to take on only integer values.
-    This is visually evident on figure \ref{fig:russian roulette}.
+    This is visually evident on Figure \ref{fig:russian roulette}.
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/russian roulette example.png}
@@ -208,7 +208,7 @@ Instead of reducing the number of simulations of a RV as Russian roulette does,
 we increase it by using more samples (i.e., splitting the samples) which
 reduces the variance.
 
-\begin{definition}[splitting]
+\begin{definition}[splitting] \label{def:splitting}
     Splitting $X$ means using multiple $X_{j} \sim X$ not independent per se to
     lower variance by averaging them:
     \[
@@ -340,7 +340,10 @@ To substantiate this conjecture, we shall outline our rationale concerning
 the accumulation of unbiased polynomial errors.\\
 
 For the sake of simplicity, we reduce the study of the local truncation error
-to the following expression: $\int_{0}^{h} s^{2}ds = O(h^{3})$. \\
+to the following expression:
+\[
+    \int_{0}^{h} s^{2}ds = O(h^{3})
+    .\]
 
 In the standard composite rule, we would drop this term, but in
 the MC version, we eliminate the bias. As a result,
@@ -371,7 +374,7 @@ is equivalent to the standard deviation:
     Optimal theoretical bounds on randomized algorithms can be found in:
     (see literature randomized trapezoidal rule)
     \cite{wu_randomised_2020}. The half order convergence that randomized
-    gains over determinstic isn't the same gain we consider
+    gains over determinstic isn't the same gain we consider.
 \end{related}
 
 \subsection{Unbiased Non-Linearity}
@@ -790,7 +793,7 @@ or convergence analysis, we will suggest potential solutions in this subsection.
                    \end{cases}.
     \end{align*}
     Straight from these green functions you get following integral equation and RRVE:
-    \begin{align} \label{eq:main dirichlet}
+    \begin{align} \label{inteq:main dirichlet}
         y(t) & = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1}) + \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds \\
         Y(t) & = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1})
         + l B\left(\frac{1}{l} \right)(b_{1}-b_{0}) G(t,S)y(S) . \label{RRVE:main dirichlet}
@@ -808,7 +811,7 @@ or convergence analysis, we will suggest potential solutions in this subsection.
     increase until approximately $k=1.5$, beyond which additional
     simulations fail to reduce the error, indicating that the variance
     doesn't exist.}
-    \label{fig:plots mainD explosion}
+    \label{fig:mainD explosion}
 \end{figure}
 
 \begin{definition}[Fredholm equation of the second kind]
@@ -854,17 +857,75 @@ If both $K$ and $f$ are nice, then for sufficiently small $\lambda$,
 it is straightforward to establish the existence and uniqueness of solutions
 for Fredholm equations of the second kind using a fix point argument. \\
 
-We conjecture that splitting combined with coupling (a coupled split) can achieve
-convergence if a fix point argument is possible.
 
 We would like to have MC algorithm that converges in that case. Our best guess is
 a combination of splitting and coupling.
 
 
 
-\begin{example}[coupled split]
-    A coupled split that alleviate instability  .
+\begin{example}[coupled splitting on (\ref{main dirichlet})]
+    Next to normal splitting (\ref{def:splitting}) we can
+    also split the domain in equation (\ref{inteq:main dirichlet}):
+    \begin{align}\label{inteq:coupled splitting}
+        y(t) & = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1}) +
+        \frac{1}{2} \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds +
+        \frac{1}{2} \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds                                              \\
+        y(t) & = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1}) + \label{inteq:coupled domain splitting}
+        \int_{b_{0}}^{\frac{b_{1}+b_{0}}{2}} G(t,s)y(s) ds +
+        \int_{\frac{b_{1}+b_{0}}{2}}^{b_{1}} G(t,s)y(s) ds
+    \end{align}
+
+    Coupling can get rid of the additive branching recursion in the RRVEs corresponding
+    to (\ref{inteq:coupled splitting}) and (\ref{inteq:coupled domain splitting}).
+    Resulting in following RRVE:
+    \begin{equation} \label{RRVE:coupled splitting}
+        X(t_{1},t_{2})=
+        \begin{bmatrix}
+            P(t_{1},b_{0}) & P(t_{1},b_{1}) \\
+            P(t_{2},b_{0}) & P(t_{2},b_{1})
+        \end{bmatrix}
+        \begin{bmatrix}
+            y(b_{0}) \\
+            y(b_{1})
+        \end{bmatrix}
+        +
+        W
+        \begin{bmatrix}
+            G(t_{1},S_{1}) & G(t_{1},S_{2}) \\
+            G(t_{2},S_{1}) & G(t_{2},S_{2})
+        \end{bmatrix}
+        X(S_{1},S_{2}).
+    \end{equation}
+    With $W$ the right weighting matrix and $S_{1},S_{2}$ can be chosen in various
+    ways.
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.8\textwidth]{plots/coupled split.png}
+        \caption{Recursive calls of equation (\ref{RRVE:coupled splitting}) when
+        calling $X(0)$ once,
+        with a split size of $20$, $S_{j}$ being domain split coupled such
+        they're equally spaced and coupling is colored.
+        The initial conditions for this call are $y(-1)=e^{-1}$ and $y(1)=e^{1}$,
+        with $l=1.2$.  }
+        \label{fig:coupled splitting}
+    \end{figure}
+
 \end{example}
+It appears that  Figure \ref{fig:coupled splitting}
+resemble a fixed point iterations, leading us to hypothesize
+that coupled splitting can achieve convergence in most cases
+where a fixed point argument holds true. \\
+Coupled splitting was tested on the example shown in Figure
+\ref{fig:mainD explosion}, but it did not contribute to the
+convergence of the method. This suggests that a fix point argument
+would not be effective for this particular example.
+
+\begin{related}[coupled splitting]
+    Coupled splitting is very similar to the ideas discussed in
+    \cite{sabelfeld_sparsified_2009}. (the paper on using more rows
+    for MC in linear systems)
+\end{related}
 
 explaining that coupled split is cool for global problems but for
 ODEs and PDEs we are interested in exploiting locality.
