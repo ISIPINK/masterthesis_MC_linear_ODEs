@@ -47,7 +47,8 @@ style=alphabetic,
 \section{Introduction}
 
 \subsection{Introductory Example}
-In this subsection we introduce recursive  Monte Carlo with following problem:
+In this subsection we introduce recursive  Monte Carlo with our main example
+for IVPs:
 
 \begin{equation} \label{ydy}
     y'=y, y(0)=1.
@@ -129,6 +130,8 @@ Notations used in this thesis include:
     \item RRVE (recursive RV equation): An equation that defines a
           family of random variables in terms of its self.
     \item MC = Monte Carlo.
+    \item RMC = Recursive MC.
+    \item RRMC = Recursion in Recursion MC.
 \end{itemize}
 
 
@@ -898,9 +901,18 @@ a combination of splitting and coupling.
         \end{bmatrix}
         X(S_{1},S_{2}).
     \end{equation}
-    With $W$ the right weighting matrix and $S_{1},S_{2}$ can be chosen in various
-    ways.
+    With $W$ the right weighting matrix (see code (\ref{py:coupled splitting}) for an example)
+    and $S_{1},S_{2}$ can be chosen in various ways.
+\end{example}
 
+\begin{pythonn}[implementation of (\ref{RRVE:coupled splitting})] \label{py:coupled splitting}
+    We implemented equation (\ref{RRVE:coupled splitting}) in example
+    (\ref{ex:coupled splitting}) with recursion but in this case it
+    is actually possible to implement it forwardly because the time
+    proces is nice. \\
+    \pythoncode{python code/coupled_splitting.py}
+
+    % can probably make a better plot then this one
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/coupled split.png}
@@ -912,14 +924,8 @@ a combination of splitting and coupling.
         with Russian roulette rate $l=1.2$.  }
         \label{fig:coupled splitting}
     \end{figure}
+\end{pythonn}
 
-\end{example}
-
-
-We implemented equation (\ref{RRVE:coupled splitting}) in example
-(\ref{ex:coupled splitting}) with recursion but in this case it
-is actually possible to implement it forwardly because the time
-proces is nice. \\
 
 It appears that  Figure \ref{fig:coupled splitting}
 resemble a fixed point iterations, leading us to hypothesize
@@ -932,14 +938,17 @@ approximation of the operator is reached. A way around this
 is by increasing coupled splitting amount  when reaching this bottleneck
 which can be done very smoothly,
 creating resembling a multi-grid method. Alternately when reaching
-the bottleneck splitting the coupled splitting can also give
-MC convergence. (Additional iterations beyond the bottleneck do not
-bring the solution closer but they still remain unbiased with low variance)
+the bottleneck it is possible to rely on MC convergence.
+% (Additional
+% iterations beyond the bottleneck do not
+% bring the solution closer but they still remain unbiased with low variance)
+\\
 
 Coupled splitting was tested on the example shown in Figure
 \ref{fig:mainD explosion}, but it did not contribute to the
 convergence of the method. This suggests that a fix point argument
-would not be effective for this particular example. \\
+would not be effective for this particular example with this
+Russian roulette. \\
 
 \begin{related}[coupled splitting]
     Coupled splitting is very similar to the ideas discussed in
@@ -959,11 +968,45 @@ explaining that coupled split is cool for global problems but for
 ODEs and PDEs we are interested in exploiting locality.
 
 \subsection{IVPs ODEs}
-In this subsection we do some IVPs examples.
+In this subsection we do some IVPs examples. \\
 
-\begin{example}[RRMC $y'=y$]
-    intro example of RRMC + convergence result
+Right now we don't have a general RMC algorithm that can
+guarantee a reasonable variance when increasing the time domain.
+Classing IVP solvers rely on shrinking the time steps for
+convergence. Recursion in Recursion MC (RRMC) for IVPs tries to emulate
+this behavior.
+
+\begin{example}[RRMC $y'=y$] (\label{ex:RRMC IVP})
+    Let's us explain RRMC for IVPs with our main example.
+    Imagine we have a time stepping sheme $(t_{n})$ ($t_{n}> t_{n-1}$)
+    then following integral equations hold:
+    \[
+        y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , t>t_{n}
+        .\]
+    Turn these in following class of RRVEs:
+    \[
+        Y_{n}(t) = y(t_{n}) + (t-t_{n})Y_{n}((t-t_{n})U+t_{n}), t>t_{n}
+        .\]
+    A problem with these RRVEs is that we don't know $y(t_{n})$.
+    Instead we can replace it with an unbiased estimate $y_{n}$
+    which we keep frozen:
+    \begin{align}
+        \label{eq:RRMC IVP inner}
+        Y_{n}(t) & = y_{n} + (t-t_{n})Y_{n}((t-t_{n})U+t_{n}), t>t_{n} \\
+        y_{n}    & = \begin{cases}
+                         Y_{n-1}(t_{n}) & \text{ if } n \neq 0 \\
+                         y(t_{0})       & \text{ if } n = 0
+                     \end{cases}.
+        \label{eq:RRMC IVP outer}
+    \end{align}
+    We refer to equation (\ref{eq:RRMC IVP inner}) as the inner recursion and
+    equation (\ref{eq:RRMC IVP outer}) as the outer recursion of the recursion in
+    recursion.
 \end{example}
+
+\begin{pythonn}[implementation of (\ref{ex:RRMC IVP})]
+
+\end{pythonn}
 
 talk about how to get higher order convergence with
 control variates
