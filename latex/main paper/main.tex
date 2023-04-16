@@ -853,6 +853,9 @@ or convergence analysis, we will suggest potential solutions in this subsection.
 %     so
 % \end{definition}
 
+
+% fix point argument is when von neumann series converges
+
 If both $K$ and $f$ are nice, then for sufficiently small $\lambda$,
 it is straightforward to establish the existence and uniqueness of solutions
 for Fredholm equations of the second kind using a fix point argument. \\
@@ -862,8 +865,7 @@ We would like to have MC algorithm that converges in that case. Our best guess i
 a combination of splitting and coupling.
 
 
-
-\begin{example}[coupled splitting on (\ref{main dirichlet})]
+\begin{example}[coupled splitting on (\ref{main dirichlet})] \label{ex:coupled splitting}
     Next to normal splitting (\ref{def:splitting}) we can
     also split the domain in equation (\ref{inteq:main dirichlet}):
     \begin{align}\label{inteq:coupled splitting}
@@ -904,27 +906,53 @@ a combination of splitting and coupling.
         \includegraphics[width=0.8\textwidth]{plots/coupled split.png}
         \caption{Recursive calls of equation (\ref{RRVE:coupled splitting}) when
         calling $X(0)$ once,
-        with a split size of $20$, $S_{j}$ being domain split coupled such
-        they're equally spaced and coupling is colored.
+        with a split size of $20$, $S_{j}$ coupled such
+        they're equally spaced (they don't have to be independent) and coupling is colored.
         The initial conditions for this call are $y(-1)=e^{-1}$ and $y(1)=e^{1}$,
-        with $l=1.2$.  }
+        with Russian roulette rate $l=1.2$.  }
         \label{fig:coupled splitting}
     \end{figure}
 
 \end{example}
+
+
+We implemented equation (\ref{RRVE:coupled splitting}) in example
+(\ref{ex:coupled splitting}) with recursion but in this case it
+is actually possible to implement it forwardly because the time
+proces is nice. \\
+
 It appears that  Figure \ref{fig:coupled splitting}
 resemble a fixed point iterations, leading us to hypothesize
 that coupled splitting can achieve convergence in most cases
 where a fixed point argument holds true. \\
+
+We also conjecture that the convergence speed is very similar
+to fix points methods until the accuracy of the stochastic
+approximation of the operator is reached. A way around this
+is by increasing coupled splitting amount  when reaching this bottleneck
+which can be done very smoothly,
+creating resembling a multi-grid method. Alternately when reaching
+the bottleneck splitting the coupled splitting can also give
+MC convergence. (Additional iterations beyond the bottleneck do not
+bring the solution closer but they still remain unbiased with low variance)
+
 Coupled splitting was tested on the example shown in Figure
 \ref{fig:mainD explosion}, but it did not contribute to the
 convergence of the method. This suggests that a fix point argument
-would not be effective for this particular example.
+would not be effective for this particular example. \\
 
 \begin{related}[coupled splitting]
     Coupled splitting is very similar to the ideas discussed in
     \cite{sabelfeld_sparsified_2009}. (the paper on using more rows
-    for MC in linear systems)
+    for MC in linear systems) \\
+
+    Example (\ref{ex:coupled splitting}) is not the best example to demonstrate
+    coupled splitting. First the problem is local and second everything is smooth.
+    Later we discuss algorithms that abuse locality via recursion in recursion and
+    smoothness with control variates. A better use case for this algorithm is for
+    Fredholm equations of the second kind with for example a non-smooth kernel.
+    Similar use cases for MC in differential equations get discussed in
+    \cite{jentzen_random_2009}.
 \end{related}
 
 explaining that coupled split is cool for global problems but for
