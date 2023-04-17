@@ -964,8 +964,8 @@ Russian roulette. \\
     \cite{jentzen_random_2009}.
 \end{related}
 
-explaining that coupled split is cool for global problems but for
-ODEs and PDEs we are interested in exploiting locality.
+% explaining that coupled split is cool for global problems but for
+% ODEs and PDEs we are interested in exploiting locality.
 
 \subsection{IVPs ODEs}
 In this subsection we do some IVPs examples. \\
@@ -976,7 +976,7 @@ Classing IVP solvers rely on shrinking the time steps for
 convergence. Recursion in Recursion MC (RRMC) for IVPs tries to emulate
 this behavior.
 
-\begin{example}[RRMC $y'=y$] (\label{ex:RRMC IVP})
+\begin{example}[RRMC $y'=y$] \label{ex:RRMC IVP}
     Let's us explain RRMC for IVPs with our main example.
     Imagine we have a time stepping sheme $(t_{n})$ ($t_{n}> t_{n-1}$)
     then following integral equations hold:
@@ -1003,51 +1003,102 @@ this behavior.
     equation (\ref{eq:RRMC IVP outer}) as the outer recursion of the recursion in
     recursion.
 \end{example}
+% maybe measurements of amount of calls to f
 
-\begin{pythonn}[implementation of (\ref{ex:RRMC IVP})]
+\begin{pythonn}[implementation of (\ref{ex:RRMC IVP})] \label{py:RRMC IVP}
     \pythoncode{python code/RRMC_IVP.py}
+    We measured the convergence speed to be $O\left(\frac{D^{1.5}}{\sqrt{\text{nsim}}}
+        \right)$.
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.8\textwidth]{plots/RRMC IVP.png}
+        \caption{Recursive calls of equation (\ref{eq:RRMC IVP outer})
+            when calling $Y_{\text{out}}(3,D)$ $30$ times for different $D$.  }
+        \label{fig:RRMC IVP}
+    \end{figure}
 \end{pythonn}
 
-talk about how to get higher order convergence with
-control variates
+$1.5$ order of convergence is cool but this begs the question on how to achieve
+higher order of convergence in $D$. Again it is easy to imitate classical methods
+to achieve higher order convergence. We do this by removing lower order terms (which requires
+smoothness) with control variates like the MC trapezoidal rule (\ref{MCtrap}).
 
-\begin{example}[control RRMC $y'=y$]
-    example of control variated RRMC
+\begin{example}[CV RRMC $y'=y$]\label{ex:CV RRMC IVP}
+    Let us control variate example (\ref{ex:RRMC IVP}). Start
+    with:
+    \[
+        y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , t>t_{n}
+        .\]
+    We need a lower order approximation of the integrand:
+    \begin{align*}
+        y(s) & = y(t_{n}) + (s-t_{n})y'(t_{n}) + O((s-t_{n})^{2})       \\
+             & \approx y(t_{n}) + (s-t_{n})f(y(t_{n}),t_{n})            \\
+             & \approx y(t_{n}) +
+        (s-t_{n})\left(\frac{y(t_{n})-y(t_{n-1})}{t_{n}-t_{n-1}}\right) \\
+             & \approx y(t_{n})(1+s-t_{n}).
+    \end{align*}
+
+    Using the last one as a control variate for the integral:
+    \begin{align*}
+        y(t) & = y(t_{n}) + \int_{t_{n}}^{t}y(s)ds                                          \\
+             & = y(t_{n}) + \int_{t_{n}}^{t}y(s)-y(t_{n})(1+s-t_{n}) +y(t_{n})(1+s-t_{n})ds \\
+             & = y(t_{n})\left(1 + (1-t_{n})(t-t_{n})+\frac{t^{2}-t_{n}^{2}}{2}\right)
+        + \int_{t_{n}}^{t}y(s)-y(t_{n})(1+s-t_{n})ds.
+    \end{align*}
+    We won't discuss turning this into an RRVE nor the implementation. The implementation
+    is very similar to (\ref{py:nonlinear RRMC IVP}) and
+    Figure \ref{fig:CV RRMC IVP} is a convergence plot for this example.
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.8\textwidth]{plots/CV RRMC IVP.png}
+        \caption{Log-log plot of example (\ref{ex:CV RRMC IVP}).}
+        \label{fig:CV RRMC IVP}
+    \end{figure}
 \end{example}
 
-talk about non-linearity and bias, Newton (linearized in time) and maybe
-how other methods deal with nonlinearity and a fix by special CVs strategies.
+\begin{related}[CV RRMC]
+    A very similar use for control variates for IVPs is \cite{daun_randomized_2011}.
+\end{related}
 
-\begin{example}[nonlinear RRMC]
+RRMC is biased for our approach to non-linear problems.
+The inner recursions are correlated because they use the same
+info from the outer recursions, this doesn't mean that reducing
+root mean square error by splitting doesn't work, you just have to be careful
+with the bias. We conjecture that the bias in RRMC converges faster then the
+variance.
 
-    We made an example to show that RRMC works for non linear problems but it is biased.
-    The inner recursions are correlated because they use the same info from the outer
-    recursions, this doesn't mean that reducing variance by splitting doesn't work
-    , you just have to be careful with the bias. (see statistical learning they have
-    a whole set of tools to estimate performance when considering bias vs variance)
 
+\begin{example}[nonlinear RRMC IVP] \label{ex:nonlinear RRMC IVP}
     Consider:
     $$
         y' = y^{2} - t^{4} +2t,y(0)=0.
     $$
     with solution: $y(t)=t^{2}$. With integral equation:
     $$
-        y(t)= y(T) + \int_{T}^{t} y^{2}(s) ds - \frac{t^{5}-T^{5}}{5} +(t^{2}-T^{2}) .
+        y(t)= y(t_{n}) + \int_{t_{n}}^{t} y^{2}(s) ds
+        - \frac{t^{5}-t_{n}^{5}}{5} +(t^{2}-t_{n}^{2}) .
     $$
-    control variating $y^{2}(s)$ up to second order:
+    control variating $y^{2}(s)$ up to second order (via Taylor):
     \begin{align*}
-        y^{2}(t) & \approx y^{2}(T) + 2(t-T)y(T)y'(T) + ((t-T)y'(T))^{2} + O((t-T)^{2}) \\
-                 & \approx y^{2}(T) + 2(t-T)y(T)y'(T)+ O((t-T)^{2})
+        y^{2}(t) & \approx y^{2}(t_{n}) + 2(t-t_{n})y(t_{n})y'(t_{n})
+        + ((t-t_{n})y'(t_{n}))^{2} + O((t-t_{n})^{2})                                   \\
+                 & \approx y^{2}(t_{n}) + 2(t-t_{n})y(t_{n})y'(t_{n})+ O((t-t_{n})^{2})
     \end{align*}
 
-    we could have kept the third term we think it would be more accurate but we're lazy. Then we have to integrate the control variate:
+    Then we have to integrate the control variate:
 
     \begin{align*}
-        \int_{T}^{t} & y^{2}(T) + 2(s-T)y(T)y'(T) ds                                          \\
-                     & = (t-T)y^{2}(T)+ 2\left(\frac{t^{2}-T^{2}}{2} -T(t-T) \right)y(T)y'(T)
+        \int_{T}^{t} & y^{2}(T) + 2(s-T)y(T)y'(T) ds                                           \\
+                     & = (t-T)y^{2}(T)+ 2\left(\frac{t^{2}-T^{2}}{2} -T(t-T) \right)y(T)y'(T).
     \end{align*}
-    .
+
 \end{example}
+
+\begin{pythonn}[implementation of (\ref{ex:nonlinear RRMC IVP})] \label{py:nonlinear RRMC IVP}
+    \pythoncode{python code/nonlinear_CVRRMC.py}
+\end{pythonn}
 
 talk about stability and then conjecture a solution DRRMC
 
