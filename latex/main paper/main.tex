@@ -936,8 +936,8 @@ We also conjecture that the convergence speed is very similar
 to fix points methods until the accuracy of the stochastic
 approximation of the operator is reached. A way around this
 is by increasing coupled splitting amount  when reaching this bottleneck
-which can be done very smoothly,
-creating resembling a multi-grid method. Alternately when reaching
+which can be done very straightforward,
+making it similar to a multi-grid method. Alternately when reaching
 the bottleneck it is possible to rely on MC convergence.
 % (Additional
 % iterations beyond the bottleneck do not
@@ -1007,20 +1007,20 @@ this behavior.
 
 \begin{pythonn}[implementation of (\ref{ex:RRMC IVP})] \label{py:RRMC IVP}
     \pythoncode{python code/RRMC_IVP.py}
-    We measured the convergence speed to be $O\left(\frac{D^{1.5}}{\sqrt{\text{nsim}}}
+    We measured the convergence speed to be $O\left(\frac{h^{1.5}}{\sqrt{\text{nsim}}}
         \right)$.
 
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/RRMC IVP.png}
         \caption{Recursive calls of equation (\ref{eq:RRMC IVP outer})
-            when calling $Y_{\text{out}}(3,D)$ $30$ times for different $D$.  }
+            when calling $Y_{\text{out}}(3,h)$ $30$ times for different $h$.  }
         \label{fig:RRMC IVP}
     \end{figure}
 \end{pythonn}
 
 $1.5$ order of convergence is cool but this begs the question on how to achieve
-higher order of convergence in $D$. Again it is easy to imitate classical methods
+higher order of convergence in $h$. Again it is easy to imitate classical methods
 to achieve higher order convergence. We do this by removing lower order terms (which requires
 smoothness) with control variates like the MC trapezoidal rule (\ref{MCtrap}).
 
@@ -1059,7 +1059,8 @@ smoothness) with control variates like the MC trapezoidal rule (\ref{MCtrap}).
 \end{example}
 
 \begin{related}[CV RRMC]
-    A very similar use for control variates for IVPs is \cite{daun_randomized_2011}.
+    \cite{daun_randomized_2011} also uses control variates to achieve
+    a higher order of convergence.
 \end{related}
 
 RRMC is biased for our approach to non-linear problems.
@@ -1090,9 +1091,9 @@ variance.
     Then we have to integrate the control variate:
 
     \begin{align*}
-        \int_{t_{n}}^{t} & y^{2}(t_{n}) + 2(s-t_{n})y(t_{n})y'(t_{n}) ds \\ 
-                     & = (t-t_{n})y^{2}(t_{n})+ 
-                     2\left(\frac{t^{2}-t_{n}^{2}}{2} -t_{n}(t-t_{n}) \right)y(t_{n})y'(t_{n}).
+        \int_{t_{n}}^{t} & y^{2}(t_{n}) + 2(s-t_{n})y(t_{n})y'(t_{n}) ds \\
+                         & = (t-t_{n})y^{2}(t_{n})+
+        2\left(\frac{t^{2}-t_{n}^{2}}{2} -t_{n}(t-t_{n}) \right)y(t_{n})y'(t_{n}).
     \end{align*}
 
 \end{example}
@@ -1101,17 +1102,77 @@ variance.
     \pythoncode{python code/nonlinear_CVRRMC.py}
 \end{pythonn}
 
-talk about stability and then conjecture a solution DRRMC
+Similarly to classic methods, RRMC struggles with big negative coefficients in front
+of the recursive parts. We discuss a potential solution to this  problem in next example.
 
-\begin{example}[DRRMC]
-    diagonal RRMC
-\end{example}
+\begin{definition}[DRRMC]
+    Consider a general linear ODE IVP problem:
+    \[
+        x' = Ax+g, x(0)= x_{0}
+        .\]
+    Sometimes repeatedly multiplying by $A$ is unstable.
+    Diagonal RRMC adds a positive diagonal matrix $D$
+    to $A$ and hopes that it stabilizes.
+    $$
+        x' + Dx = (A+D)x+g.
+    $$
+    Following integral equation can be derived by using integrating factor:
+    $$
+        x(t)= e^{D(t_{n}-t)}x(t_{n}) + \int_{t_{n}}^{t} e^{D(s-t)}(A+D)x(s)ds+\int_{t_{n}}^{t} e^{D(s-t)}g(s)ds.
+    $$
+    Note that exponential of a diagonal matrix is the exponential of its elements.
+    The recursive integral has the following trivial control variate:
 
-talk about performance stability and maybe comparison to parareal
+    \[
+        \int_{t_{n}}^{t}  e^{D(s-t)}(A+D)x(t_{n})ds = D^{-1}(I-e^{D(t_{n}-t)})(A+D)x(t_{n})
+        .\]
+
+\end{definition}
+
+% \begin{example}[DRRMC]
+%     Consider
+%     $$
+%         x'= Ax, x(0)=
+%         \begin{pmatrix}
+%             1 \\
+%             0
+%         \end{pmatrix}.
+%     $$
+
+%     With
+
+%     $$
+%         A = \begin{pmatrix}
+%             0     & 1     \\
+%             -1000 & -1001
+%         \end{pmatrix}.
+%     $$
+
+
+
+%     we choose $D$ fixed over all outer recursions:
+
+%     $$
+%         D = \begin{pmatrix}
+%             1 & 0    \\
+%             0 & 1000
+%         \end{pmatrix}.
+%     $$
+
+%     Here is the implementation of this:
+
+% \end{example}
+
+TODO:
 (critical path and how to measure performance)
 
+\begin{related}[DRRMC]
+    DRRMC is inspired by how $\bar{\sigma}$ get chosen in \cite{sawhney_grid-free_2022}.
+    Similar manipulations can also be found in exponential integrator methods.
+\end{related}
 
 \subsection{BVPs ODEs}
+
 
 \begin{example}[local BVP]
     a RRMC algo for dirichlet see period 5
