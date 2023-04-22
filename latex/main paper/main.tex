@@ -64,9 +64,9 @@ Equation (\ref{Integral ydy}) is a recursive integral equation or to be more spe
 a linear Volterra integral equation of the second type. By estimating the recursive integral
 of equation (\ref{Integral ydy}) with Monte Carlo one derives following estimator:
 
-\[
-    Y(t) = 1 + t y(Ut)
-    .\]
+\begin{equation}
+    Y(t) = 1 + t y(Ut).
+\end{equation}
 
 With $U \sim \text{Uniform}(0,1)$. If $y$ is well behaved then $E[Y(t)]=y(t)$ but we can't
 calculate $Y(t)$ without accesses to $y(s),s<t$. Notice that we can replace $y$ by a
@@ -148,26 +148,26 @@ with a less computationally expensive approximation sometimes.
     Define Russian roulette on $X$ with free parameters
     $Y_{1},Y_{2}: E[Y_{1}] = E[Y_{2}]$, $p \in [0,1]$ and $U$
     independent of $Y_{1},Y_{2},X$ the following way:
-    \[
+    \begin{equation}
         X \rightarrow \begin{cases}
             \frac{1}{p}(X- (1-p)Y_{1}) & \text{ if } U<p \\
             Y_{2}                      & \text{ else }
-        \end{cases}
-        .\]
+        \end{cases}.
+    \end{equation}
 \end{definition}
 
 \begin{example}[Russian roulette]
     Say that we are interested in estimating $E[Z]$ with $Z$
     defined in the following way:
-    \[
-        Z = U + \frac{f(U)}{1000}
-        .\]
+    \begin{equation}
+        Z = U + \frac{f(U)}{1000}.
+    \end{equation}
     where $f:\mathbb{R} \rightarrow [0,1]$ expensive to compute.
     Estimating $E[Z]$ directly would require calling $f$ each
     simulation. We can modify $Z$ to
-    \[
-        \tilde{Z} = U + B\left(\frac{1}{100}\right)\frac{f(U)}{10}
-        .\]
+    \begin{equation}
+        \tilde{Z} = U + B\left(\frac{1}{100}\right)\frac{f(U)}{10}.
+    \end{equation}
     Now $\tilde{Z}$
     just requires calling $f$ on average once every $100$ simulations with the variance
     only increasing slightly compared to $Z$. \\
@@ -182,13 +182,13 @@ with a less computationally expensive approximation sometimes.
     sometimes. Concretely
     we replace the $t$ in front of the recursive term with $B(t)$
     when $t<1$.
-    \[
+    \begin{equation}
         Y(t) =
         \begin{cases}
             1 + B(t)Y(Ut) & \text{ if } t<1 \\
             1 + tY(Ut)    & \text{ else}
-        \end{cases}
-        .\]
+        \end{cases}.
+    \end{equation}
 \end{example}
 
 \vspace{0.2cm}
@@ -214,9 +214,9 @@ reduces the variance.
 \begin{definition}[splitting] \label{def:splitting}
     Splitting $X$ means using multiple $X_{j} \sim X$ not independent per se to
     lower variance by averaging them:
-    \[
-        \bar{X}= \frac{1}{N} \sum_{j=1}^{N} X_{j}
-        .\]
+    \begin{equation}
+        \bar{X}= \frac{1}{N} \sum_{j=1}^{N} X_{j}.
+    \end{equation}
 \end{definition}
 
 Splitting the recursive term in a RRVE can lead to (additive) branching recursion,
@@ -224,13 +224,13 @@ which requires extra care to ensure that the branches get terminated quickly to 
 an exponential increase in computational complexity. This can be achieved by employing
 termination strategies that have already been discussed. Later on, we will discuss
 the use of coupled recursion as a technique for alleviating additive branching
-recursion in RRVEs.
+recursion in RRVEs (see (\ref{ex:coupled splitting})).
 
 \begin{example}[splitting on (\ref{recursive RV})]
     We can "split" the recursive term of  (\ref{recursive RV}) in $2$:
-    \[
-        Y(t) = 1 + \frac{t}{2}(Y_{1}(Ut)+Y_{2}(Ut))
-        .\]
+    \begin{equation}
+        Y(t) = 1 + \frac{t}{2}(Y_{1}(Ut)+Y_{2}(Ut)).
+    \end{equation}
     with $Y_{1}(t),Y_{2}(t)$ i.i.d. $Y(t)$.
 \end{example}
 
@@ -242,16 +242,16 @@ recursion in RRVEs.
 
 \begin{definition}[$2$-level MC] \label{2 level}
     $2$-level MC on $X$ with parameters $\tilde{X}, Y: E[\tilde{X}]=E[Y]$:
-    \[
-        X \rightarrow X-\tilde{X} + Y
-        .\]
+    \begin{equation}
+        X \rightarrow X-\tilde{X} + Y.
+    \end{equation}
 \end{definition}
 
 \begin{definition}[control variates] \label{CV}
     Control variate on $f(X)$ is
-    \[
-        f(X) \rightarrow f(X)-\tilde{f}(X) + E[\tilde{f}(X)]
-        .\]
+    \begin{equation}
+        f(X) \rightarrow f(X)-\tilde{f}(X) + E[\tilde{f}(X)].
+    \end{equation}
 \end{definition}
 Control variates are a special case of $2$-level MC. Usually $\tilde{f}$ is an approximation
 of $f$ to reduce variance.
@@ -259,9 +259,9 @@ of $f$ to reduce variance.
 \begin{example}[control variate on (\ref{recursive RV})]
     To make a control variate for (\ref{recursive RV}) that reduces variance
     we use following approximation of $y(t) \approx 1+t$:
-    \[
-        Y(t)= 1+t+\frac{t^{2}}{2} + t(Y(Ut)-1-Ut)
-        .\]
+    \begin{equation}
+        Y(t)= 1+t+\frac{t^{2}}{2} + t(Y(Ut)-1-Ut).
+    \end{equation}
     Notice that we can cancel the constant term of the control variate
     but that would affect the Russian roulette negatively.
 \end{example}
@@ -344,17 +344,17 @@ the accumulation of unbiased polynomial errors.\\
 
 For the sake of simplicity, we reduce the study of the local truncation error
 to the following expression:
-\[
-    \int_{0}^{h} s^{2}ds = O(h^{3})
-    .\]
+\begin{equation}
+    \int_{0}^{h} s^{2}ds = O(h^{3}).
+\end{equation}
 
 In the standard composite rule, we would drop this term, but in
 the MC version, we eliminate the bias. As a result,
 the local truncation error behaves like:
 
-\[
-    \int_{0}^{h} s^{2}ds- h(hU)^{2} = \int_{0}^{h} s^{2}ds- h^{3}U^{2} = O(h^{3})
-    .\]
+\begin{equation}
+    \int_{0}^{h} s^{2}ds- h(hU)^{2} = \int_{0}^{h} s^{2}ds- h^{3}U^{2} = O(h^{3}).
+\end{equation}
 
 The main distinction between the standard and MC rule lies in how they
 accumulate local truncation errors into global truncation error. In the standard
@@ -362,7 +362,7 @@ case, there is a loss of one order. When measuring the error of randomized algor
 , the root mean square error is typically used, which, in the unbiased case,
 is equivalent to the standard deviation:
 
-\begin{align*}
+\begin{align}
     \sqrt{\text{Var}\left(\sum_{j=1}^{n} \int_{0}^{h} s^{2}ds- h^{3}U_{j}^{2}\right)}
      & =\sqrt{\text{Var}\left(\sum_{j=1}^{n} h^{3}U_{j}^{2}\right)}   \\
      & =h^{3} \sqrt{\text{Var}\left( \sum_{j=1}^{n} U_{j}^{2}\right)} \\
@@ -370,7 +370,7 @@ is equivalent to the standard deviation:
      & =h^{3} \sqrt{ n \text{Var}(U^{2})}                             \\
      & =h^{3} \sqrt{n} \sqrt{ \text{Var}(U^{2})}                      \\
      & = O(h^{2.5}).
-\end{align*}
+\end{align}
 
 
 \begin{related}
@@ -427,7 +427,7 @@ biased alternative approaches based on linearization or approximate polynomial n
     \end{align}
     Change the fractions of equation (\ref{taylor e}) to Bernoulli processes
     and replace all $X$ with independent $X_j$ with $E[X]=E[X_{i}]$.
-    \begin{align*}
+    \begin{align}
         e^{E[X]} & = E
         \left[1 + B\left(\frac{1}{1}\right)E[X_1]
         \left(1+ B\left(\frac{1}{2}\right)E[X_2]
@@ -444,7 +444,7 @@ biased alternative approaches based on linearization or approximate polynomial n
             \right)
             \right)
         \right]              \\
-    \end{align*}
+    \end{align}
     What is inside the expectation is something that we can simulate with simulations of $X_{j}$.
 \end{example}
 
@@ -474,7 +474,7 @@ In this subsection we discuss recursion related techniques.
     because you have accesses to more assumptions at the same time.
 \end{technique}
 
-\begin{example}[coupled recursion]
+\begin{example}[coupled recursion] \label{ex:coupled recursion}
     Lets say you are interested in calculating the
     sensitivity of the solution of an ODE to a
     parameter $a$:
@@ -490,6 +490,7 @@ In this subsection we discuss recursion related techniques.
             Y(t) \\
             \partial_{a}Y(t)
         \end{bmatrix}=
+        X(t)=
         \begin{bmatrix}
             1 \\
             0
@@ -498,10 +499,11 @@ In this subsection we discuss recursion related techniques.
             a & 0 \\
             1 & a
         \end{bmatrix}
-        \begin{bmatrix}
-            Y(Ut) \\
-            \partial_{a}Y(Ut)
-        \end{bmatrix}.
+        X(Ut).
+        % \begin{bmatrix}
+        %     Y(Ut) \\
+        %     \partial_{a}Y(Ut)
+        % \end{bmatrix}.
     \end{equation}
     Notice how this gets rid of the additive branching
     recursion of equation (\ref{couple recu ex2}).
@@ -511,6 +513,11 @@ In this subsection we discuss recursion related techniques.
 \begin{pythonn} [implementation of (\ref{coupled mat})]
     \pythoncode{python code/coupled_mat.py}
 \end{pythonn}
+
+\begin{related}[coupled recursion]
+    Example (\ref{ex:coupled recursion}) is inspired by \cite{vicini_path_2021}.
+    Coupling feels close to percolation \cite{duminil-copin_sixty_2019}.
+\end{related}
 
 \begin{technique}[recursion in recursion]
     Recursion in recursion is what is sounds like. It is like proving an induction
@@ -581,7 +588,7 @@ to combine tail recursion with normal recursion.
 \begin{related}[branching recursion]
     This blog discusses branching tail recursion:
     \url{https://jeroenvanwijgerden.me/post/recursion-1/}.
-    Interesting techniques  like tail recursion  gets discussed in \cite{vicini_path_2021}.
+    Interesting techniques  like tail recursion  gets discussed in .
 \end{related}
 
 
@@ -612,25 +619,26 @@ we do some examples.  \\
         y'=y.
     \end{equation}
     but this time with the following condition:
-    \[
-        \int_{0}^{1} y(s) ds = e-1
-        .\]
+    \begin{equation}
+        \int_{0}^{1} y(s) ds = e-1.
+    \end{equation}
+
     This still has solution $y(t)=e^{t}$. We define the corresponding source
     green function $G(t,x)$ for $y'$ and this type of condition as follows:
-    \[
-        G'= \delta(x-t), \int_{0}^{1}G(s,x)ds = 0
-        .\]
+    \begin{equation}
+        G'= \delta(x-t), \int_{0}^{1}G(s,x)ds = 0.
+    \end{equation}
     Solving this obtains:
-    \[
-        G(t,x) = H(t-x) +x-1
-        .\]
+    \begin{equation}
+        G(t,x) = H(t-x) +x-1.
+    \end{equation}
     with
-    \[
+    \begin{equation}
         H(x) = \begin{cases}
             0 & \text{ if } x<0 \\
             1 & \text{ else }
-        \end{cases}
-        .\]
+        \end{cases}.
+    \end{equation}
 
     Note that we could have used a different green function corresponding
     to a different linear differential operator. \\
@@ -672,40 +680,41 @@ we do some examples.  \\
     This has solution $y(t) = e^{t}$. We define the source green function $G(t,x)$
     for $y''$ and Dirichlet/Neumann boundary conditions in the following way:
 
-    \[
-        G''= \delta(t-x),G(0)=0,G'(1)=0
-        .\]
+    \begin{equation}
+        G''= \delta(t-x),G(0)=0,G'(1)=0.
+    \end{equation}
 
     Solving this obtains:
 
-    \[
+    \begin{equation}
         G(t,x) =
         \begin{cases}
             -t & \text{if } t <  x   \\
             -x & \text{if } t \ge  x
-        \end{cases}
-        .\]
+        \end{cases}.
+    \end{equation}
 
     The boundary green function $P(t,x)$ (for $x \in \{0,1\}$)
     for $y''$ and Dirichlet/Neumann boundary conditions is defined
     the following way:
-    \[
+    \begin{equation}
         P'' = 0, \left(P(0,x),P'(1,x) \right)=
         \begin{cases}
             (1 , 0) & \text{ if } x=0 \\
             (0 , 1) & \text{ if } x=1
-        \end{cases}
-        .\]
+        \end{cases}.
+    \end{equation}
+
     Which is just a basis for the homogenous solutions for now. Solving
     this gives:
 
-    \[
+    \begin{equation}
         P(t,x) =
         \begin{cases}
             1 & \text{ if } x=0 \\
             t & \text{ if } x=1
-        \end{cases}
-        .\]
+        \end{cases}.
+    \end{equation}
 
     Again it shouldn't be clear from this point but with these set of green
     functions we form following integral equation for (\ref{ddyy}):
@@ -785,7 +794,7 @@ or convergence analysis, we will suggest potential solutions in this subsection.
     \end{equation}
     The green functions corresponding to $y''$ and Dirichlet conditions are:
 
-    \begin{align*}
+    \begin{align}
         P(t,x) & = \begin{cases}
                        \frac{b_{1}-t}{b_{1}-b_{0}} & \text{if } x = b_{0} \\
                        \frac{t-b_{0}}{b_{1}-b_{0}} & \text{if } x = b_{1}
@@ -794,7 +803,7 @@ or convergence analysis, we will suggest potential solutions in this subsection.
                        -\frac{(b_{1}-t)(s-b_{0})}{b_{1}-b_{0}} & \text{if } s<t \\
                        -\frac{(b_{1}-s)(t-b_{0})}{b_{1}-b_{0}} & \text{if } t<s
                    \end{cases}.
-    \end{align*}
+    \end{align}
     Straight from these green functions you get following integral equation and RRVE:
     \begin{align} \label{inteq:main dirichlet}
         y(t) & = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1}) + \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds \\
@@ -819,9 +828,9 @@ or convergence analysis, we will suggest potential solutions in this subsection.
 
 \begin{definition}[Fredholm equation of the second kind]
     A Fredholm equation of the second kind for $\varphi$  is of the following form:
-    $$
+    \begin{equation}
         \varphi(t)=f(t)+\lambda \int_a^b K(t, s) \varphi(s) ds.
-    $$
+    \end{equation}
     Given the kernel  $K(t, s)$  and  $ f(t)$.
 \end{definition}
 
@@ -951,7 +960,7 @@ would not be effective for this particular example with this
 Russian roulette. \\
 
 \begin{related}[coupled splitting]
-    Coupled splitting is very similar to the ideas discussed in
+    Similar ideas to coupled splitting gets discussed in
     \cite{sabelfeld_sparsified_2009}. (the paper on using more rows
     for MC in linear systems) \\
 
@@ -980,13 +989,15 @@ this behavior.
     Let's us explain RRMC for IVPs with our main example.
     Imagine we have a time stepping sheme $(t_{n})$ ($t_{n}> t_{n-1}$)
     then following integral equations hold:
-    \[
-        y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , t>t_{n}
-        .\]
+    \begin{equation}
+        y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , t>t_{n}.
+    \end{equation}
     Turn these in following class of RRVEs:
-    \[
-        Y_{n}(t) = y(t_{n}) + (t-t_{n})Y_{n}((t-t_{n})U+t_{n}), t>t_{n}
-        .\]
+
+    \begin{equation}
+        Y_{n}(t) = y(t_{n}) + (t-t_{n})Y_{n}((t-t_{n})U+t_{n}), t>t_{n}.
+    \end{equation}
+
     A problem with these RRVEs is that we don't know $y(t_{n})$.
     Instead we can replace it with an unbiased estimate $y_{n}$
     which we keep frozen:
@@ -1027,25 +1038,25 @@ smoothness) with control variates like the MC trapezoidal rule (\ref{MCtrap}).
 \begin{example}[CV RRMC $y'=y$]\label{ex:CV RRMC IVP}
     Let us control variate example (\ref{ex:RRMC IVP}). Start
     with:
-    \[
-        y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , t>t_{n}
-        .\]
+    \begin{equation}
+        y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , t>t_{n}.
+    \end{equation}
     We need a lower order approximation of the integrand:
-    \begin{align*}
+    \begin{align}
         y(s) & = y(t_{n}) + (s-t_{n})y'(t_{n}) + O((s-t_{n})^{2})       \\
              & \approx y(t_{n}) + (s-t_{n})f(y(t_{n}),t_{n})            \\
              & \approx y(t_{n}) +
         (s-t_{n})\left(\frac{y(t_{n})-y(t_{n-1})}{t_{n}-t_{n-1}}\right) \\
              & \approx y(t_{n})(1+s-t_{n}).
-    \end{align*}
+    \end{align}
 
     Using the last one as a control variate for the integral:
-    \begin{align*}
+    \begin{align}
         y(t) & = y(t_{n}) + \int_{t_{n}}^{t}y(s)ds                                          \\
              & = y(t_{n}) + \int_{t_{n}}^{t}y(s)-y(t_{n})(1+s-t_{n}) +y(t_{n})(1+s-t_{n})ds \\
              & = y(t_{n})\left(1 + (1-t_{n})(t-t_{n})+\frac{t^{2}-t_{n}^{2}}{2}\right)
         + \int_{t_{n}}^{t}y(s)-y(t_{n})(1+s-t_{n})ds.
-    \end{align*}
+    \end{align}
     We won't discuss turning this into an RRVE nor the implementation. The implementation
     is very similar to (\ref{py:nonlinear RRMC IVP}) and
     Figure \ref{fig:CV RRMC IVP} is a convergence plot for this example.
@@ -1073,28 +1084,32 @@ variance.
 
 \begin{example}[nonlinear RRMC IVP] \label{ex:nonlinear RRMC IVP}
     Consider:
-    $$
+
+    \begin{equation}
         y' = y^{2} - t^{4} +2t,y(0)=0.
-    $$
+    \end{equation}
+
     with solution: $y(t)=t^{2}$. With integral equation:
-    $$
+
+    \begin{equation}
         y(t)= y(t_{n}) + \int_{t_{n}}^{t} y^{2}(s) ds
         - \frac{t^{5}-t_{n}^{5}}{5} +(t^{2}-t_{n}^{2}) .
-    $$
+    \end{equation}
+
     control variating $y^{2}(s)$ up to second order (via Taylor):
-    \begin{align*}
+    \begin{align}
         y^{2}(t) & \approx y^{2}(t_{n}) + 2(t-t_{n})y(t_{n})y'(t_{n})
         + ((t-t_{n})y'(t_{n}))^{2} + O((t-t_{n})^{2})                                   \\
                  & \approx y^{2}(t_{n}) + 2(t-t_{n})y(t_{n})y'(t_{n})+ O((t-t_{n})^{2})
-    \end{align*}
+    \end{align}
 
     Then we have to integrate the control variate:
 
-    \begin{align*}
+    \begin{align}
         \int_{t_{n}}^{t} & y^{2}(t_{n}) + 2(s-t_{n})y(t_{n})y'(t_{n}) ds \\
                          & = (t-t_{n})y^{2}(t_{n})+
         2\left(\frac{t^{2}-t_{n}^{2}}{2} -t_{n}(t-t_{n}) \right)y(t_{n})y'(t_{n}).
-    \end{align*}
+    \end{align}
 
 \end{example}
 
@@ -1107,25 +1122,29 @@ of the recursive parts. We discuss a potential solution to this  problem in next
 
 \begin{definition}[DRRMC]
     Consider a general linear ODE IVP problem:
-    \[
-        x' = Ax+g, x(0)= x_{0}
-        .\]
+    \begin{equation}
+        x' = Ax+g, x(0)= x_{0}.
+    \end{equation}
     Sometimes repeatedly multiplying by $A$ is unstable.
     Diagonal RRMC adds a positive diagonal matrix $D$
     to $A$ and hopes that it stabilizes.
-    $$
+
+    \begin{equation}
         x' + Dx = (A+D)x+g.
-    $$
+    \end{equation}
+
     Following integral equation can be derived by using integrating factor:
-    $$
+
+    \begin{equation}
         x(t)= e^{D(t_{n}-t)}x(t_{n}) + \int_{t_{n}}^{t} e^{D(s-t)}(A+D)x(s)ds+\int_{t_{n}}^{t} e^{D(s-t)}g(s)ds.
-    $$
+    \end{equation}
+
     Note that exponential of a diagonal matrix is the exponential of its elements.
     The recursive integral has the following trivial control variate:
 
-    \[
-        \int_{t_{n}}^{t}  e^{D(s-t)}(A+D)x(t_{n})ds = D^{-1}(I-e^{D(t_{n}-t)})(A+D)x(t_{n})
-        .\]
+    \begin{equation}
+        \int_{t_{n}}^{t}  e^{D(s-t)}(A+D)x(t_{n})ds = D^{-1}(I-e^{D(t_{n}-t)})(A+D)x(t_{n}).
+    \end{equation}
 
 \end{definition}
 
