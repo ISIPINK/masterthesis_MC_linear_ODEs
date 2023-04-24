@@ -777,9 +777,14 @@ we do some examples.  \\
     either null linear conditions and a Dirac delta source term, or vice versa.
 \end{definition}
 
+\begin{related}[green function]
+    Our notion of green function is similar to that in \cite{hwang_simulationtabulation_2001}.
+\end{related}
+
 % maybe an example of difference equation
 
 \subsection{Convergence}
+% \subsection{Fredholm equations}
 
 The ODE examples we have seen so far exhibit rapidly increasing variance as the domain increases,
 some cases this leads to non-convergence. However, we have not yet discussed convergence
@@ -1192,22 +1197,60 @@ TODO:
 
 \subsection{BVPs ODEs}
 
+Now we hope we can imitate what we did for IVPs to get converging RMC
+algorithms for BVPs. The $2$ essential trick that we used for RRMC IVP are
+integral representations on subdomains and unbiased estimators for the linear
+conditions. \\
 
-\begin{example}[local BVP]
-    a RRMC algo for dirichlet see period 5
+TODO: fix it or leave it out
+\begin{example}[alternating RRMC]
+    We demonstrate alternating RRMC on example (\ref{main dirichlet})
+    with $y(-2)=e^{-2}$ and $y(2)=e^{2}$ which didn't have convergence on
+    (\ref{fig:mainD explosion}).
+    In alternating RRMC we use integral equations of overlapping domains see Figure
+    (\ref{fig:alternating RRMC}) and communicate boundary conditions in the outer recursion.
+    \begin{figure}[ht!]
+        \centering
+        \includegraphics[width=0.8\textwidth]{tikz figures/local RRMC/axis.pdf}
+        \caption{}
+        \label{fig:alternating RRMC}
+    \end{figure}
 \end{example}
 
-discuss getting higher order
+\begin{related}
+    Schwarz alternating method, walk on rectangles paper.
+\end{related}
 
-\begin{example}[higher order local BVP]
-    a higher order RRMC algo + convergence
+\section{Brownian Motion}
+
+\begin{definition}[Brownian Motion]
+    limit of how I program it
+\end{definition}
+
+\begin{definition}[first passage problem ] \label{def:first passage}
+    explains what a first passage problem is for Brownian motion
+    and a barrier
+\end{definition}
+
+\begin{example}[(\ref{def:first passage}) triangular barrier]
+
 \end{example}
 
+\begin{theorem}[scale invariance Brownian Motion]
+    explains the scale invariance of Brownian Motion
+\end{theorem}
 
-\section{Recursive Brownian Motion}
+
+\begin{example}[scaled (\ref{def:first passage}) triangular barrier]
+
+\end{example}
+
+\begin{technique}[]
+
+\end{technique}
 
 \subsection{Brownian Motion}
-introduces Brownian motion
+introduces Brownian motion,
 
 \subsection{Boundary Green Function Of The Heat Equation}
 introduce with $1$D case, numerically calculating it
