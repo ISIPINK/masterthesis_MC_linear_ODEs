@@ -948,10 +948,11 @@ where a fixed point argument holds true. \\
 
 We also conjecture that the convergence speed is very similar
 to fix points methods until the accuracy of the stochastic
-approximation of the operator is reached. A way around this
+approximation of the operator is reached (which is the most important
+bottleneck). A way around this
 is by increasing coupled splitting amount  when reaching this bottleneck
 which can be done very straightforward,
-making it similar to a multi-grid method. Alternately when reaching
+making it similar to a multi-grid method. Alternatively when reaching
 the bottleneck it is possible to rely on MC convergence.
 % (Additional
 % iterations beyond the bottleneck do not
@@ -973,9 +974,13 @@ Russian roulette. \\
     coupled splitting. First the problem is local and second everything is smooth.
     Later we discuss algorithms that abuse locality via recursion in recursion and
     smoothness with control variates. A better use case for this algorithm is for
-    Fredholm equations of the second kind with for example a non-smooth kernel.
+    Fredholm equations of the second kind with for example a non-smooth kernel or
+    a nasty domain.
     Similar use cases for MC in differential equations get discussed in
-    \cite{jentzen_random_2009}.
+    \cite{jentzen_random_2009}. \\
+
+    See \cite{gupta_convergence_2021} for a discussion on convergence
+    of recursive stochastic algorithms.
 \end{related}
 
 % explaining that coupled split is cool for global problems but for
@@ -1195,84 +1200,215 @@ TODO:
     Similar manipulations can also be found in exponential integrator methods.
 \end{related}
 
-\subsection{BVPs ODEs}
+% \subsection{BVPs ODEs}
 
-Now we hope we can imitate what we did for IVPs to get converging RMC
-algorithms for BVPs. The $2$ essential trick that we used for RRMC IVP are
-integral representations on subdomains and unbiased estimators for the linear
-conditions. \\
+% Now we hope we can imitate what we did for IVPs to get converging RMC
+% algorithms for BVPs. The $2$ essential trick that we used for RRMC IVP are
+% integral representations on subdomains and unbiased estimators for the linear
+% conditions. \\
 
-TODO: fix it or leave it out
-\begin{example}[alternating RRMC]
-    We demonstrate alternating RRMC on example (\ref{main dirichlet})
-    with $y(-2)=e^{-2}$ and $y(2)=e^{2}$ which didn't have convergence on
-    (\ref{fig:mainD explosion}).
-    In alternating RRMC we use integral equations of overlapping domains see Figure
-    (\ref{fig:alternating RRMC}) and communicate boundary conditions in the outer recursion.
-    \begin{figure}[ht!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{tikz figures/local RRMC/axis.pdf}
-        \caption{}
-        \label{fig:alternating RRMC}
-    \end{figure}
-\end{example}
+% TODO: fix it or leave it out
+% \begin{example}[alternating RRMC]
+%     We demonstrate alternating RRMC on example (\ref{main dirichlet})
+%     with $y(-2)=e^{-2}$ and $y(2)=e^{2}$ which didn't have convergence on
+%     (\ref{fig:mainD explosion}).
+%     In alternating RRMC we use integral equations of overlapping domains see Figure
+%     (\ref{fig:alternating RRMC}) and communicate boundary conditions in the outer recursion.
+%     \begin{figure}[ht!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{tikz figures/local RRMC/axis.pdf}
+%         \caption{}
+%         \label{fig:alternating RRMC}
+%     \end{figure}
+% \end{example}
 
-\begin{related}
-    Schwarz alternating method, walk on rectangles paper.
-\end{related}
+% \begin{related}
+%     Schwarz alternating method, walk on rectangles paper.
+% \end{related}
 
 \section{Brownian Motion}
 
 \begin{definition}[Brownian Motion]
-    limit of how I program it
+    Define Brownian motion $W_{t}$ as the limit/logical generalization
+    when $n \rightarrow \infty$ of following discrete proces defined as:
+    \begin{equation}
+        \begin{cases}
+            X_{t}^{n} = X_{t-\frac{1}{n}}^{n} + Z_{n} \\
+            X^{n}_{0}=0
+        \end{cases}.
+    \end{equation}
+    With $Z_{n}\sim N(0,\frac{1}{n})$ i.i.d . From this definition it is easily seen that
+    $W_{t} \sim N(0,t)$.
 \end{definition}
 
-\begin{definition}[first passage problem ] \label{def:first passage}
-    explains what a first passage problem is for Brownian motion
-    and a barrier
-\end{definition}
 
-\begin{example}[(\ref{def:first passage}) triangular barrier]
+\begin{lemma}[self-affinity Brownian motion] \label{lem:self affine}
+    Brownian motion is self affine as a random proces that means you can cut a small
+    part of it move so it starts in $0$ and scale time to the original size
+    and space such that the variance stays the same to get back the whole Brownian motion.
+\end{lemma}
 
-\end{example}
+\begin{equation}
+    \forall c \in \mathbb{R}^{+}_{0}: \frac{W_{ct}}{\sqrt{c}} \sim W_{t}.
+\end{equation}
 
-\begin{theorem}[scale invariance Brownian Motion]
-    explains the scale invariance of Brownian Motion
+\begin{theorem}[Feyman-Kac formula (wikipedia)] \label{thrm:feymankac}
+
+    Consider the partial differential equation
+    \begin{equation}
+        \frac{\partial u}{\partial t}(x, t)+\mu(x, t) \frac{\partial u}{\partial x}(x, t)+\frac{1}{2} \sigma^2(x, t) \frac{\partial^2 u}{\partial x^2}(x, t)-V(x, t) u(x, t)+f(x, t)=0,
+        .
+    \end{equation}
+    defined for all $x \in \mathbb{R}$ and $t \in[0, T]$, subject to the terminal condition
+    \begin{equation}
+        u(x, T)=\psi(x),
+        .
+    \end{equation}
+    where $\mu, \sigma, \psi, V, f$ are known functions, $T$ is a parameter, and $u: \mathbb{R} \times[0, T] \rightarrow \mathbb{R}$ is the unknown. Then the Feynman-Kac formula tells us that the solution can be written as a conditional expectation
+    \begin{equation}
+        u(x, t)=E^Q\left[\int_t^T e^{-\int_t^r V\left(X_\tau, \tau\right) d \tau} f\left(X_r, r\right) d r+e^{-\int_t^T V\left(X_\tau, \tau\right) d \tau} \psi\left(X_T\right) \mid X_t=x\right]
+        .
+    \end{equation}
+    under the probability measure $Q$ such that $X$ is an Itô process driven by the equation
+    \begin{equation}
+        d X_t=\mu(X, t) d t+\sigma(X, t) d W_t^Q
+        .
+    \end{equation}
+    with $W^Q(t)$ is a Wiener process (also called Brownian motion) under $Q$, and the initial condition for $X(t)$ is $X(t)=x$.
 \end{theorem}
 
+\begin{definition}[first passage sampling ] \label{def:first passage}
+    In the first passage sampling we try to sample states when a proces
+    reaches a boundary or specified state of the system for the first time
+    (the first passage). We are specifically interested in
+    first passage problem with Brownian motion for a closed time space barrier.
+\end{definition}
 
-\begin{example}[scaled (\ref{def:first passage}) triangular barrier]
+The first passage distribution of Brownian motion is in fact the boundary
+green function for the heat equation this can be easily seen by using the
+Feynman-Kac formula (\ref{thrm:feymankac}).
 
+\begin{example}[Euler first passage sampling]
+    In this example we naively sample first passage exit point of Brownian motion
+    for a parabolic barrier by simulating Brownian motion with the Euler scheme.
+    \begin{figure}[ht!]
+        \centering
+        \includegraphics[width=0.8\textwidth]{plots/Euler first passage para.png}
+        \caption{todo}
+        \label{fig:Euler first passage para}
+    \end{figure}
 \end{example}
 
-\begin{technique}[]
 
+\begin{technique}[recursive first passage sampling]
+    The idea behind recursive first passage sampling is to break down a first passage
+    sampling on a bigger domain to contained smaller domains by using the fact you
+    can't leave the big domain without leaving the smaller first
+    (intermediate value theorem). When you sample the exit from the smaller domain
+    it is the start point of a new first passage sampling problem and then you  recurse
+    until you are close to the stopping condition.
 \end{technique}
 
-\subsection{Brownian Motion}
-introduces Brownian motion,
-
-\subsection{Boundary Green Function Of The Heat Equation}
-introduce with $1$D case, numerically calculating it
-
-\subsection{Recursive Brownian Motion}
-WoS like way to simulate Brownian motion which is related to the green function
-of the heat equation, this
-
-\begin{related}[recursive Brownian motion]
-    see Brownian motion tag in zotero
+\begin{related}[recursive first passage sampling]
+    Recursive first passage sampling get discussed in \cite{herrmann_first-passage_2016}
+    and extension for processes with jumps in \cite{herrmann_exact_2021}.
 \end{related}
 
-\subsection{Heat Equation}
-a geometric robust way to solve the heat equation and maybe a higher order method to solve
-the heat equation
+\begin{example}[recursive first passage sampling] \label{ex:recursive first passage sampling}
+    In this example we recursively first passage sample the exit point of Brownian motion
+    for a triangular barrier by resampling and scaling (using (\ref{lem:self affine})) from
+    a precomputed Euler scheme to sample a exit point from a parabolic barrier.
+    \begin{figure}[ht!]
+        \centering
+        \includegraphics[width=1\textwidth]{plots/recursive first passage para.png}
+        \caption{todo}
+        \label{fig:recursive first passage para}
+    \end{figure}
+\end{example}
+
+Instead of resampling from a Euler scheme it is also possible
+to tabloid the inverse cumulative probability function for the
+triangular case. Something similar gets done in \cite{hwang_simulationtabulation_2001}. \\
 
 
+You can transform first passage sampling problems for others processes back to
+Brownian Motion by doing the right time and space bending. For example geometric
+Brownian motion can be made into Brownian motion by taking the log. \\
+
+
+Sometimes we're interested in a specific property of a first passage sampled
+path like the max or the average. The naif way would be sampling full paths
+and calculating the desired property instead you can sample only the required
+information to calculate the desired property. In the case of the max
+and the average for example you only need the sample the max/average
+of the subpaths and combined that to the max/average of the whole path.\\
+
+
+\begin{example}[recursive first passage average sampling]
+    This is the same as example (\ref{ex:recursive first passage sampling}) but now we have
+    to keep track of the average.
+
+    \begin{figure}[ht!]
+        \centering
+        \includegraphics[width=1\textwidth]{plots/recursive first passage average para.png}
+        \caption{todo}
+        \label{fig:recursive first passage average para}
+    \end{figure}
+\end{example}
+
+Doing the same thing for geometric Brownian motion is difficult because the average
+behaves bad under transformation unlike the max. You can think of the average
+as an extra dimension to keep track of. What you would need  for geometric
+Brownian motion is the  first passage distribution of the average and exit
+point for every different position of the begin point for subpaths.\\
+And nothing holds you back of changing methods midway if you didn't
+the precompute a situation.
+
+\begin{technique}[path stitching]
+    Instead of thinking in sampling first passage points you can also sample
+    whole paths to the first passage. The same way as before you need to be
+    able to generate paths for a simple first passage problem and "stich"
+    these paths together into one for a complicated one.
+\end{technique}
+
+\begin{example}[path stitching parabola]
+    This is the same as example (\ref{ex:recursive first passage sampling}) but now we have
+    to keep track of the whole resampled Euler scheme generated paths.
+
+    \begin{figure}[ht!]
+        \centering
+        \includegraphics[width=0.8\textwidth]{plots/path stitching para.png}
+        \caption{todo}
+        \label{fig:path stitching para}
+    \end{figure}
+\end{example}
+
+For plotting the path we needed to accesses to all of its points.  An advantage
+over normally generating paths is that a path can be represented by its subpaths
+and their scalings requiring way less memory then a full path. This can be useful
+in case where the whole path isn't needed. Even if  accesses to the whole
+path is needed this can be done in a slightly more efficient manor
+then a normal Euler scheme because it can almost be done in parallel
+vs step for step generation. The only downsides are that the time
+steps are inhomogeneous and it requires a precomputation. \\
+
+A way around scaling base samples is limiting scaling to a
+discrete set and pick the biggest scaling that fits, instead
+of generating base samples for $1$ scale and scaling it dynamically
+precompute all the discrete scalings. \\
+
+Similar precomputing tricks can be used for geometric Brownian motion
+requiring and extra dimension of precomputing based on transformations.
+
+\begin{related}[path stitching]
+    Path stitching appears frequently in rendering and also in \cite{das_sarma_fast_2015}
+    and \cite{ji_reusing_2012}.
+\end{related}
 
 \newpage
 \printbibliography
 \newpage
 
-\section{Appendix}
-Derivation of the green functions and some expressions.
+% \section{Appendix}
+% Derivation of the green functions and some expressions.
 \end{document}
