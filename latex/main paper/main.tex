@@ -103,10 +103,6 @@ this is issue gets resolved in the section on ODEs. Note that (\ref{python eps y
 from unbiased Monte Carlo methods such as being embarrassingly parallel and
 having simple error estimates.
 
-
-\subsection{Contributions}
-We write this at the end. Probably a lot of conjectures.
-
 \subsection{Related Work}
 work on
 \begin{itemize}
@@ -116,6 +112,10 @@ work on
     \item WoS
 \end{itemize}
 This is just to give a general overview we probably reference specific ideas when we first introduce them.
+
+\subsection{Contributions}
+We write this at the end. Probably a lot of conjectures.
+
 
 \section{Background}
 
@@ -1294,7 +1294,7 @@ Feynman-Kac formula (\ref{thrm:feymankac}).
     \begin{figure}[ht!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/Euler first passage para.png}
-        \caption{todo}
+        \caption{ $50$ realizations of Euler first passage sampling with step size $0.001$.}
         \label{fig:Euler first passage para}
     \end{figure}
 \end{example}
@@ -1321,7 +1321,9 @@ Feynman-Kac formula (\ref{thrm:feymankac}).
     \begin{figure}[ht!]
         \centering
         \includegraphics[width=1\textwidth]{plots/recursive first passage para.png}
-        \caption{todo}
+        \caption{ $50000$ of realizations of recursive first passage sampling.
+            The precomputed sample of $1000$ first passages of a triangular barrier
+            uses the Euler scheme with step size $0.001$.}
         \label{fig:recursive first passage para}
     \end{figure}
 \end{example}
@@ -1351,7 +1353,9 @@ of the subpaths and combined that to the max/average of the whole path.\\
     \begin{figure}[ht!]
         \centering
         \includegraphics[width=1\textwidth]{plots/recursive first passage average para.png}
-        \caption{todo}
+        \caption{ $10000$ of realizations of recursive first passage sampling (for the average).
+            The precomputed sample of $1000$ first passages and averages of a triangular barrier
+            uses the Euler scheme with step size $0.001$.}
         \label{fig:recursive first passage average para}
     \end{figure}
 \end{example}
@@ -1378,7 +1382,8 @@ the precompute a situation.
     \begin{figure}[ht!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/path stitching para.png}
-        \caption{todo}
+        \caption{ $10$ paths build with path stitching build out of
+            precomputed Euler scheme generated paths with stepsize $0.01$.}
         \label{fig:path stitching para}
     \end{figure}
 \end{example}
