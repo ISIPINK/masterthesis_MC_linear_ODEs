@@ -23,7 +23,7 @@ style=alphabetic,
 \usepackage{listings}
 \input{custom commands.tex}
 
-\addbibresource{bibliography.bib} 
+\addbibresource{bibliography2.bib} 
 \setlength{\parindent}{0pt}
 
 \begin{document}
@@ -104,17 +104,59 @@ from unbiased Monte Carlo methods such as being embarrassingly parallel and
 having simple error estimates.
 
 \subsection{Related Work}
-work on
-\begin{itemize}
-    \item alternative methods for recursive integrals
-    \item MC work on ODEs
-    \item MC work on PDEs
-    \item WoS
-\end{itemize}
-This is just to give a general overview we probably reference specific ideas when we first introduce them.
+The main motivation for this thesis is the walk on sphere method for $2$nd order elliptic PDEs
+with varying coefficients with Dirichlet boundary conditions
+discussed in \cite{sawhney_grid-free_2022}. This RMC method
+is accurate even if the boundary conditions are geometric complex. We studied the
+mechanics behind these type of MC techniques and applied them to simple BVPs and IVPs.
+
+\begin{related}[walk on sphere]
+    tmp
+    \begin{itemize}
+        \item \cite{sawhney_walk_2023},\cite{sawhney_monte_nodate},\cite{sawhney_grid-free_2022}
+        \item \cite{hwang_off-centered_2015}
+    \end{itemize}
+\end{related}
+
+\begin{related}[MC for IVPs ODEs]
+    MC methods for IVPS ODEs are little studied. The most significant works that touch on
+    the subject are
+    \begin{itemize}
+        \item \cite{jentzen_random_2009}
+        \item \cite{daun_randomized_2011}
+        \item \cite{ermakov_monte_2019}, \cite{ermakov_monte_2021}
+    \end{itemize}
+    limitations of that work
+
+\end{related}
+
+\begin{related}[MC for linear systems]
+    Instead of solving a ODE/PDE directly with MC, MC can still be used after
+    a discretisation technique to choice on the resulting linear system
+    which should have similar behavior to the orginal problem. \\
+    The main technique for MC for linear systems is sampling
+    the Von Neumann series.
+
+    \begin{itemize}
+        \item page rank stuff
+    \end{itemize}
+
+    mmm
+
+\end{related}
+
 
 \subsection{Contributions}
-We write this at the end. Probably a lot of conjectures.
+We write this at the end. Probably a lot of conjectures.\\
+
+\begin{itemize}
+    \item An unbiased MC method for linear IVP ODEs of higher order with stability issues.
+    \item Meager extension of recursive first passage sampling algorithm discussed in
+          \cite{herrmann_first-passage_2016}.
+    \item Coupled recursion and recursion in recursion reformulation of the coupling in
+          \cite{vicini_path_2021} and next flight in  \cite{sawhney_grid-free_2022}.
+\end{itemize}
+
 
 
 \section{Background}
@@ -156,7 +198,7 @@ with a less computationally expensive approximation sometimes.
     \end{equation}
 \end{definition}
 
-\begin{example}[Russian roulette]
+\begin{example}[Russian roulette] \label{ex:simple russian roulette}
     Say that we are interested in estimating $E[Z]$ with $Z$
     defined in the following way:
     \begin{equation}
@@ -172,9 +214,16 @@ with a less computationally expensive approximation sometimes.
     just requires calling $f$ on average once every $100$ simulations with the variance
     only increasing slightly compared to $Z$. \\
 
-    In this example it is also possible to estimate the expectance of the $2$
-    terms of $Z$ separately.
 \end{example}
+
+\begin{related}[Russian roulette]
+    In example (\ref{ex:simple russian roulette}) it is possible to estimate
+    the expectance of the $2$ terms of $Z$ separately. Given the variances and
+    computational complexity  of both terms you can calculate the asymptotical optimal
+    division of samples for each term. \\
+    In \cite{rath_ears_2022} they approximate optimal Russian roulette and splitting
+    (RRS) factors with fixed-point iterations to maximize the efficiency in a render.
+\end{related}
 
 \begin{example}[Russian roulette on (\ref{recursive RV})]
     Russian roulette can fix the indefinite recursion issue of
@@ -276,7 +325,7 @@ Introduces Russian roulette, splitting, control variates, importance sampling an
 $y'=y$ example. We are missing importance sampling and quasi MC
 \end{comment}
 
-\begin{related}
+\begin{related}[MC modification]
     Our favorite work that discusses these techniques is \cite{veach_robust_nodate}.
     More interesting works can be found on MC techniques in rendering.
     $2$-level gets discussed in \cite{giles_multilevel_2013}.
@@ -1383,7 +1432,7 @@ the precompute a situation.
         \centering
         \includegraphics[width=0.8\textwidth]{plots/path stitching para.png}
         \caption{ $10$ paths build with path stitching build out of
-            precomputed Euler scheme generated paths with stepsize $0.01$.}
+            precomputed Euler scheme generated paths with step size $0.01$.}
         \label{fig:path stitching para}
     \end{figure}
 \end{example}
@@ -1409,6 +1458,9 @@ requiring and extra dimension of precomputing based on transformations.
     Path stitching appears frequently in rendering and also in \cite{das_sarma_fast_2015}
     and \cite{ji_reusing_2012}.
 \end{related}
+
+\section{Limitations and Future Work}
+test
 
 \newpage
 \printbibliography
