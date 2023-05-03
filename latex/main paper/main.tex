@@ -8,6 +8,15 @@
 \setlength{\headheight}{0cm}
 \pagestyle{plain}
 
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+    citecolor=blue,
+    linktoc=page
+}
 \usepackage[dvips]{epsfig}
 \usepackage{tikz}
 
@@ -15,6 +24,8 @@
 backend=biber,
 style=alphabetic,
 ]{biblatex}
+
+\renewcommand{\bibfont}{\footnotesize}
 
 \usepackage{amsmath,amssymb,amsthm}
 \input{environments.tex}
@@ -119,7 +130,7 @@ mechanics behind these type of MC techniques and applied them to simple BVPs and
 \end{related}
 
 \begin{related}[MC for IVPs ODEs]
-    MC methods for IVPS ODEs are little studied. The most significant works that touch on
+    MC methods for IVPs ODEs are little studied. The most significant works that touch on
     the subject are
     \begin{itemize}
         \item \cite{jentzen_random_2009}
@@ -133,7 +144,7 @@ mechanics behind these type of MC techniques and applied them to simple BVPs and
 \begin{related}[MC for linear systems]
     Instead of solving a ODE/PDE directly with MC, MC can still be used after
     a discretisation technique to choice on the resulting linear system
-    which should have similar behavior to the orginal problem. \\
+    which should have similar behavior to the original problem. \\
     The main technique for MC for linear systems is sampling
     the Von Neumann series.
 
@@ -150,11 +161,10 @@ mechanics behind these type of MC techniques and applied them to simple BVPs and
 We write this at the end. Probably a lot of conjectures.\\
 
 \begin{itemize}
-    \item An unbiased MC method for linear IVP ODEs of higher order with stability issues.
-    \item Meager extension of recursive first passage sampling algorithm discussed in
-          \cite{herrmann_first-passage_2016}.
-    \item Coupled recursion and recursion in recursion reformulation of the coupling in
-          \cite{vicini_path_2021} and next flight in  \cite{sawhney_grid-free_2022}.
+    \item An unbiased MC method for linear IVP ODEs of higher order (under
+          the right smoothness conditions) with stability issues.
+    \item Coupled recursion and recursion in recursion reformulations of the coupling in
+          \cite{vicini_path_2021} and next flight in rendering (see \cite{sawhney_grid-free_2022}).
 \end{itemize}
 
 
@@ -166,7 +176,11 @@ Notations used in this thesis include:
 
 \begin{itemize}
     \item $U \sim \text{Uniform}(0,1)$.
-    \item $B(p) \sim \text{Bernoulli}(p)$.
+    \item $B(p) \sim \text{Bernoulli}(p) =
+              \begin{cases}
+                  1 & \text{ if } U<p \\
+                  0 & \text{ else }
+              \end{cases}. $
     \item RV = random variable.
     \item RVs will be denoted with capital letters, e.g., $X,Y$ or $Z$.
     \item RRVE (recursive RV equation): An equation that defines a
@@ -578,9 +592,10 @@ In this subsection we discuss recursion related techniques.
 %\end{example}
 
 \begin{related}[recursion in recursion]
-    The next flight variant of WoS
-    is a beautiful example of recursion in recursion described in
-    \cite{sawhney_grid-free_2022}.
+    Beautiful examples of recursion in recursion are
+    the next flight variant of WoS in
+    \cite{sawhney_grid-free_2022} and epoch based algorithms in optimization
+    \cite{gupta_convergence_2021}.
 \end{related}
 
 Most programming languages support recursion but this comes with restrictions
@@ -634,10 +649,9 @@ to combine tail recursion with normal recursion.
 %\end{technique}
 
 
-\begin{related}[branching recursion]
+\begin{related}[branching tail recursion]
     This blog discusses branching tail recursion:
     \url{https://jeroenvanwijgerden.me/post/recursion-1/}.
-    Interesting techniques  like tail recursion  gets discussed in .
 \end{related}
 
 
@@ -990,17 +1004,15 @@ a combination of splitting and coupling.
 \end{pythonn}
 
 
-It appears that  Figure \ref{fig:coupled splitting}
-resemble a fixed point iterations, leading us to hypothesize
+Figure \ref{fig:coupled splitting}
+resembles a fixed point iterations, leading us to hypothesize
 that coupled splitting can achieve convergence in most cases
-where a fixed point argument holds true. \\
-
-We also conjecture that the convergence speed is very similar
-to fix points methods until the accuracy of the stochastic
-approximation of the operator is reached (which is the most important
-bottleneck). A way around this
-is by increasing coupled splitting amount  when reaching this bottleneck
-which can be done very straightforward,
+where a fixed point argument holds true and that the convergence
+speed is very similar to fix points methods until the accuracy
+of the stochastic approximation of the operator is reached
+(the approximate operator bottleneck). The approximation of the operator
+can be improved by increasing coupled splitting amount usually done when
+approaching the bottleneck,
 making it similar to a multi-grid method. Alternatively when reaching
 the bottleneck it is possible to rely on MC convergence.
 % (Additional
@@ -1012,31 +1024,33 @@ Coupled splitting was tested on the example shown in Figure
 \ref{fig:mainD explosion}, but it did not contribute to the
 convergence of the method. This suggests that a fix point argument
 would not be effective for this particular example with this
-Russian roulette. \\
+Russian roulette setup. \\
+
+Example (\ref{ex:coupled splitting}) isn't the best example to demonstrate
+coupled splitting. We don't exploit locality and smoothness of the problem.
+We conjecture that this algorithm is useful for
+linear Fredholm equations of the second kind in cases where MC integration win
+over classic integration: high dimensional, non-smooth kernels or
+nasty domains.
 
 \begin{related}[coupled splitting]
     Similar ideas to coupled splitting gets discussed in
     \cite{sabelfeld_sparsified_2009}. (the paper on using more rows
     for MC in linear systems) \\
 
-    Example (\ref{ex:coupled splitting}) is not the best example to demonstrate
-    coupled splitting. First the problem is local and second everything is smooth.
-    Later we discuss algorithms that abuse locality via recursion in recursion and
-    smoothness with control variates. A better use case for this algorithm is for
-    Fredholm equations of the second kind with for example a non-smooth kernel or
-    a nasty domain.
     Similar use cases for MC in differential equations get discussed in
     \cite{jentzen_random_2009}. \\
 
     See \cite{gupta_convergence_2021} for a discussion on convergence
-    of recursive stochastic algorithms.
+    of recursive stochastic algorithms. We highly recommend watching
+    the following video \cite{abhishek_gupta_recursive_2020} before reading
+    previous paper.
 \end{related}
 
 % explaining that coupled split is cool for global problems but for
 % ODEs and PDEs we are interested in exploiting locality.
 
 \subsection{IVPs ODEs}
-In this subsection we do some IVPs examples. \\
 
 Right now we don't have a general RMC algorithm that can
 guarantee a reasonable variance when increasing the time domain.
@@ -1198,13 +1212,14 @@ of the recursive parts. We discuss a potential solution to this  problem in next
         x(t)= e^{D(t_{n}-t)}x(t_{n}) + \int_{t_{n}}^{t} e^{D(s-t)}(A+D)x(s)ds+\int_{t_{n}}^{t} e^{D(s-t)}g(s)ds.
     \end{equation}
 
-    Note that exponential of a diagonal matrix is the exponential of its elements.
+    Remember that the exponential of a diagonal matrix is the exponential of its elements.
     The recursive integral has the following trivial control variate:
 
     \begin{equation}
         \int_{t_{n}}^{t}  e^{D(s-t)}(A+D)x(t_{n})ds = D^{-1}(I-e^{D(t_{n}-t)})(A+D)x(t_{n}).
     \end{equation}
 
+    Note that $D$ may be chosen differently every recursion.
 \end{definition}
 
 % \begin{example}[DRRMC]
@@ -1245,7 +1260,10 @@ TODO:
 (critical path and how to measure performance)
 
 \begin{related}[DRRMC]
-    DRRMC is inspired by how $\bar{\sigma}$ get chosen in \cite{sawhney_grid-free_2022}.
+    DRRMC is inspired by  $\bar{\sigma}$ parameter in \cite{sawhney_grid-free_2022} but
+    instead of importance sampling and weight window we use control variates  to deal with
+    nonlinearity introduced by the exponential because it needs to work over
+    an entire vector at the same time.
     Similar manipulations can also be found in exponential integrator methods.
 \end{related}
 
@@ -1326,7 +1344,7 @@ TODO:
     with $W^Q(t)$ is a Wiener process (also called Brownian motion) under $Q$, and the initial condition for $X(t)$ is $X(t)=x$.
 \end{theorem}
 
-\begin{definition}[first passage sampling ] \label{def:first passage}
+\begin{definition}[first passage sampling] \label{def:first passage}
     In the first passage sampling we try to sample states when a proces
     reaches a boundary or specified state of the system for the first time
     (the first passage). We are specifically interested in
