@@ -59,7 +59,7 @@ style=alphabetic,
 
 \subsection{Introductory Example}
 In this subsection we introduce recursive  Monte Carlo with our main example
-for IVPs:
+for initial value problems:
 
 \begin{equation} \label{ydy}
     y'=y, y(0)=1.
@@ -88,7 +88,7 @@ unbiased estimator of it without changing $E[Y(t)]=y(t)$ by the law of total exp
     Y(t) = 1 + tY(Ut).
 \end{equation}
 
-Equation (\ref{recursive RV}) is a recursive random variable equation (RRVE). If you would implement equation
+Equation (\ref{recursive RV}) is a recursive random variable equation. If you would implement equation
 (\ref{recursive RV}) with recursion it will run indefinitely. A biased way of around this is by approximating
 $Y(t) \approx 1$ near $t = 0$. Later we discuss Russian roulette (\ref{Russian roulette}) which
 can be used as an unbiased stopping mechanism.
@@ -97,7 +97,8 @@ can be used as an unbiased stopping mechanism.
 
 \begin{pythonn}[implementation of (\ref{recursive RV})] \label{python eps ydy}
     \pythoncode{python code/eps_ydy.py}
-    To gain insight into realizations of RRVEs, it can be helpful to plot
+    To gain insight into realizations of recursive random variable equation,
+    it can be helpful to plot
     all recursive calls $(t,Y(t))$, as shown in Figure \ref{fig:intro example}
     for this implementation.
 
@@ -117,28 +118,32 @@ having simple error estimates.
 \subsection{Related Work}
 The main motivation for this thesis is the walk on sphere method for $2$nd order elliptic PDEs
 with varying coefficients with Dirichlet boundary conditions
-discussed in \cite{sawhney_grid-free_2022}. This RMC method
+discussed in \cite{sawhney_grid-free_2022}. This recursive Monte Carlo method
 is accurate even if the boundary conditions are geometric complex. We studied the
-mechanics behind these type of MC techniques and applied them to simple BVPs and IVPs.
+mechanics behind these type of Monte Carlo techniques.
 
 \begin{related}[MC for IVPs ODEs]
-    MC methods for IVPs ODEs are little studied. The most significant are:
+    Monte Carlo methods for initial value problems for systems of ordinary
+    differential equations are little studied. The most significant works are:
     \begin{itemize}
-        \item \cite{jentzen_random_2009} describes a random Euler scheme for IVPs ODEs under
+        \item \cite{jentzen_random_2009} describes a random Euler scheme for
               weak smoothness conditions.
 
-        \item \cite{daun_randomized_2011} describes an randomized algorithm for IVPs ODEs that
-              achieves higher order of convergence then deterministic algorithms under the
-              same smoothness conditions by using polynomial extrapolation and control variates.
+        \item \cite{daun_randomized_2011} describes an randomized algorithm that
+              achieves higher order of convergence order optimal even
+              then deterministic algorithms under the
+              same smoothness conditions by using polynomial extrapolation and
+              control variates.
 
-        \item \cite{ermakov_monte_2019}, \cite{ermakov_monte_2021} study unbiased MC methods
-              for large system of linear ODEs and slightly biased for nonlinear ODEs.
+        \item \cite{ermakov_monte_2019}, \cite{ermakov_monte_2021} study unbiased  methods
+              for linear problems and slightly biased for nonlinear based
+              on the Volterra integral equations.
     \end{itemize}
 
-    Previous MC methods have limited applicability for IVPs.
+    Previous Monte Carlo methods have limited applicability for
+    initial value problems for systems of ordinary differential equations.
     From our personal perspective, the current literature on
-    MC methods for IVPs is difficult to comprehend and lacks
-    rewarding insights.
+    this subject lacks rewarding insights.
 
 \end{related}
 
@@ -160,13 +165,18 @@ mechanics behind these type of MC techniques and applied them to simple BVPs and
 
 
 \subsection{Contributions}
-We write this at the end. Probably a lot of conjectures.\\
+A significant part of this thesis is dedicated to informally introducing recursive Monte Carlo
+with plenty of examples. The key contributions are:
 
 \begin{itemize}
-    \item An unbiased MC method for linear IVP ODEs of higher order (under
-          the right smoothness conditions) with stability issues.
-    \item Coupled recursion and recursion in recursion reformulations of the coupling in
-          \cite{vicini_path_2021} and next flight in rendering (see \cite{sawhney_grid-free_2022}).
+    \item An unbiased Monte Carlo method (\ref{ex:CV RRMC IVP}) for
+          linear initial value problems for systems of ordinary
+          differential equations. This method achieves a higher order of convergence
+          in the time step size that is comparable to explicit deterministic methods.
+    \item Coupled recursion (\ref{ex:coupled recursion}) and
+          recursion in recursion (\ref{tech:recu in recu}) reformulations of the coupling in
+          \cite{vicini_path_2021} and next flight in rendering see \cite{sawhney_grid-free_2022}
+          the next flight version of walk on sphere.
 \end{itemize}
 
 
@@ -346,7 +356,8 @@ of $f$ to reduce variance.
 \end{pythonn}
 
 \begin{comment}
-Introduces Russian roulette, splitting, control variates, importance sampling and maybe quasi Monte Carlo with the
+Introduces Russian roulette, splitting, control variates,
+importance sampling and maybe quasi Monte Carlo with the
 $y'=y$ example. We are missing importance sampling and quasi MC
 \end{comment}
 
@@ -594,7 +605,7 @@ In this subsection we discuss recursion related techniques.
     % maybe I should search a paper that coupling in happens
 \end{related}
 
-\begin{technique}[recursion in recursion]
+\begin{technique}[recursion in recursion]\label{tech:recu in recu}
     Recursion in recursion is what is sounds like. It is like proving an induction
     step of an induction proof with induction.
 \end{technique}
@@ -667,7 +678,7 @@ to combine tail recursion with normal recursion.
 \end{related}
 
 
-\section{ODEs}
+\section{Ordinary Differential Equations }
 
 %\subsection{Linear Recursive Integrals}
 %We have algo in mind for this case based on coupled recursion on disjunct sets.
@@ -688,7 +699,7 @@ by example.
 Our main tool for this are green functions. Before defining green functions
 we do some examples.  \\
 
-\begin{example}[$y'=y$]
+\begin{example}[$y'=y$ average condition]
     Let's solve
     \begin{equation} \label{ydy int}
         y'=y.
@@ -740,7 +751,7 @@ we do some examples.  \\
 
 \end{example}
 
-\begin{example}[$y''=y$]
+\begin{example}[$y''=y$ mixed boundary conditions]
     Lets solve the following boundary problem:
     \begin{equation} \label{ddyy}
         y'' = y, y(0) = 1, y'(1)=e.
@@ -808,6 +819,10 @@ we do some examples.  \\
 
 \end{example}
 
+\begin{related}[$y''=y$ mixed boundary conditions]
+    \cite{sawhney_walk_2023} discusses an algorithm for mixed boundary conditions.
+\end{related}
+
 
 %\begin{definition}[boundary green function]
 %    we write this later
@@ -854,10 +869,10 @@ we do some examples.  \\
 % \subsection{Convergence}
 \subsection{Fredholm Integral Equations}
 
-The ODE examples we have seen so far exhibit rapidly increasing variance as the domain increases,
-some cases this leads to non-convergence. However, we have not yet discussed convergence
-criteria for recursive Monte Carlo. Rather than delving deeply into variance
-or convergence analysis, we will suggest potential solutions in this subsection.
+The integral equations acquired in the last subsection are Fredholm integral equations
+of the second kind. In this subsection we introduce coupled splitting a technique for
+RMC for this kind of equations.
+
 
 \begin{definition}[Fredholm equation of the second kind]
     A Fredholm equation of the second kind for $\varphi$  is of the following form:
@@ -866,6 +881,13 @@ or convergence analysis, we will suggest potential solutions in this subsection.
     \end{equation}
     Given the kernel  $K(t, s)$  and  $ f(t)$.
 \end{definition}
+
+If both $K$ and $f$ are nice, then for sufficiently small $\lambda$,
+it is straightforward to establish the existence and uniqueness of solutions
+for Fredholm equations of the second kind using a fix point argument.
+
+% We would like to have MC algorithm that converges in that case. Our best guess is
+% a combination of splitting and coupling.
 
 \begin{example}[Dirichlet $y''=y$] \label{main dirichlet}
     The following problem will be the main testing example for
@@ -942,14 +964,6 @@ or convergence analysis, we will suggest potential solutions in this subsection.
 
 % fix point argument is when von neumann series converges
 
-If both $K$ and $f$ are nice, then for sufficiently small $\lambda$,
-it is straightforward to establish the existence and uniqueness of solutions
-for Fredholm equations of the second kind using a fix point argument. \\
-
-
-We would like to have MC algorithm that converges in that case. Our best guess is
-a combination of splitting and coupling.
-
 
 \begin{example}[coupled splitting on (\ref{main dirichlet})] \label{ex:coupled splitting}
     Next to normal splitting (\ref{def:splitting}) we can
@@ -1018,8 +1032,7 @@ speed is very similar to fix points methods until the accuracy
 of the stochastic approximation of the operator is reached
 (the approximate operator bottleneck). The approximation of the operator
 can be improved by increasing coupled splitting amount usually done when
-approaching the bottleneck,
-making it similar to a multi-grid method. Alternatively when reaching
+approaching the bottleneck. Alternatively when reaching
 the bottleneck it is possible to rely on MC convergence.
 % (Additional
 % iterations beyond the bottleneck do not
@@ -1054,10 +1067,10 @@ nasty domains.
 % explaining that coupled split is cool for global problems but for
 % ODEs and PDEs we are interested in exploiting locality.
 
-\subsection{IVPs ODEs}
+\subsection{Initial Value Problems}
 
-Right now we don't have a general RMC algorithm that can
-guarantee a reasonable variance when increasing the time domain.
+Right now we don't have a RMC algorithm for IVPs that can
+guarantee a reasonable variance or even existence when increasing the time domain.
 Classing IVP solvers rely on shrinking the time steps for
 convergence. Recursion in Recursion MC (RRMC) for IVPs tries to emulate
 this behavior.
@@ -1195,7 +1208,8 @@ variance.
 \end{pythonn}
 
 Similarly to classic methods, RRMC struggles with big negative coefficients in front
-of the recursive parts. We discuss a potential solution to this  problem in next example.
+of the recursive parts. DRRMC is a potential solution to this problem but we don't think
+it is effective.
 
 \begin{definition}[DRRMC]
     Consider a general linear ODE IVP problem:
@@ -1260,15 +1274,15 @@ of the recursive parts. We discuss a potential solution to this  problem in next
 
 % \end{example}
 
-TODO:
-(critical path and how to measure performance)
+% TODO: 
+% (critical path and how to measure performance)  see period 6 tests
 
 \begin{related}[DRRMC]
     DRRMC is inspired by  $\bar{\sigma}$ parameter in \cite{sawhney_grid-free_2022} but
     instead of importance sampling and weight window we use control variates  to deal with
     nonlinearity introduced by the exponential because it needs to work over
-    an entire vector at the same time.
-    Similar manipulations can also be found in exponential integrator methods.
+    an entire vector at the same time. Similar manipulations can also be found
+    in exponential integrator methods.
 \end{related}
 
 % \subsection{BVPs ODEs}
@@ -1298,6 +1312,10 @@ TODO:
 % \end{related}
 
 \section{Brownian Motion}
+
+Current RMC algorithms for PDEs are linked to Brownian motion. In this
+section build up to recursive first passage sampling which is similar to
+walk on sphere.
 
 \begin{definition}[Brownian Motion]
     Define Brownian motion $W_{t}$ as the limit/logical generalization
@@ -1347,6 +1365,8 @@ TODO:
     \end{equation}
     with $W^Q(t)$ is a Wiener process (also called Brownian motion) under $Q$, and the initial condition for $X(t)$ is $X(t)=x$.
 \end{theorem}
+
+\subsection{First Passage Sampling}
 
 \begin{definition}[first passage sampling] \label{def:first passage}
     In the first passage sampling we try to sample states when a proces
@@ -1408,6 +1428,8 @@ You can transform first passage sampling problems for others processes back to
 Brownian Motion by doing the right time and space bending. For example geometric
 Brownian motion can be made into Brownian motion by taking the log. \\
 
+
+\subsection{Extending First Passage Sampling}
 
 Sometimes we're interested in a specific property of a first passage sampled
 path like the max or the average. The naif way would be sampling full paths
