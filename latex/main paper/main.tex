@@ -110,7 +110,7 @@ can be used as an unbiased stopping mechanism.
 \end{pythonn}
 
 An issue with (\ref{python eps ydy}) is that the variance increases rapidly when $t$ increases. Later
-this is issue gets resolved in the section on ODEs. Note that (\ref{python eps ydy}) keeps desirable properties
+this is issue gets resolved in (\ref{ex:RRMC IVP}). Note that (\ref{python eps ydy}) keeps desirable properties
 from unbiased Monte Carlo methods such as being embarrassingly parallel and
 having simple error estimates.
 
@@ -121,40 +121,42 @@ discussed in \cite{sawhney_grid-free_2022}. This RMC method
 is accurate even if the boundary conditions are geometric complex. We studied the
 mechanics behind these type of MC techniques and applied them to simple BVPs and IVPs.
 
-\begin{related}[walk on sphere]
-    tmp
-    \begin{itemize}
-        \item \cite{sawhney_walk_2023},\cite{sawhney_monte_nodate},\cite{sawhney_grid-free_2022}
-        \item \cite{hwang_off-centered_2015}
-    \end{itemize}
-\end{related}
-
 \begin{related}[MC for IVPs ODEs]
-    MC methods for IVPs ODEs are little studied. The most significant works that touch on
-    the subject are
+    MC methods for IVPs ODEs are little studied. The most significant are:
     \begin{itemize}
-        \item \cite{jentzen_random_2009}
-        \item \cite{daun_randomized_2011}
-        \item \cite{ermakov_monte_2019}, \cite{ermakov_monte_2021}
+        \item \cite{jentzen_random_2009} describes a random Euler scheme for IVPs ODEs under
+              weak smoothness conditions.
+
+        \item \cite{daun_randomized_2011} describes an randomized algorithm for IVPs ODEs that
+              achieves higher order of convergence then deterministic algorithms under the
+              same smoothness conditions by using polynomial extrapolation and control variates.
+
+        \item \cite{ermakov_monte_2019}, \cite{ermakov_monte_2021} study unbiased MC methods
+              for large system of linear ODEs and slightly biased for nonlinear ODEs.
     \end{itemize}
-    limitations of that work
+
+    Previous MC methods have limited applicability for IVPs.
+    From our personal perspective, the current literature on
+    MC methods for IVPs is difficult to comprehend and lacks
+    rewarding insights.
 
 \end{related}
 
-\begin{related}[MC for linear systems]
-    Instead of solving a ODE/PDE directly with MC, MC can still be used after
-    a discretisation technique to choice on the resulting linear system
-    which should have similar behavior to the original problem. \\
-    The main technique for MC for linear systems is sampling
-    the Von Neumann series.
+% \begin{related}[MC for linear systems]
+%     MC methods can be employed to tackle an ODE or a PDE indirectly
+%     by using it on the resulting linear system obtained through
+%     a discretization technique. This approach may yield a similar
+%     behavior to the original problem. Sampling the Von Neumann series
+%     is the primary technique utilized for MC methods in linear systems.
 
-    \begin{itemize}
-        \item page rank stuff
-    \end{itemize}
+%     \begin{itemize}
+%         \item MC methods are common for the page rank problem \cite{zhang_advanced_2021}.
+%         \item 
+%     \end{itemize}
 
-    mmm
+%     mmm
 
-\end{related}
+% \end{related}
 
 
 \subsection{Contributions}
@@ -175,19 +177,28 @@ We write this at the end. Probably a lot of conjectures.\\
 Notations used in this thesis include:
 
 \begin{itemize}
-    \item $U \sim \text{Uniform}(0,1)$.
     \item $B(p) \sim \text{Bernoulli}(p) =
               \begin{cases}
                   1 & \text{ if } U<p \\
                   0 & \text{ else }
               \end{cases}. $
-    \item RV = random variable.
-    \item RVs will be denoted with capital letters, e.g., $X,Y$ or $Z$.
-    \item RRVE (recursive RV equation): An equation that defines a
-          family of random variables in terms of its self.
+    \item $ H(x) =
+              \begin{cases}
+                  0 & \text{ if } x<0 \\
+                  1 & \text{ else }
+              \end{cases}.$
+    \item $U \sim \text{Uniform}(0,1)$.
+    \item BVP = Boundary Value Problem
+    \item IVP = Initial Value Problem
     \item MC = Monte Carlo.
-    \item RMC = Recursive MC.
-    \item RRMC = Recursion in Recursion MC.
+    \item ODE = Ordinary Differential Equation
+    \item PDE = Partial Differential Equation
+    \item RMC = Recursive Monte Carlo.
+    \item RRMC = Recursion in Recursion Monte Carlo.
+    \item RRVE (Recursive Random Variable Equation): An equation that defines a
+          family of random variables in terms of its self.
+    \item RV = Random Variable.
+    \item Random variables will be denoted with capital letters, e.g., $X,Y$ or $Z$.
 \end{itemize}
 
 
@@ -341,7 +352,7 @@ $y'=y$ example. We are missing importance sampling and quasi MC
 
 \begin{related}[MC modification]
     Our favorite work that discusses these techniques is \cite{veach_robust_nodate}.
-    More interesting works can be found on MC techniques in rendering.
+    More interesting MC techniques  can be found in rendering.
     $2$-level gets discussed in \cite{giles_multilevel_2013}.
 \end{related}
 % need to fix veach refrence see bibliography
@@ -580,6 +591,7 @@ In this subsection we discuss recursion related techniques.
 \begin{related}[coupled recursion]
     Example (\ref{ex:coupled recursion}) is inspired by \cite{vicini_path_2021}.
     Coupling feels close to percolation \cite{duminil-copin_sixty_2019}.
+    % maybe I should search a paper that coupling in happens
 \end{related}
 
 \begin{technique}[recursion in recursion]
@@ -670,7 +682,7 @@ to combine tail recursion with normal recursion.
 %
 
 
-\subsection{Introduction}
+\subsection{Green Functions}
 In this subsection we discuss informally how to turn ODEs into integral equations mainly
 by example.
 Our main tool for this are green functions. Before defining green functions
@@ -694,13 +706,6 @@ we do some examples.  \\
     Solving this obtains:
     \begin{equation}
         G(t,x) = H(t-x) +x-1.
-    \end{equation}
-    with
-    \begin{equation}
-        H(x) = \begin{cases}
-            0 & \text{ if } x<0 \\
-            1 & \text{ else }
-        \end{cases}.
     \end{equation}
 
     Note that we could have used a different green function corresponding
@@ -846,13 +851,21 @@ we do some examples.  \\
 
 % maybe an example of difference equation
 
-\subsection{Convergence}
-% \subsection{Fredholm equations}
+% \subsection{Convergence}
+\subsection{Fredholm Integral Equations}
 
 The ODE examples we have seen so far exhibit rapidly increasing variance as the domain increases,
 some cases this leads to non-convergence. However, we have not yet discussed convergence
 criteria for recursive Monte Carlo. Rather than delving deeply into variance
 or convergence analysis, we will suggest potential solutions in this subsection.
+
+\begin{definition}[Fredholm equation of the second kind]
+    A Fredholm equation of the second kind for $\varphi$  is of the following form:
+    \begin{equation}
+        \varphi(t)=f(t)+\lambda \int_a^b K(t, s) \varphi(s) ds.
+    \end{equation}
+    Given the kernel  $K(t, s)$  and  $ f(t)$.
+\end{definition}
 
 \begin{example}[Dirichlet $y''=y$] \label{main dirichlet}
     The following problem will be the main testing example for
@@ -894,13 +907,6 @@ or convergence analysis, we will suggest potential solutions in this subsection.
     \label{fig:mainD explosion}
 \end{figure}
 
-\begin{definition}[Fredholm equation of the second kind]
-    A Fredholm equation of the second kind for $\varphi$  is of the following form:
-    \begin{equation}
-        \varphi(t)=f(t)+\lambda \int_a^b K(t, s) \varphi(s) ds.
-    \end{equation}
-    Given the kernel  $K(t, s)$  and  $ f(t)$.
-\end{definition}
 
 % comes straight from wikipedia
 % \begin{definition}[Liouville–Neumann series]
@@ -1034,12 +1040,10 @@ over classic integration: high dimensional, non-smooth kernels or
 nasty domains.
 
 \begin{related}[coupled splitting]
-    Similar ideas to coupled splitting gets discussed in
-    \cite{sabelfeld_sparsified_2009}. (the paper on using more rows
-    for MC in linear systems) \\
-
-    Similar use cases for MC in differential equations get discussed in
-    \cite{jentzen_random_2009}. \\
+    Coupled splitting is partly inspired by how \cite{sabelfeld_sparsified_2009}
+    reduces variance by using a bigger submatrices .
+    Use cases for MC for differential equations under weak smoothness conditions
+    get discussed in \cite{jentzen_random_2009}. \\
 
     See \cite{gupta_convergence_2021} for a discussion on convergence
     of recursive stochastic algorithms. We highly recommend watching
