@@ -118,7 +118,9 @@ having simple error estimates.
 \subsection{Related Work}
 The main motivation for this thesis is the walk on sphere method for $2$nd order elliptic PDEs
 with varying coefficients with Dirichlet boundary conditions
-discussed in \cite{sawhney_grid-free_2022}. This recursive Monte Carlo method
+discussed in \citeauthor{sawhney_grid-free_2022}'s
+\citeyear{sawhney_grid-free_2022} \cite{sawhney_grid-free_2022} paper.
+This recursive Monte Carlo method
 is accurate even if the boundary conditions are geometric complex. We studied the
 mechanics behind these type of Monte Carlo techniques.
 
@@ -126,24 +128,33 @@ mechanics behind these type of Monte Carlo techniques.
     Monte Carlo methods for initial value problems for systems of ordinary
     differential equations are little studied. The most significant works are:
     \begin{itemize}
-        \item \cite{jentzen_random_2009} describes a random Euler scheme for
+        \item \citeauthor{jentzen_random_2009}'s \citeyear{jentzen_random_2009}
+              \cite{jentzen_random_2009} paper describes a random Euler scheme for
               weak smoothness conditions.
 
-        \item \cite{daun_randomized_2011} describes an randomized algorithm that
+        \item \citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011}
+              \cite{daun_randomized_2011} paper describes a randomized algorithm that
               achieves higher order of convergence order optimal even
               then deterministic algorithms under the
               same smoothness conditions by using polynomial extrapolation and
               control variates.
 
-        \item \cite{ermakov_monte_2019}, \cite{ermakov_monte_2021} study unbiased  methods
+        \item \citeauthor{ermakov_monte_2019}'s \citeyear{ermakov_monte_2019}
+              \cite{ermakov_monte_2019}
+              and \citeauthor{ermakov_monte_2021}'s \citeyear{ermakov_monte_2021}
+              \cite{ermakov_monte_2021}
+              papers study unbiased  methods
               for linear problems and slightly biased for nonlinear based
               on the Volterra integral equations.
+
     \end{itemize}
 
-    Previous Monte Carlo methods have limited applicability for
-    initial value problems for systems of ordinary differential equations.
-    From our personal perspective, the current literature on
-    this subject lacks rewarding insights.
+    % Previous Monte Carlo methods have limited applicability for
+    % initial value problems for systems of ordinary differential equations.
+    % From our personal perspective, the current literature on
+    % this subject lacks rewarding insights.
+
+    % Current is literature is quite involved
 
 \end{related}
 
@@ -179,6 +190,17 @@ with plenty of examples. The key contributions are:
           the next flight version of walk on sphere.
 \end{itemize}
 
+In the background section we introduce Monte Carlo techniques, a
+Monte Carlo trapezoidal rule and discuss
+coupled recursion / recursion in recursion. \\
+
+In the ordinary differential equation section we introduce green functions
+to transform ODEs to integral equations and
+build up to (\ref{ex:CV RRMC IVP}). \\
+
+In the Brownian motion section we informally derive the connection of Brownian
+Motion to the heat equation and introduce recursive first passage sampling. \\
+
 
 
 \section{Background}
@@ -198,11 +220,12 @@ Notations used in this thesis include:
                   1 & \text{ else }
               \end{cases}.$
     \item $U \sim \text{Uniform}(0,1)$.
-    \item BVP = Boundary Value Problem
-    \item IVP = Initial Value Problem
+    \item BVP = Boundary Value Problem.
+    \item FP = First Passage.
+    \item IVP = Initial Value Problem.
     \item MC = Monte Carlo.
-    \item ODE = Ordinary Differential Equation
-    \item PDE = Partial Differential Equation
+    \item ODE = Ordinary Differential Equation.
+    \item PDE = Partial Differential Equation.
     \item RMC = Recursive Monte Carlo.
     \item RRMC = Recursion in Recursion Monte Carlo.
     \item RRVE (Recursive Random Variable Equation): An equation that defines a
@@ -257,7 +280,7 @@ with a less computationally expensive approximation sometimes.
     computational complexity  of both terms you can calculate the asymptotical optimal
     division of samples for each term. \\
     In \cite{rath_ears_2022} they approximate optimal Russian roulette and splitting
-    (RRS) factors with fixed-point iterations to maximize the efficiency in a render.
+    (RRS) factors with fixed-point iterations to maximize the efficiency in a renderer.
 \end{related}
 
 \begin{example}[Russian roulette on (\ref{recursive RV})]
@@ -364,7 +387,8 @@ $y'=y$ example. We are missing importance sampling and quasi MC
 \begin{related}[MC modification]
     Our favorite work that discusses these techniques is \cite{veach_robust_nodate}.
     More interesting MC techniques  can be found in rendering.
-    $2$-level gets discussed in \cite{giles_multilevel_2013}.
+    $2$-level gets discussed in \cite{giles_multilevel_2013} a introductory paper to
+    multilevel MC.
 \end{related}
 % need to fix veach refrence see bibliography
 
@@ -458,11 +482,10 @@ is equivalent to the standard deviation:
 \end{align}
 
 
-\begin{related}
-    Optimal theoretical bounds on randomized algorithms can be found in:
-    (see literature randomized trapezoidal rule)
-    \cite{wu_randomised_2020}. The half order convergence that randomized
-    gains over determinstic isn't the same gain we consider.
+\begin{related}[MC trapezoidal rule]
+    In \cite{wu_randomised_2020} an improvement of a half order
+    for a MC trapezoidal is also discussed but we aren't sure that it is similar to our
+    half order improvement.
 \end{related}
 
 \subsection{Unbiased Non-Linearity}
@@ -541,10 +564,8 @@ biased alternative approaches based on linearization or approximate polynomial n
     %}
 \end{pythonn}
 
-\begin{related}
+\begin{related}[unbiased non-linearity]
     A similar approach to non-linearity can be found in \cite{ermakov_monte_2019}.
-    We have more papers on how to deal with non-linearity stashed, no idea if they are
-    worth mentioning.
 \end{related}
 
 \subsection{Recursion}
@@ -601,7 +622,7 @@ In this subsection we discuss recursion related techniques.
 
 \begin{related}[coupled recursion]
     Example (\ref{ex:coupled recursion}) is inspired by \cite{vicini_path_2021}.
-    Coupling feels close to percolation \cite{duminil-copin_sixty_2019}.
+    % Coupling feels close to percolation \cite{duminil-copin_sixty_2019}.
     % maybe I should search a paper that coupling in happens
 \end{related}
 
@@ -636,7 +657,7 @@ issues.
 \end{technique}
 
 The non-branching recursion presented in the RRVEs
-can be implemented straightforwardly due to the associativity of
+can be implemented with tail recursion due to the associativity of
 all operations ($(xy)z = x(yz)$) involved. However, tail recursion
 may not always be desirable as it discards intermediate values of
 the recursion calls which may be of interest. To retain some of these intermediate
@@ -1055,13 +1076,10 @@ nasty domains.
 \begin{related}[coupled splitting]
     Coupled splitting is partly inspired by how \cite{sabelfeld_sparsified_2009}
     reduces variance by using a bigger submatrices .
-    Use cases for MC for differential equations under weak smoothness conditions
-    get discussed in \cite{jentzen_random_2009}. \\
-
     See \cite{gupta_convergence_2021} for a discussion on convergence
     of recursive stochastic algorithms. We highly recommend watching
-    the following video \cite{abhishek_gupta_recursive_2020} before reading
-    previous paper.
+    the corresponding video \cite{abhishek_gupta_recursive_2020} before reading
+    the paper.
 \end{related}
 
 % explaining that coupled split is cool for global problems but for
@@ -1160,7 +1178,7 @@ smoothness) with control variates like the MC trapezoidal rule (\ref{MCtrap}).
 \end{example}
 
 \begin{related}[CV RRMC]
-    \cite{daun_randomized_2011} also uses control variates to achieve
+    \cite{daun_randomized_2011} similarly uses control variates to achieve
     a higher order of convergence.
 \end{related}
 
@@ -1317,7 +1335,13 @@ Current RMC algorithms for PDEs are linked to Brownian motion. In this
 section build up to recursive first passage sampling which is similar to
 walk on sphere.
 
-\begin{definition}[Brownian Motion]
+
+
+\subsection{Heat Equation}
+In this subsection we introduce the relation between the heat equation and
+Brownian motion.
+
+\begin{definition}[Brownian motion]
     Define Brownian motion $W_{t}$ as the limit/logical generalization
     when $n \rightarrow \infty$ of following discrete proces defined as:
     \begin{equation}
@@ -1335,53 +1359,154 @@ walk on sphere.
     Brownian motion is self affine as a random proces that means you can cut a small
     part of it move so it starts in $0$ and scale time to the original size
     and space such that the variance stays the same to get back the whole Brownian motion.
+
+    \begin{equation}
+        \forall c \in \mathbb{R}^{+}_{0}: \frac{W_{ct}}{\sqrt{c}} \sim W_{t}.
+    \end{equation}
 \end{lemma}
 
-\begin{equation}
-    \forall c \in \mathbb{R}^{+}_{0}: \frac{W_{ct}}{\sqrt{c}} \sim W_{t}.
-\end{equation}
-
-\begin{theorem}[Feyman-Kac formula (wikipedia)] \label{thrm:feymankac}
-
-    Consider the partial differential equation
+\begin{definition}[$1$D heat equation Dirichlet] \label{def:heat equation}
+    We define the $1$D heat equation for $u$ on connected domain $\Omega$
+    with  Dirichlet boundary conditions the following way:
     \begin{equation}
-        \frac{\partial u}{\partial t}(x, t)+\mu(x, t) \frac{\partial u}{\partial x}(x, t)+\frac{1}{2} \sigma^2(x, t) \frac{\partial^2 u}{\partial x^2}(x, t)-V(x, t) u(x, t)+f(x, t)=0,
-        .
+        \frac{\partial u}{\partial t} = \frac{\partial^{2} u}{\partial x ^{2}}.
     \end{equation}
-    defined for all $x \in \mathbb{R}$ and $t \in[0, T]$, subject to the terminal condition
-    \begin{equation}
-        u(x, T)=\psi(x),
-        .
-    \end{equation}
-    where $\mu, \sigma, \psi, V, f$ are known functions, $T$ is a parameter, and $u: \mathbb{R} \times[0, T] \rightarrow \mathbb{R}$ is the unknown. Then the Feynman-Kac formula tells us that the solution can be written as a conditional expectation
-    \begin{equation}
-        u(x, t)=E^Q\left[\int_t^T e^{-\int_t^r V\left(X_\tau, \tau\right) d \tau} f\left(X_r, r\right) d r+e^{-\int_t^T V\left(X_\tau, \tau\right) d \tau} \psi\left(X_T\right) \mid X_t=x\right]
-        .
-    \end{equation}
-    under the probability measure $Q$ such that $X$ is an Itô process driven by the equation
-    \begin{equation}
-        d X_t=\mu(X, t) d t+\sigma(X, t) d W_t^Q
-        .
-    \end{equation}
-    with $W^Q(t)$ is a Wiener process (also called Brownian motion) under $Q$, and the initial condition for $X(t)$ is $X(t)=x$.
-\end{theorem}
-
-\subsection{First Passage Sampling}
-
-\begin{definition}[first passage sampling] \label{def:first passage}
-    In the first passage sampling we try to sample states when a proces
-    reaches a boundary or specified state of the system for the first time
-    (the first passage). We are specifically interested in
-    first passage problem with Brownian motion for a closed time space barrier.
+    Given $u(x,t)=\psi(x,t) ,\forall (x,t) \in \partial \Omega: t<\sup \{
+        t| (x,t) \in \Omega\}$ .
 \end{definition}
 
-The first passage distribution of Brownian motion is in fact the boundary
-green function for the heat equation this can be easily seen by using the
-Feynman-Kac formula (\ref{thrm:feymankac}).
+% maybe should improve this 
+An example how the Dirichlet condition is defined for a domain
+is the parabola on Figure \ref{fig:Euler first passage para} but
+reverse in time.
+
+\begin{lemma}[Brownian motion and the heat equation] \label{lem:BM HE}
+    For problem (\ref{def:heat equation}) if $ |\psi|< \infty$
+    there is following formula:
+
+    \begin{equation}
+        u(x,t)=E[\psi(Y_{\tau},\tau) | Y_{t} =x].
+    \end{equation}
+    With $dY_{s} = dW_{-s},\tau = \sup\{s | (Y_{s},s) \notin \Omega\}$ .
+\end{lemma}
+
+
+\begin{proof}
+    Discretize the heat equation
+    with a regular rectangular mesh that includes $(x,t)$ with equally
+    spaced intervals over space and time ($\Delta x, \Delta t$) with
+    the corresponding difference equation:
+
+    \begin{equation}
+        \frac{u(x,t)-u(x,t-\Delta t)}{\Delta t} = \frac{u(x + \Delta x,t)-2 u(x,t) +u(x - \Delta x,t)}{\Delta x^{2}} .
+    \end{equation}
+
+    Isolate $u(x,t)$:
+
+    \begin{equation} \label{eq:discrete iso heat equation}
+        u(x,t) =
+        \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}
+        \left(
+        u(x+\Delta x,t)+u(x-\Delta x,t)
+        \right) +
+        \frac{\Delta x^{2}}{ 2 \Delta t + \Delta x^{2}}
+        \left(
+        u(x,t-\Delta t)
+        \right).
+    \end{equation}
+
+    Because $u(x+\Delta x,t) \approx u(x-\Delta x,t) \approx u(x,t-\Delta t) \approx$
+    RHS of equation (\ref{eq:discrete iso heat equation}) we may Russian roulette
+    to remove branching recursion and generate a recursion path instead of a tree.
+    \begin{equation} \label{eq:RRVE discrete heat equation }
+        Z(x,t) =
+        \begin{cases}
+            \psi(\text{argmin}_{b \in \partial \Omega} ||(x,t) - b||)
+             & \text{ when } (x,t) \notin \Omega \\
+            \begin{cases}
+                Z(x+\Delta x , t)  & \text{ with chance  } \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}     \\
+                Z(x-\Delta x , t)  & \text{ with chance  } \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}     \\
+                Z(x, t - \Delta t) & \text{ with chance  } \frac{\Delta x^{2}}{ 2 \Delta t + \Delta x^{2}}
+            \end{cases}
+             & \text{ else }.
+        \end{cases}
+    \end{equation}
+    This is a RRVE, $Z$ has finite variance because $ |\psi|< \infty$
+    and $E[Z(x,t)]$ is the solution to the discretized heat equation. Taking the limit
+    makes the discrete solution go the the real solution.
+    For (\ref{eq:RRVE discrete heat equation }) the limit
+    makes the recursion path go to Brownian motion $Y_{t}$.
+    \begin{equation}
+        Z(x,t) \rightarrow \psi(Y_{\tau},\tau)  .
+    \end{equation}
+    Finishing the proof.
+\end{proof}
+
+% maybe with the source
+
+\begin{related}
+    (\ref{lem:BM HE}) is a subcase of the Feynman-Kac formula.
+    For a proof and a in depth discussion of the Feynman-Kac formula
+    see \cite{oksendal_stochastic_2003}. \\
+\end{related}
+
+
+% \begin{theorem}[Feynman-Kac formula (wikipedia)] \label{thrm:feymankac}
+%     Consider the partial differential equation
+%     \begin{equation}
+%         \frac{\partial u}{\partial t}(x, t)+\mu(x, t) \frac{\partial u}{\partial x}(x, t)+\frac{1}{2} \sigma^2(x, t) \frac{\partial^2 u}{\partial x^2}(x, t)-V(x, t) u(x, t)+f(x, t)=0,
+%     \end{equation}
+%     defined for all $x \in \mathbb{R}$ and $t \in[0, T]$, subject to the terminal condition
+%     \begin{equation}
+%         u(x, T)=\psi(x),
+%     \end{equation}
+%     where $\mu, \sigma, \psi, V, f$ are known functions, $T$ is a parameter, and $u: \mathbb{R} \times[0, T] \rightarrow \mathbb{R}$ is the unknown. Then the Feynman-Kac formula tells us that the solution can be written as a conditional expectation
+%     \begin{equation}
+%         u(x, t)=E^Q\left[\int_t^T e^{-\int_t^r V\left(X_\tau, \tau\right) d \tau} f\left(X_r, r\right) d r+e^{-\int_t^T V\left(X_\tau, \tau\right) d \tau} \psi\left(X_T\right) \mid X_t=x\right]
+%     \end{equation}
+%     under the probability measure $Q$ such that $X$ is an Itô process driven by the equation
+%     \begin{equation}
+%         d X_t=\mu(X, t) d t+\sigma(X, t) d W_t^Q
+%     \end{equation}
+%     with $W^Q(t)$ is a Wiener process (also called Brownian motion) under $Q$, and the initial condition for $X(t)$ is $X(t)=x$.
+% \end{theorem}
+
+\subsection{First Passage Sampling}
+In this subsection we build up to sampling $(Y_{\tau},\tau)$ from (\ref{lem:BM HE}) efficiently.
+
+\begin{definition}[first passage time] \label{def:first passage time}
+    Define the first passage time for a process $X_{t}$ for a set of valid states
+    $V$ as
+    \begin{equation}
+        \text{FPt}(X_{t},S)=\inf \{t| (X_{t},t) \notin V \}
+        .
+    \end{equation}
+    Note that the first passage time is a RV itself.
+\end{definition}
+
+\begin{definition}[first passage] \label{def:first passage}
+    Define the first passage for a process $X_{t}$ for a set of valid states
+    $V$ as
+    \begin{equation}
+        \text{FP}(X_{t},S)=(X_{\tau},\tau), \tau = \text{FPt}(X_{t},V)
+        .
+    \end{equation}
+\end{definition}
+
+\begin{theorem}
+    The the density of first passages of Brownian motion for  exiting a  boundary is  the
+    Dirichlet boundary green function for the heat equation.
+\end{theorem}
+
+\begin{proof}
+    Follows from (\ref{lem:BM HE}).
+\end{proof}
 
 \begin{example}[Euler first passage sampling]
-    In this example we naively sample first passage exit point of Brownian motion
-    for a parabolic barrier by simulating Brownian motion with the Euler scheme.
+    In this example we approximately sample first passage exit point of Brownian motion
+    for a parabolic barrier by simulating Brownian motion with the Euler scheme. We plotted
+    this on Figure \ref{fig:Euler first passage para}.
+
     \begin{figure}[ht!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/Euler first passage para.png}
@@ -1390,25 +1515,37 @@ Feynman-Kac formula (\ref{thrm:feymankac}).
     \end{figure}
 \end{example}
 
+\begin{lemma} \label{lem: FP order}
+    When a process has more valid states the first passage time gets larger i.e.
+    \begin{equation}
+        V_{1} \subset V_{2} \Rightarrow
+        \text{FPt}(X_{t}(\omega),V_{1}) \le  \text{FPt}(X_{t}(\omega),V_{2}) .
+    \end{equation}
+    The $\omega$ is to indicate we mean the same realization of $X_{t}$.
+\end{lemma}
+
 
 \begin{technique}[recursive first passage sampling]
-    The idea behind recursive first passage sampling is to break down a first passage
-    sampling on a bigger domain to contained smaller domains by using the fact you
-    can't leave the big domain without leaving the smaller first
-    (intermediate value theorem). When you sample the exit from the smaller domain
-    it is the start point of a new first passage sampling problem and then you  recurse
-    until you are close to the stopping condition.
+    Recursive first passage sampling involves sampling an initial,
+    simpler first passage that includes fewer valid states. Using
+    this sampled first passage as a starting point, we
+    then perform the same sampling process until the sampled
+    first passage is almost invalid.
 \end{technique}
 
 \begin{related}[recursive first passage sampling]
-    Recursive first passage sampling get discussed in \cite{herrmann_first-passage_2016}
-    and extension for processes with jumps in \cite{herrmann_exact_2021}.
+    The original walk on spheres is a recursive first passage algorithm.
+    Recursive first passage sampling gets discussed in \cite{herrmann_first-passage_2016}.
+    To add jumps you can use \cite{herrmann_exact_2021}.
 \end{related}
 
 \begin{example}[recursive first passage sampling] \label{ex:recursive first passage sampling}
-    In this example we recursively first passage sample the exit point of Brownian motion
-    for a triangular barrier by resampling and scaling (using (\ref{lem:self affine})) from
-    a precomputed Euler scheme to sample a exit point from a parabolic barrier.
+    In this example we sample the exit point of Brownian motion from a parabolic barrier
+    with recursive first passage sampling. \\
+    For the simpler first passage sampler we resample scaled/translated
+    (using (\ref{lem:self affine})) from a samples generated
+    by the Euler scheme.  code ref and figure ref
+
     \begin{figure}[ht!]
         \centering
         \includegraphics[width=1\textwidth]{plots/recursive first passage para.png}
@@ -1418,6 +1555,14 @@ Feynman-Kac formula (\ref{thrm:feymankac}).
         \label{fig:recursive first passage para}
     \end{figure}
 \end{example}
+
+\begin{pythonn}[Euler first passage sampling]
+    TODO
+\end{pythonn}
+
+\begin{pythonn}[recursive first passage sampling]
+    TODO
+\end{pythonn}
 
 Instead of resampling from a Euler scheme it is also possible
 to tabloid the inverse cumulative probability function for the
