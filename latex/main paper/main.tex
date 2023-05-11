@@ -676,19 +676,32 @@ to combine tail recursion with normal recursion.
 \subsection{Limitations and Future Work}
 
 \begin{technique}[SALT]
-    SALT
+    Sequential Approximation in L-Two (SALT) is an adaptive MC technique
+    which builds control variates with a (bi-) orthonormal basis. The
+    rough idea behind it is that calculating coefficients for
+    an (bi-) orthonormal basis can be found by MC integration and MC integration
+    can be accelerated by the current estimates of the coefficients.
+    It can be seen as intrestring case of stochastic gradient descent.
 \end{technique}
 
-\begin{example}[SALT wavelet]
-    check period 3
-\end{example}
+% \begin{example}[SALT wavelet]
+%     check period 3
+% \end{example}
+
+\begin{related}[SALT]
+    SALT gets discussed in \cite{gobet_new_nodate}. Other papers noteworthy papers on 
+    adaptive MC techniques are \cite{he_adaptive_2021} on adaptive important sampling
+    and \cite{salaun_regression-based_2022} on regression based MC.
+\end{related}
 
 % improving (\ref{ex:exp int})
 
-The current approach to non-linearity is inefficient
-\begin{example}[fixpoint problem]
-    check period 1
-\end{example}
+The current approach to non-linearity is inefficient (\ref{ex:exp int})
+and is limited to small forms of non-linearity. Currently we haven't
+tested any variance reduction techniques in that context.\\
+% \begin{example}[fixpoint]
+%     check period 1
+% \end{example}
 
 
 Branching tail recursion is little studied and hard. There  are multiple ways to
