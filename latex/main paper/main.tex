@@ -1541,52 +1541,52 @@ In this subsection we build up to sampling $(Y_{\tau},\tau)$ from (\ref{lem:BM H
 
 \begin{example}[recursive first passage sampling] \label{ex:recursive first passage sampling}
     In this example we sample the exit point of Brownian motion from a parabolic barrier
-    with recursive first passage sampling. \\
-    For the simpler first passage sampler we resample scaled/translated
-    (using (\ref{lem:self affine})) from a samples generated
-    by the Euler scheme.  code ref and figure ref
+    with recursive first passage sampling.
+    For the simpler first passage sampler we scale and translate
+    samples from a triangular barrier so its
+    valid states are contained in the parabola generated
+    by the Euler scheme. The precomputed samples are created
+    by (\ref{py:euler FP sampling}) and used to produce first passages
+    in (\ref{py:recu FP sampling}).
+
+\end{example}
+
+\begin{pythonn}[Euler first passage sampling] \label{py:euler FP sampling}
+    \pythoncode{python code/sample_euler_triangle.py}
+\end{pythonn}
+
+\begin{pythonn}[recursive first passage sampling] \label{py:recu FP sampling}
+    The maximum scaling of the triangular barrier that fits
+    in the parabola is derived through (\ref{lem:self affine})
+    and using the fact that a parabola domain is convex. To dampen barrier
+    overstepping of (\ref{py:euler FP sampling}) we use a smaller scaling
+    then the maximum. \\
+    \pythoncode{python code/sample_recu_para.py}
 
     \begin{figure}[ht!]
         \centering
         \includegraphics[width=1\textwidth]{plots/recursive first passage para.png}
-        \caption{ $50000$ of realizations of recursive first passage sampling.
-            The precomputed sample of $1000$ first passages of a triangular barrier
-            uses the Euler scheme with step size $0.001$.}
+        \caption{ $50000$ of realizations of recursive first passage sampling produced
+            by (\ref{py:recu FP sampling}). The precomputed sample of $5000$ first
+            passages of a triangular barrier uses the Euler scheme with
+            step size $0.001$.}
         \label{fig:recursive first passage para}
     \end{figure}
-\end{example}
-
-\begin{pythonn}[Euler first passage sampling]
-    TODO
 \end{pythonn}
 
-\begin{pythonn}[recursive first passage sampling]
-    TODO
-\end{pythonn}
+\begin{related}[simulation tabulation]
+    An alternative to resampling from an Euler scheme is to use tabulated
+    inverse cumulative probability functions,
+    as demonstrated in \cite{hwang_simulationtabulation_2001}.
+\end{related}
 
-Instead of resampling from a Euler scheme it is also possible
-to tabloid the inverse cumulative probability function for the
-triangular case. Something similar gets done in \cite{hwang_simulationtabulation_2001}. \\
-
-
-You can transform first passage sampling problems for others processes back to
-Brownian Motion by doing the right time and space bending. For example geometric
-Brownian motion can be made into Brownian motion by taking the log. \\
-
-
-\subsection{Extending First Passage Sampling}
-
-Sometimes we're interested in a specific property of a first passage sampled
-path like the max or the average. The naif way would be sampling full paths
-and calculating the desired property instead you can sample only the required
-information to calculate the desired property. In the case of the max
-and the average for example you only need the sample the max/average
-of the subpaths and combined that to the max/average of the whole path.\\
+% For recursive first passage sampling for high dimensional Brownian motion
+% there symmetry trick to be pulled off
 
 
 \begin{example}[recursive first passage average sampling]
-    This is the same as example (\ref{ex:recursive first passage sampling}) but now we have
-    to keep track of the average.
+    In example (\ref{ex:recursive first passage sampling}) it is possible to keep
+    track of the average because scales and translates with our base first passage sampler.
 
     \begin{figure}[ht!]
         \centering
@@ -1598,19 +1598,17 @@ of the subpaths and combined that to the max/average of the whole path.\\
     \end{figure}
 \end{example}
 
-Doing the same thing for geometric Brownian motion is difficult because the average
-behaves bad under transformation unlike the max. You can think of the average
-as an extra dimension to keep track of. What you would need  for geometric
-Brownian motion is the  first passage distribution of the average and exit
-point for every different position of the begin point for subpaths.\\
-And nothing holds you back of changing methods midway if you didn't
-the precompute a situation.
 
-\begin{technique}[path stitching]
-    Instead of thinking in sampling first passage points you can also sample
-    whole paths to the first passage. The same way as before you need to be
+\begin{technique}[Brownian motion path stitching]
+    Instead of thinking in sampling first passages  you can also sample
+    whole paths to the first passage. Similar to before we need to be
     able to generate paths for a simple first passage problem and "stich"
-    these paths together into one for a complicated one.
+    these paths together. An advantage over normally generating paths
+    is that a path can be represented by its subpaths and their scalings
+    requiring less memory then a fully stored path. This can be useful
+    in case you need to look back to a part of the path.
+    The only downsides are that the time steps are inhomogeneous
+    and storing paths for the simpler first passage problem.
 \end{technique}
 
 \begin{example}[path stitching parabola]
@@ -1626,22 +1624,13 @@ the precompute a situation.
     \end{figure}
 \end{example}
 
-For plotting the path we needed to accesses to all of its points.  An advantage
-over normally generating paths is that a path can be represented by its subpaths
-and their scalings requiring way less memory then a full path. This can be useful
-in case where the whole path isn't needed. Even if  accesses to the whole
-path is needed this can be done in a slightly more efficient manor
-then a normal Euler scheme because it can almost be done in parallel
-vs step for step generation. The only downsides are that the time
-steps are inhomogeneous and it requires a precomputation. \\
+% For plotting the path we needed to accesses to all of its points.  
 
-A way around scaling base samples is limiting scaling to a
-discrete set and pick the biggest scaling that fits, instead
-of generating base samples for $1$ scale and scaling it dynamically
-precompute all the discrete scalings. \\
+% A way around scaling base samples is limiting scaling to a
+% discrete set and pick the biggest scaling that fits, instead
+% of generating base samples for $1$ scale and scaling it dynamically
+% precompute all the discrete scalings. \\
 
-Similar precomputing tricks can be used for geometric Brownian motion
-requiring and extra dimension of precomputing based on transformations.
 
 \begin{related}[path stitching]
     Path stitching appears frequently in rendering and also in \cite{das_sarma_fast_2015}
@@ -1651,6 +1640,16 @@ requiring and extra dimension of precomputing based on transformations.
 \section{Limitations and Future Work}
 test
 
+\begin{itemize}
+    \item extending first passage averages sampling to geometric brownian motion
+          % Doing the same thing for geometric Brownian motion is difficult because the average
+          % behaves bad under transformation unlike the max. You can think of the average
+          % as an extra dimension to keep track of. What you would need  for geometric
+          % Brownian motion is the  first passage distribution of the average and exit
+          % point for every different position of the begin point for subpaths.\\
+          % And nothing holds you back of changing methods midway if you didn't
+          % the precompute a situation.
+\end{itemize}
 \newpage
 \printbibliography
 \newpage
