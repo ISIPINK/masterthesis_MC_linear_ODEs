@@ -115,6 +115,35 @@ this is issue gets resolved in (\ref{ex:RRMC IVP}). Note that (\ref{python eps y
 from unbiased Monte Carlo methods such as being embarrassingly parallel and
 having simple error estimates.
 
+\subsection{Notation}
+Notations used in this thesis include:
+
+\begin{itemize}
+    \item $B(p) \sim \text{Bernoulli}(p) =
+              \begin{cases}
+                  1 & \text{ if } U<p \\
+                  0 & \text{ else }
+              \end{cases}. $
+    \item $ H(x) =
+              \begin{cases}
+                  0 & \text{ if } x<0 \\
+                  1 & \text{ else }
+              \end{cases}.$
+    \item $U \sim \text{Uniform}(0,1)$.
+    \item BVP = Boundary Value Problem.
+    \item FP = First Passage.
+    \item IVP = Initial Value Problem.
+    \item MC = Monte Carlo.
+    \item ODE = Ordinary Differential Equation.
+    \item PDE = Partial Differential Equation.
+    \item RMC = Recursive Monte Carlo.
+    \item RRMC = Recursion in Recursion Monte Carlo.
+    \item RRVE (Recursive Random Variable Equation): An equation that defines a
+          family of random variables in terms of its self.
+    \item RV = Random Variable.
+    \item Random variables will be denoted with capital letters, e.g., $X,Y$ or $Z$.
+\end{itemize}
+
 \subsection{Related Work}
 The main motivation for this thesis is the walk on sphere method for $2$nd order elliptic PDEs
 with varying coefficients with Dirichlet boundary conditions
@@ -196,43 +225,17 @@ coupled recursion / recursion in recursion. \\
 
 In the ordinary differential equation section we introduce green functions
 to transform ODEs to integral equations and
-build up to (\ref{ex:CV RRMC IVP}). \\
+build up to the our main algorithm for linear initial
+value problems for systems of ordinary differential equations(\ref{ex:CV RRMC IVP}). \\
 
-In the Brownian motion section we informally derive the connection of Brownian
-Motion to the heat equation and introduce recursive first passage sampling. \\
+In the Brownian motion section we derive the connection of Brownian
+Motion to the heat equation with recursive Monte Carlo and
+introduce recursive first passage sampling. \\
 
 
 
 \section{Background}
 
-\subsection{Notation}
-Notations used in this thesis include:
-
-\begin{itemize}
-    \item $B(p) \sim \text{Bernoulli}(p) =
-              \begin{cases}
-                  1 & \text{ if } U<p \\
-                  0 & \text{ else }
-              \end{cases}. $
-    \item $ H(x) =
-              \begin{cases}
-                  0 & \text{ if } x<0 \\
-                  1 & \text{ else }
-              \end{cases}.$
-    \item $U \sim \text{Uniform}(0,1)$.
-    \item BVP = Boundary Value Problem.
-    \item FP = First Passage.
-    \item IVP = Initial Value Problem.
-    \item MC = Monte Carlo.
-    \item ODE = Ordinary Differential Equation.
-    \item PDE = Partial Differential Equation.
-    \item RMC = Recursive Monte Carlo.
-    \item RRMC = Recursion in Recursion Monte Carlo.
-    \item RRVE (Recursive Random Variable Equation): An equation that defines a
-          family of random variables in terms of its self.
-    \item RV = Random Variable.
-    \item Random variables will be denoted with capital letters, e.g., $X,Y$ or $Z$.
-\end{itemize}
 
 
 \subsection{Modifying Monte Carlo}
@@ -437,9 +440,10 @@ such that the increase in functions calls is arbitrarily small.
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/MCtrap.png}
-        \caption{Log-log plot of (\ref{MCtrap}) for
+        \caption{Log-log plot of the error of (\ref{MCtrap}) for
         $\int_{0}^{1}e^{s}ds$ with $l=100$.
-        %There are some artifacts of floating-point arithmetic.  
+        The spikes in the graph are artifacts
+        of floating-point arithmetic.
         }
         \label{fig:MCtrap}
     \end{figure}
@@ -524,7 +528,7 @@ biased alternative approaches based on linearization or approximate polynomial n
     \pythoncode{python code/dyy2.py}
 \end{pythonn}
 
-\begin{example}[$e^{E[X]}$]
+\begin{example}[$e^{E[X]}$] \label{ex:exp int}
     $e^{\int x(s)ds}$ is common expression encountered when studying ODEs.
     In this example we demonstrate how you can generate unbiased estimates of
     $e^{E[X]}$ with simulations of $X$. The taylor series of $e^{x}$ is:
@@ -631,10 +635,6 @@ In this subsection we discuss recursion related techniques.
     step of an induction proof with induction.
 \end{technique}
 
-%\begin{example}[recursion in recursion]
-%    maybe induction in induction proof example or a reference to ODE solvers later.
-%\end{example}
-
 \begin{related}[recursion in recursion]
     Beautiful examples of recursion in recursion are
     the next flight variant of WoS in
@@ -672,32 +672,51 @@ to combine tail recursion with normal recursion.
     \pythoncode{python code/tailrecu.py}
 \end{pythonn}
 
-%Branching tail recursion is hard. There  are multiple ways to
-%do branching tail recursion with each their advantages and disadvantages. \\
-%In the context of recursive MC there are $2$ techniques that
-%stand out:
 
-%\begin{technique}[tree regrowing]
-%    The structure of branching recursion can be captured by a tree. Storing that tree
-%    in memory can be expensive. In recursion you only need to retrace steps
-%    $1$ by $1$ therefore you only need local parts of the recursion tree. Tree
-%    regrowing tries to alleviate memory issues by instead storing the whole
-%    tree only storing seeds (of the random generator) of parts of the
-%    tree and growing them when needed.
-%\end{technique}
-%
-%\begin{technique}[backward tail recursion]
-%    One way of doing branching tail recursion is by using operation buffers for
-%    all leafs which is not memory friendly. In backward tail recursion you retrace
-%    steps and do all operations in reverse to recover the buffer needed.
-%\end{technique}
+\subsection{Limitations and Future Work}
 
+\begin{technique}[SALT]
+    SALT
+\end{technique}
+
+\begin{example}[SALT wavelet]
+    check period 3
+\end{example}
+
+% improving (\ref{ex:exp int})
+
+The current approach to non-linearity is inefficient
+\begin{example}[fixpoint problem]
+    check period 1
+\end{example}
+
+
+Branching tail recursion is little studied and hard. There  are multiple ways to
+do branching tail recursion with each their advantages and disadvantages. In
+the context of recursive MC there are $2$ techniques that
+stand out.
+
+\begin{technique}[tree regrowing]
+    The structure of branching recursion can be captured by a tree. Storing that tree
+    in memory can be expensive. In recursion you only need to retrace steps
+    $1$ by $1$ therefore you only need local parts of the recursion tree. Tree
+    regrowing tries to alleviate memory issues by instead storing the whole
+    tree only storing seeds (of the random generator) of parts of the
+    tree and growing them when needed.
+\end{technique}
+
+\begin{technique}[backward tail recursion]
+    One way of doing branching tail recursion is by using operation buffers for
+    all leafs which is not memory friendly. In backward tail recursion you retrace
+    steps and do all operations in reverse to recover the buffer needed.
+\end{technique}
 
 \begin{related}[branching tail recursion]
+    Tree regrowing and backward tail recursion ideas appear in
+    \cite{vicini_path_2021}.
     This blog discusses branching tail recursion:
     \url{https://jeroenvanwijgerden.me/post/recursion-1/}.
 \end{related}
-
 
 \section{Ordinary Differential Equations }
 
@@ -716,8 +735,7 @@ to combine tail recursion with normal recursion.
 
 \subsection{Green Functions}
 In this subsection we discuss informally how to turn ODEs into integral equations mainly
-by example.
-Our main tool for this are green functions. Before defining green functions
+by example. Our main tool for this are green functions. Before defining green functions
 we do some examples.  \\
 
 \begin{example}[$y'=y$ average condition]
@@ -938,17 +956,6 @@ for Fredholm equations of the second kind using a fix point argument.
 
 \end{example}
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.8\textwidth]{plots/mainD explosion.png}
-    \caption{The logarithmic percentage error of $Y(0)$ for
-    (\ref{RRVE:main dirichlet}), with $l=1.2$ and initial conditions
-    $y(-k)=e^{-k}$ and $y(k)=e^{k}$, displays an exponential
-    increase until approximately $k=1.5$, beyond which additional
-    simulations fail to reduce the error, indicating that the variance
-    doesn't exist.}
-    \label{fig:mainD explosion}
-\end{figure}
 
 
 % comes straight from wikipedia
@@ -1225,6 +1232,51 @@ variance.
     \pythoncode{python code/nonlinear_CVRRMC.py}
 \end{pythonn}
 
+
+% \subsection{BVPs ODEs}
+
+% Now we hope we can imitate what we did for IVPs to get converging RMC
+% algorithms for BVPs. The $2$ essential trick that we used for RRMC IVP are
+% integral representations on subdomains and unbiased estimators for the linear
+% conditions. \\
+
+% TODO: fix it or leave it out
+% \begin{example}[alternating RRMC]
+%     We demonstrate alternating RRMC on example (\ref{main dirichlet})
+%     with $y(-2)=e^{-2}$ and $y(2)=e^{2}$ which didn't have convergence on
+%     (\ref{fig:mainD explosion}).
+%     In alternating RRMC we use integral equations of overlapping domains see Figure
+%     (\ref{fig:alternating RRMC}) and communicate boundary conditions in the outer recursion.
+%     \begin{figure}[ht!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{tikz figures/local RRMC/axis.pdf}
+%         \caption{}
+%         \label{fig:alternating RRMC}
+%     \end{figure}
+% \end{example}
+
+% \begin{related}
+%     Schwarz alternating method, walk on rectangles paper.
+% \end{related}
+
+\subsection{Limitations and Future Work}
+
+RMC convergence issues, exploding variance problems
+quasi RRMC
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plots/mainD explosion.png}
+    \caption{The logarithmic percentage error of $Y(0)$ for
+    (\ref{RRVE:main dirichlet}), with $l=1.2$ and initial conditions
+    $y(-k)=e^{-k}$ and $y(k)=e^{k}$, displays an exponential
+    increase until approximately $k=1.5$, beyond which additional
+    simulations fail to reduce the error, indicating that the variance
+    doesn't exist.}
+    \label{fig:mainD explosion}
+\end{figure}
+
+
 Similarly to classic methods, RRMC struggles with big negative coefficients in front
 of the recursive parts. DRRMC is a potential solution to this problem but we don't think
 it is effective.
@@ -1258,39 +1310,37 @@ it is effective.
     Note that $D$ may be chosen differently every recursion.
 \end{definition}
 
-% \begin{example}[DRRMC]
-%     Consider
-%     $$
-%         x'= Ax, x(0)=
-%         \begin{pmatrix}
-%             1 \\
-%             0
-%         \end{pmatrix}.
-%     $$
+\begin{example}[DRRMC]
+    Consider
+    $$
+        x'= Ax, x(0)=
+        \begin{pmatrix}
+            1 \\
+            0
+        \end{pmatrix}.
+    $$
 
-%     With
+    With
 
-%     $$
-%         A = \begin{pmatrix}
-%             0     & 1     \\
-%             -1000 & -1001
-%         \end{pmatrix}.
-%     $$
+    $$
+        A = \begin{pmatrix}
+            0     & 1     \\
+            -1000 & -1001
+        \end{pmatrix}.
+    $$
 
 
 
-%     we choose $D$ fixed over all outer recursions:
+    we choose $D$ fixed over all outer recursions:
 
-%     $$
-%         D = \begin{pmatrix}
-%             1 & 0    \\
-%             0 & 1000
-%         \end{pmatrix}.
-%     $$
+    $$
+        D = \begin{pmatrix}
+            1 & 0    \\
+            0 & 1000
+        \end{pmatrix}.
+    $$
 
-%     Here is the implementation of this:
-
-% \end{example}
+\end{example}
 
 % TODO: 
 % (critical path and how to measure performance)  see period 6 tests
@@ -1303,32 +1353,45 @@ it is effective.
     in exponential integrator methods.
 \end{related}
 
-% \subsection{BVPs ODEs}
 
-% Now we hope we can imitate what we did for IVPs to get converging RMC
-% algorithms for BVPs. The $2$ essential trick that we used for RRMC IVP are
-% integral representations on subdomains and unbiased estimators for the linear
-% conditions. \\
 
-% TODO: fix it or leave it out
-% \begin{example}[alternating RRMC]
-%     We demonstrate alternating RRMC on example (\ref{main dirichlet})
-%     with $y(-2)=e^{-2}$ and $y(2)=e^{2}$ which didn't have convergence on
-%     (\ref{fig:mainD explosion}).
-%     In alternating RRMC we use integral equations of overlapping domains see Figure
-%     (\ref{fig:alternating RRMC}) and communicate boundary conditions in the outer recursion.
-%     \begin{figure}[ht!]
-%         \centering
-%         \includegraphics[width=0.8\textwidth]{tikz figures/local RRMC/axis.pdf}
-%         \caption{}
-%         \label{fig:alternating RRMC}
-%     \end{figure}
-% \end{example}
 
-% \begin{related}
-%     Schwarz alternating method, walk on rectangles paper.
-% \end{related}
+\begin{example}[random ODEs] \label{ex:random ode}
+    Let's solve:
+    \begin{equation}
+        Y' = AY, Y(0)=1 , A = \text{Uniform}(0,1).
+    \end{equation}
 
+    With solution $Y(t)= e^{tA}$ which is a RV. With
+    the techniques we have right now we can simulate ''unbiased estimates
+    of simulations of the solution'' $X$. With
+    these you can get $E[f(Y(t))]$ (with $f$ analytic)
+    to the problem:
+    \begin{align}
+        E[f(Y(t))] & = E[E_A[f(Y(t)) \mid  A]] \\
+                   & = E[E_A[f(Y(t))]]         \\
+                   & = E[E_A[f(E_x[X(t,A)])]]  \\
+    \end{align}
+    We can estimate $f(E_x[X(t,A)])$ like (\ref{ex:exp int}).
+
+    In our example we estimate the expectance and variance which can
+    be derived from the solution:
+    \begin{align}
+        E_A[Y(t)]     & =  \frac{e^{t}}{t} - \frac{1}{t}    \\
+        E_A[Y^{2}(t)] & =  \frac{e^{2t}}{2t} - \frac{1}{2t}
+    \end{align}
+\end{example}
+
+\begin{pythonn}[implementation of (\ref{ex:random ode})]
+    \pythoncode{python code/random_ODE.py}
+\end{pythonn}
+
+
+IVPs solver problems slow and instable, maybe special cases.
+CV in the inner recursion example with recursing on DY
+
+notion of green function is vague maybe not the right tools
+mention mixed boundary work
 \section{Brownian Motion}
 
 Current RMC algorithms for PDEs are linked to Brownian motion. In this
@@ -1472,7 +1535,8 @@ reverse in time.
 % \end{theorem}
 
 \subsection{First Passage Sampling}
-In this subsection we build up to sampling $(Y_{\tau},\tau)$ from (\ref{lem:BM HE}) efficiently.
+In this subsection we build up to sampling $(Y_{\tau},\tau)$
+from (\ref{lem:BM HE}) efficiently and extend this to paths.
 
 \begin{definition}[first passage time] \label{def:first passage time}
     Define the first passage time for a process $X_{t}$ for a set of valid states
@@ -1503,7 +1567,7 @@ In this subsection we build up to sampling $(Y_{\tau},\tau)$ from (\ref{lem:BM H
 \end{proof}
 
 \begin{example}[Euler first passage sampling]
-    In this example we approximately sample first passage exit point of Brownian motion
+    In this example we approximately sample the first passage  of Brownian motion
     for a parabolic barrier by simulating Brownian motion with the Euler scheme. We plotted
     this on Figure \ref{fig:Euler first passage para}.
 
@@ -1533,14 +1597,9 @@ In this subsection we build up to sampling $(Y_{\tau},\tau)$ from (\ref{lem:BM H
     first passage is almost invalid.
 \end{technique}
 
-\begin{related}[recursive first passage sampling]
-    The original walk on spheres is a recursive first passage algorithm.
-    Recursive first passage sampling gets discussed in \cite{herrmann_first-passage_2016}.
-    To add jumps you can use \cite{herrmann_exact_2021}.
-\end{related}
 
 \begin{example}[recursive first passage sampling] \label{ex:recursive first passage sampling}
-    In this example we sample the exit point of Brownian motion from a parabolic barrier
+    In this example we sample the first passage of Brownian motion from a parabolic barrier
     with recursive first passage sampling.
     For the simpler first passage sampler we scale and translate
     samples from a triangular barrier so its
@@ -1574,7 +1633,10 @@ In this subsection we build up to sampling $(Y_{\tau},\tau)$ from (\ref{lem:BM H
     \end{figure}
 \end{pythonn}
 
-\begin{related}[simulation tabulation]
+\begin{related}[recursive first passage sampling]
+    The original walk on spheres is a recursive first passage algorithm.
+    Recursive first passage sampling gets discussed in \cite{herrmann_first-passage_2016}.
+    % To add jumps you can use \cite{herrmann_exact_2021}.
     An alternative to resampling from an Euler scheme is to use tabulated
     inverse cumulative probability functions,
     as demonstrated in \cite{hwang_simulationtabulation_2001}.
@@ -1637,19 +1699,21 @@ In this subsection we build up to sampling $(Y_{\tau},\tau)$ from (\ref{lem:BM H
     and \cite{ji_reusing_2012}.
 \end{related}
 
-\section{Limitations and Future Work}
-test
+\subsection{Limitations and Future Work}
+source term to (\ref{lem:BM HE}) different from Feynman kac
 
-\begin{itemize}
-    \item extending first passage averages sampling to geometric brownian motion
-          % Doing the same thing for geometric Brownian motion is difficult because the average
-          % behaves bad under transformation unlike the max. You can think of the average
-          % as an extra dimension to keep track of. What you would need  for geometric
-          % Brownian motion is the  first passage distribution of the average and exit
-          % point for every different position of the begin point for subpaths.\\
-          % And nothing holds you back of changing methods midway if you didn't
-          % the precompute a situation.
-\end{itemize}
+extending first passage averages sampling to geometric brownian motion
+% Doing the same thing for geometric Brownian motion is difficult because the average
+% behaves bad under transformation unlike the max. You can think of the average
+% as an extra dimension to keep track of. What you would need  for geometric
+% Brownian motion is the  first passage distribution of the average and exit
+% point for every different position of the begin point for subpaths.\\
+% And nothing holds you back of changing methods midway if you didn't
+% the precompute a situation.
++ discrete scaling idea
+
+recursive passage sampling in higher dimension
+
 \newpage
 \printbibliography
 \newpage
