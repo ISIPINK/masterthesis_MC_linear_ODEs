@@ -58,7 +58,8 @@ style=alphabetic,
 \section{Introduction}
 
 \subsection{Introductory Example}
-In this subsection we introduce recursive  Monte Carlo with our main example
+In this subsection we introduce recursive
+Monte Carlo with our main example
 for initial value problems:
 
 \begin{equation} \label{ydy}
@@ -79,7 +80,7 @@ of equation (\ref{Integral ydy}) with Monte Carlo one derives following estimato
     Y(t) = 1 + t y(Ut).
 \end{equation}
 
-With $U \sim \text{Uniform}(0,1)$. If $y$ is well behaved then $E[Y(t)]=y(t)$ but we can't
+With $U \sim \text{Uniform}(0,1)$. If $y$ is well behaved then $E[Y(t)]=y(t)$ but we can not
 calculate $Y(t)$ without accesses to $y(s),s<t$. Notice that we can replace $y$ by a
 unbiased estimator of it without changing $E[Y(t)]=y(t)$ by the law of total expectance
 ($E[X] = E[E[X|Z]]$). By replacing $y$ by $Y$ itself we obtain a recursive expression for $Y$:
@@ -626,6 +627,7 @@ In this subsection we discuss recursion related techniques.
 
 \begin{related}[coupled recursion]
     Example (\ref{ex:coupled recursion}) is inspired by \cite{vicini_path_2021}.
+    \cite{yilmazer_solving_2022} extends \cite{vicini_path_2021} to walk on spheres.
     % Coupling feels close to percolation \cite{duminil-copin_sixty_2019}.
     % maybe I should search a paper that coupling in happens
 \end{related}
@@ -674,14 +676,17 @@ to combine tail recursion with normal recursion.
 
 
 \subsection{Limitations and Future Work}
+There are alot MC techniques we did not discuss like quasi MC and important sampling.
+We would like to mention SALT as a MC technique that we find
+particularly interesting and has received relatively little attention.
 
 \begin{technique}[SALT]
     Sequential Approximation in L-Two (SALT) is an adaptive MC technique
     which builds control variates with a (bi-) orthonormal basis. The
     rough idea behind it is that calculating coefficients for
-    an (bi-) orthonormal basis can be found by MC integration and MC integration
-    can be accelerated by the current estimates of the coefficients.
-    It can be seen as intrestring case of stochastic gradient descent.
+    an (bi-) orthonormal basis can be found by MC integration and
+    the current estimate of those coefficients can accelerate MC integration.
+    It can be seen as interesting case of stochastic gradient descent.
 \end{technique}
 
 % \begin{example}[SALT wavelet]
@@ -689,25 +694,27 @@ to combine tail recursion with normal recursion.
 % \end{example}
 
 \begin{related}[SALT]
-    SALT gets discussed in \cite{gobet_new_nodate}. Other papers noteworthy papers on 
+    SALT gets discussed in \cite{gobet_new_nodate}. Other papers noteworthy papers on
     adaptive MC techniques are \cite{he_adaptive_2021} on adaptive important sampling
     and \cite{salaun_regression-based_2022} on regression based MC.
 \end{related}
 
 % improving (\ref{ex:exp int})
 
-The current approach to non-linearity is inefficient (\ref{ex:exp int})
-and is limited to small forms of non-linearity. Currently we haven't
-tested any variance reduction techniques in that context.\\
+Our current method for handling non-linearity, as demonstrated
+in (\ref{ex:exp int}), is rudimentary and only applicable to small
+levels of non-linearity. At present, we have not implemented any
+variance reduction techniques in this context.
 % \begin{example}[fixpoint]
 %     check period 1
 % \end{example}
 
 
-Branching tail recursion is little studied and hard. There  are multiple ways to
-do branching tail recursion with each their advantages and disadvantages. In
-the context of recursive MC there are $2$ techniques that
-stand out.
+The study of branching tail recursion is relatively scarce, but
+it holds potential to improve our approach to handling non-linearity.
+There exist multiple methods of implementing branching tail recursion,
+each with its own set of benefits and drawbacks. When it comes to recursive
+Monte Carlo, there are two techniques that are particularly noteworthy.
 
 \begin{technique}[tree regrowing]
     The structure of branching recursion can be captured by a tree. Storing that tree
@@ -718,7 +725,7 @@ stand out.
     tree and growing them when needed.
 \end{technique}
 
-\begin{technique}[backward tail recursion]
+\begin{technique}
     One way of doing branching tail recursion is by using operation buffers for
     all leafs which is not memory friendly. In backward tail recursion you retrace
     steps and do all operations in reverse to recover the buffer needed.
@@ -774,7 +781,7 @@ we do some examples.  \\
     Note that we could have used a different green function corresponding
     to a different linear differential operator. \\
 
-    It shouldn't be clear from this point but with this green
+    It should not be clear from this point but with this green
     function we form following integral equation for (\ref{ydy int}):
     \begin{equation} \label{int ydy int}
         y(t)= e -1 + \int_{0}^{1}G(t,s)y(s)ds.
@@ -906,10 +913,10 @@ we do some examples.  \\
 % Green's function vs green function (check chatgpt for the answer)
 \begin{definition}[green function]
     Vaguely speaking we define the green function as a type of kernel function that we use
-    to solve linear problems with linear conditions. The Green's function is the kernel that
+    to solve linear problems with linear conditions. The green's function is the kernel that
     we need to put in front of  the linear conditions or the source term that we integrate
-    over and to obtain the solution  and the green function has the property that it satisfies
-    either null linear conditions and a Dirac delta source term, or vice versa.
+    over to obtain the solution.  The green function has the property that it satisfies
+    either null linear conditions and a dirac delta source term, or vice versa.
 \end{definition}
 
 \begin{related}[green function]
@@ -1080,11 +1087,6 @@ the bottleneck it is possible to rely on MC convergence.
 % bring the solution closer but they still remain unbiased with low variance)
 \\
 
-Coupled splitting was tested on the example shown in Figure
-\ref{fig:mainD explosion}, but it did not contribute to the
-convergence of the method. This suggests that a fix point argument
-would not be effective for this particular example with this
-Russian roulette setup. \\
 
 Example (\ref{ex:coupled splitting}) isn't the best example to demonstrate
 coupled splitting. We don't exploit locality and smoothness of the problem.
@@ -1099,19 +1101,21 @@ nasty domains.
     See \cite{gupta_convergence_2021} for a discussion on convergence
     of recursive stochastic algorithms. We highly recommend watching
     the corresponding video \cite{abhishek_gupta_recursive_2020} before reading
-    the paper.
+    the paper. Coupled splitting doesn't work for walk on sphere because
+    of the dynamically changing domain. A technique based on reusing samples
+    like coupled splitting  gets discussed in \cite{miller_boundary_2023}.
 \end{related}
 
 % explaining that coupled split is cool for global problems but for
 % ODEs and PDEs we are interested in exploiting locality.
 
 \subsection{Initial Value Problems}
-
-Right now we don't have a RMC algorithm for IVPs that can
-guarantee a reasonable variance or even existence when increasing the time domain.
-Classing IVP solvers rely on shrinking the time steps for
-convergence. Recursion in Recursion MC (RRMC) for IVPs tries to emulate
+Classic IVP solvers rely on shrinking the time steps for
+convergence. In this subsection we build up to
+Recursion in Recursion MC (RRMC) for IVPs that tries to emulate
 this behavior.
+
+
 
 \begin{example}[RRMC $y'=y$] \label{ex:RRMC IVP}
     Let's us explain RRMC for IVPs with our main example.
@@ -1126,7 +1130,7 @@ this behavior.
         Y_{n}(t) = y(t_{n}) + (t-t_{n})Y_{n}((t-t_{n})U+t_{n}), t>t_{n}.
     \end{equation}
 
-    A problem with these RRVEs is that we don't know $y(t_{n})$.
+    A problem with these RRVEs is that we do not know $y(t_{n})$.
     Instead we can replace it with an unbiased estimate $y_{n}$
     which we keep frozen:
     \begin{align}
@@ -1160,8 +1164,8 @@ this behavior.
 
 $1.5$ order of convergence is cool but this begs the question on how to achieve
 higher order of convergence in $h$. Again it is easy to imitate classical methods
-to achieve higher order convergence. We do this by removing lower order terms (which requires
-smoothness) with control variates like the MC trapezoidal rule (\ref{MCtrap}).
+to achieve higher order convergence. We do this by removing lower order terms which requires
+smoothness with control variates like the MC trapezoidal rule (\ref{MCtrap}).
 
 \begin{example}[CV RRMC $y'=y$]\label{ex:CV RRMC IVP}
     Let us control variate example (\ref{ex:RRMC IVP}). Start
@@ -1204,10 +1208,10 @@ smoothness) with control variates like the MC trapezoidal rule (\ref{MCtrap}).
 
 RRMC is biased for our approach to non-linear problems.
 The inner recursions are correlated because they use the same
-info from the outer recursions, this doesn't mean that reducing
+information from the outer recursions, this doesn't mean that reducing
 root mean square error by splitting doesn't work, you just have to be careful
 with the bias. We conjecture that the bias in RRMC converges faster then the
-variance.
+variance when decreasing $h$.
 
 
 \begin{example}[nonlinear RRMC IVP] \label{ex:nonlinear RRMC IVP}
@@ -1238,7 +1242,7 @@ variance.
                          & = (t-t_{n})y^{2}(t_{n})+
         2\left(\frac{t^{2}-t_{n}^{2}}{2} -t_{n}(t-t_{n}) \right)y(t_{n})y'(t_{n}).
     \end{align}
-
+    We implement this example in (\ref{py:nonlinear RRMC IVP}) and
 \end{example}
 
 \begin{pythonn}[implementation of (\ref{ex:nonlinear RRMC IVP})] \label{py:nonlinear RRMC IVP}
@@ -1274,6 +1278,12 @@ variance.
 
 \subsection{Limitations and Future Work}
 
+Right now we don't have a RMC algorithm for IVPs that can
+guarantee a reasonable variance or even existence when increasing the time domain.
+Classing IVP solvers rely on shrinking the time steps for
+convergence. Recursion in Recursion MC (RRMC) for IVPs tries to emulate
+this behavior.
+
 RMC convergence issues, exploding variance problems
 quasi RRMC
 
@@ -1289,6 +1299,11 @@ quasi RRMC
     \label{fig:mainD explosion}
 \end{figure}
 
+Coupled splitting was tested on the example shown in Figure
+\ref{fig:mainD explosion}, but it did not contribute to the
+convergence of the method. This suggests that a fix point argument
+would not be effective for this particular example with this
+Russian roulette setup. \\
 
 Similarly to classic methods, RRMC struggles with big negative coefficients in front
 of the recursive parts. DRRMC is a potential solution to this problem but we don't think
@@ -1381,13 +1396,11 @@ it is effective.
     these you can get $E[f(Y(t))]$ (with $f$ analytic)
     to the problem:
     \begin{align}
-        E[f(Y(t))] & = E[E_A[f(Y(t)) \mid  A]] \\
-                   & = E[E_A[f(Y(t))]]         \\
-                   & = E[E_A[f(E_x[X(t,A)])]]  \\
+        E_{A}[f(Y(t))] & = E_A[f(Y(t)) \mid  A]        \\
+                       & = E_A[f(E_x[X(t,A)]) \mid  A]
     \end{align}
     We can estimate $f(E_x[X(t,A)])$ like (\ref{ex:exp int}).
-
-    In our example we estimate the expectance and variance which can
+    In our example we estimate the first $2$ moments which can
     be derived from the solution:
     \begin{align}
         E_A[Y(t)]     & =  \frac{e^{t}}{t} - \frac{1}{t}    \\
