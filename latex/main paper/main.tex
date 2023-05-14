@@ -669,15 +669,15 @@ to combine tail recursion with normal recursion.
 \begin{pythonn}[tail recursion on (\ref{coupled mat})]
     We implement (\ref{coupled mat}) but this time with tail recursion.
     We collect addition operations in a vector $sol$ and multiplication
-    in a matrix $W$.
+    in a matrix $W$. $W$ may be referred to as accumulated weight or throughput.
     \vspace{0.3cm}
     \pythoncode{python code/tailrecu.py}
 \end{pythonn}
 
 
 \subsection{Limitations and Future Work}
-There are alot MC techniques we did not discuss like quasi MC and important sampling.
-We would like to mention SALT as a MC technique that we find
+There are a lot MC techniques we did not discuss like quasi MC and important sampling.
+We would like to mention SALT  a MC technique that we find
 particularly interesting and has received relatively little attention.
 
 \begin{technique}[SALT]
@@ -704,14 +704,15 @@ particularly interesting and has received relatively little attention.
 Our current method for handling non-linearity, as demonstrated
 in (\ref{ex:exp int}), is rudimentary and only applicable to small
 levels of non-linearity. At present, we have not implemented any
-variance reduction techniques in this context.
+variance reduction techniques in this context. We think that
+major improvements can be made in (\ref{ex:exp int}). \\
 % \begin{example}[fixpoint]
 %     check period 1
 % \end{example}
 
 
-The study of branching tail recursion is relatively scarce, but
-it holds potential to improve our approach to handling non-linearity.
+We didn't discuss Branching tail recursion but
+it is important to improve our approach to handling non-linearity.
 There exist multiple methods of implementing branching tail recursion,
 each with its own set of benefits and drawbacks. When it comes to recursive
 Monte Carlo, there are two techniques that are particularly noteworthy.
@@ -732,7 +733,7 @@ Monte Carlo, there are two techniques that are particularly noteworthy.
 \end{technique}
 
 \begin{related}[branching tail recursion]
-    Tree regrowing and backward tail recursion ideas appear in
+    Both ideas appear in
     \cite{vicini_path_2021}.
     This blog discusses branching tail recursion:
     \url{https://jeroenvanwijgerden.me/post/recursion-1/}.
@@ -1278,14 +1279,16 @@ variance when decreasing $h$.
 
 \subsection{Limitations and Future Work}
 
-Right now we don't have a RMC algorithm for IVPs that can
-guarantee a reasonable variance or even existence when increasing the time domain.
-Classing IVP solvers rely on shrinking the time steps for
-convergence. Recursion in Recursion MC (RRMC) for IVPs tries to emulate
-this behavior.
+We have not dedicated significant attention, if any at all, to
+the convergence analysis of RMC methods
+for Fredholm equations. Figure \ref{fig:mainD explosion} illustrates
+that arbitrary RMC do not converge. \\
 
-RMC convergence issues, exploding variance problems
-quasi RRMC
+Coupled splitting was tested on the example shown in Figure
+\ref{fig:mainD explosion}, but it did not contribute to the
+convergence of the method. This suggests that a fix point argument
+would not be effective for this particular example with this
+Russian roulette setup. \\
 
 \begin{figure}[h!]
     \centering
@@ -1299,15 +1302,13 @@ quasi RRMC
     \label{fig:mainD explosion}
 \end{figure}
 
-Coupled splitting was tested on the example shown in Figure
-\ref{fig:mainD explosion}, but it did not contribute to the
-convergence of the method. This suggests that a fix point argument
-would not be effective for this particular example with this
-Russian roulette setup. \\
+
+% maybe example alternting RMC
 
 Similarly to classic methods, RRMC struggles with big negative coefficients in front
-of the recursive parts. DRRMC is a potential solution to this problem but we don't think
-it is effective.
+of the recursive parts which may appear in
+stiff problems. We tested DRRMC as a potential remedy  but we conclude
+it to be ineffective.
 
 \begin{definition}[DRRMC]
     Consider a general linear ODE IVP problem:
@@ -1324,49 +1325,70 @@ it is effective.
 
     Following integral equation can be derived by using integrating factor:
 
-    \begin{equation}
+    \begin{equation}\label{eq:int eq DRRMC}
         x(t)= e^{D(t_{n}-t)}x(t_{n}) + \int_{t_{n}}^{t} e^{D(s-t)}(A+D)x(s)ds+\int_{t_{n}}^{t} e^{D(s-t)}g(s)ds.
     \end{equation}
 
     Remember that the exponential of a diagonal matrix is the exponential of its elements.
     The recursive integral has the following trivial control variate:
 
-    \begin{equation}
+    \begin{equation}\label{eq: CV DRRMC}
         \int_{t_{n}}^{t}  e^{D(s-t)}(A+D)x(t_{n})ds = D^{-1}(I-e^{D(t_{n}-t)})(A+D)x(t_{n}).
     \end{equation}
 
     Note that $D$ may be chosen differently every recursion.
 \end{definition}
 
-\begin{example}[DRRMC]
-    Consider
-    $$
+\begin{example}[DRRMC] \label{ex:DRRMC}
+    Consider:
+    \begin{equation}
         x'= Ax, x(0)=
-        \begin{pmatrix}
+        \begin{bmatrix}
             1 \\
             0
-        \end{pmatrix}.
-    $$
+        \end{bmatrix}.
+    \end{equation}
 
     With
 
-    $$
-        A = \begin{pmatrix}
+    \begin{equation}
+        A = \begin{bmatrix}
             0     & 1     \\
             -1000 & -1001
-        \end{pmatrix}.
-    $$
+        \end{bmatrix}.
+    \end{equation}
 
+    This has solution:
 
+    \begin{equation}
+        x(t) = \frac{1}{999}
+        \begin{bmatrix}
+            -  e^{-1000t}+ 1000 e^{-t} \\
+            1000 e^{-1000t}- 1000e^{-t}
+        \end{bmatrix}.
+    \end{equation}
 
-    we choose $D$ fixed over all outer recursions:
+    We choose $D$ fixed over all outer recursions:
 
-    $$
-        D = \begin{pmatrix}
+    \begin{equation}
+        D = \begin{bmatrix}
             1 & 0    \\
             0 & 1000
-        \end{pmatrix}.
-    $$
+        \end{bmatrix}.
+    \end{equation}
+
+    We make the convergence plot for this example with
+    integral equation  (\ref{eq:int eq DRRMC}) with control variate
+    (\ref{eq: CV DRRMC}) implemented with recursion in recursion
+    on Figure \ref{fig:DRRMC}.
+
+    \begin{figure}[ht!]
+        \centering
+        \includegraphics[width=0.8\textwidth]{plots/DRRMC.png}
+        \caption{Log-log plot of the error for example (\ref{ex:DRRMC})}. We plotted
+        the second component of the error transparent.
+        \label{fig:DRRMC}
+    \end{figure}
 
 \end{example}
 
@@ -1375,36 +1397,45 @@ it is effective.
 
 \begin{related}[DRRMC]
     DRRMC is inspired by  $\bar{\sigma}$ parameter in \cite{sawhney_grid-free_2022} but
-    instead of importance sampling and weight window we use control variates  to deal with
+    instead of importance sampling  we use control variates  to deal with
     nonlinearity introduced by the exponential because it needs to work over
-    an entire vector at the same time. Similar manipulations can also be found
-    in exponential integrator methods.
+    an entire vector at the same time. Ideas from exponential integrator methods may
+    improve DRRMC.
 \end{related}
 
-
-
+In addition to the challenges with stiff problems, we have not conducted
+a comparison between RRMC and traditional methods, and we do not anticipate
+that RRMC in this form outperform other classic methods.
+The reason for this is that RRMC involves
+many function calls in the inner recursion without updating the current control
+variate. Proper testing requires precise tuning of the MC techniques utilized.
+However, we do believe that RRMC could potentially offer advantages in atypical scenarios.
+In the following example, we examine an ODE with a random parameter.
 
 \begin{example}[random ODEs] \label{ex:random ode}
-    Let's solve:
-    \begin{equation}
-        Y' = AY, Y(0)=1 , A = \text{Uniform}(0,1).
+    Consider the problem given by the initial value problem
+    \begin{equation}\label{eq:random ode}
+        Y' = AY, \quad Y(0)=1, \quad A \sim \text{Uniform}(0,1).
     \end{equation}
+    The solution to this problem is given by
+    $Y(t) = e^{tA}$, which is a RV.
+    In order to compute expectations of functions of $Y(t)$,
+    we use unbiased estimates $X$ of the simulations of the solution.
 
-    With solution $Y(t)= e^{tA}$ which is a RV. With
-    the techniques we have right now we can simulate ''unbiased estimates
-    of simulations of the solution'' $X$. With
-    these you can get $E[f(Y(t))]$ (with $f$ analytic)
-    to the problem:
+    Given an analytic function $f$, we can obtain $E[f(Y(t))]$
+    by conditioning on the value of $A$ and using the
+    law of total expectation:
     \begin{align}
-        E_{A}[f(Y(t))] & = E_A[f(Y(t)) \mid  A]        \\
-                       & = E_A[f(E_x[X(t,A)]) \mid  A]
+        E_A[f(Y(t))] & = E_A[f(Y(t)) \mid A]         \\
+                     & = E_A[f(E_X[X(t,A)]) \mid A].
     \end{align}
-    We can estimate $f(E_x[X(t,A)])$ like (\ref{ex:exp int}).
-    In our example we estimate the first $2$ moments which can
-    be derived from the solution:
+
+    To estimate $f(E_X[X(t,A)])$, we use the approach outlined in
+    (\ref{ex:exp int}). For the specific example of (\ref{eq:random ode}),
+    we can compute the first two moments of $Y(t)$ as
     \begin{align}
-        E_A[Y(t)]     & =  \frac{e^{t}}{t} - \frac{1}{t}    \\
-        E_A[Y^{2}(t)] & =  \frac{e^{2t}}{2t} - \frac{1}{2t}
+        E_A[Y(t)]   & = \frac{e^t}{t} - \frac{1}{t},      \\
+        E_A[Y^2(t)] & = \frac{e^{2t}}{2t} - \frac{1}{2t}.
     \end{align}
 \end{example}
 
@@ -1413,17 +1444,11 @@ it is effective.
 \end{pythonn}
 
 
-IVPs solver problems slow and instable, maybe special cases.
-CV in the inner recursion example with recursing on DY
-
-notion of green function is vague maybe not the right tools
-mention mixed boundary work
 \section{Brownian Motion}
 
-Current RMC algorithms for PDEs are linked to Brownian motion. In this
-section build up to recursive first passage sampling which is similar to
-walk on sphere.
-
+Current RMC algorithms for PDEs are related to Brownian motion. In this section,
+we explore the relationship between the heat equation and Brownian motion,
+and discuss how recursive first passage sampling  fits into the picture.
 
 
 \subsection{Heat Equation}
@@ -1465,13 +1490,13 @@ Brownian motion.
 \end{definition}
 
 % maybe should improve this 
-An example how the Dirichlet condition is defined for a domain
-is the parabola on Figure \ref{fig:Euler first passage para} but
-reverse in time.
+An example of how the Dirichlet condition is defined for a domain is shown
+in Figure \ref{fig:Euler first passage para}, which depicts a parabola
+in reverse time.
 
 \begin{lemma}[Brownian motion and the heat equation] \label{lem:BM HE}
     For problem (\ref{def:heat equation}) if $ |\psi|< \infty$
-    there is following formula:
+    there holds
 
     \begin{equation}
         u(x,t)=E[\psi(Y_{\tau},\tau) | Y_{t} =x].
@@ -1480,7 +1505,7 @@ reverse in time.
 \end{lemma}
 
 
-\begin{proof}
+\begin{proof} \label{proof: BM HE }
     Discretize the heat equation
     with a regular rectangular mesh that includes $(x,t)$ with equally
     spaced intervals over space and time ($\Delta x, \Delta t$) with
@@ -1568,7 +1593,7 @@ from (\ref{lem:BM HE}) efficiently and extend this to paths.
     Define the first passage time for a process $X_{t}$ for a set of valid states
     $V$ as
     \begin{equation}
-        \text{FPt}(X_{t},S)=\inf \{t| (X_{t},t) \notin V \}
+        \text{FPt}(X_{t},S)=\inf \{t>0| (X_{t},t) \notin V \}
         .
     \end{equation}
     Note that the first passage time is a RV itself.
@@ -1674,7 +1699,7 @@ from (\ref{lem:BM HE}) efficiently and extend this to paths.
 
 \begin{example}[recursive first passage average sampling]
     In example (\ref{ex:recursive first passage sampling}) it is possible to keep
-    track of the average because scales and translates with our base first passage sampler.
+    track of the average because it scales and translates with our base first passage sampler.
 
     \begin{figure}[ht!]
         \centering
@@ -1696,7 +1721,7 @@ from (\ref{lem:BM HE}) efficiently and extend this to paths.
     requiring less memory then a fully stored path. This can be useful
     in case you need to look back to a part of the path.
     The only downsides are that the time steps are inhomogeneous
-    and storing paths for the simpler first passage problem.
+    and it requires storing paths for the simpler first passage problem.
 \end{technique}
 
 \begin{example}[path stitching parabola]
@@ -1726,7 +1751,10 @@ from (\ref{lem:BM HE}) efficiently and extend this to paths.
 \end{related}
 
 \subsection{Limitations and Future Work}
-source term to (\ref{lem:BM HE}) different from Feynman kac
+
+It would be interesting to extend proof technique of (\ref{lem:BM HE}) to the full
+Feynman-kac formula. Just adding a source term in the Feynman-kac formula would require
+infinite evaluations of the source term.
 
 extending first passage averages sampling to geometric brownian motion
 % Doing the same thing for geometric Brownian motion is difficult because the average
