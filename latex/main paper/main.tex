@@ -164,8 +164,7 @@ mechanics behind these type of Monte Carlo techniques.
 
         \item \citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011}
               \cite{daun_randomized_2011} paper describes a randomized algorithm that
-              achieves higher order of convergence order optimal even
-              then deterministic algorithms under the
+              achieves higher order of convergence order optimal under the
               same smoothness conditions by using polynomial extrapolation and
               control variates.
 
@@ -1642,7 +1641,7 @@ from (\ref{lem:BM HE}) efficiently and extend this to paths.
 
 \begin{technique}[recursive first passage sampling]
     Recursive first passage sampling involves sampling an initial,
-    simpler first passage that includes fewer valid states. Using
+    simpler first passage, the base  that includes fewer valid states. Using
     this sampled first passage as a starting point, we
     then perform the same sampling process until the sampled
     first passage is almost invalid.
@@ -1686,7 +1685,10 @@ from (\ref{lem:BM HE}) efficiently and extend this to paths.
 
 \begin{related}[recursive first passage sampling]
     The original walk on spheres is a recursive first passage algorithm.
-    Recursive first passage sampling gets discussed in \cite{herrmann_first-passage_2016}.
+    Recursive first passage sampling for
+    Brownian motion gets discussed in \cite{herrmann_first-passage_2016}
+    and by transformation also first passage problems for the
+    Ornstein-Uhlenbeck process.
     % To add jumps you can use \cite{herrmann_exact_2021}.
     An alternative to resampling from an Euler scheme is to use tabulated
     inverse cumulative probability functions,
@@ -1697,7 +1699,7 @@ from (\ref{lem:BM HE}) efficiently and extend this to paths.
 % there symmetry trick to be pulled off
 
 
-\begin{example}[recursive first passage average sampling]
+\begin{example}[recursive first passage average sampling] \label{ex:recu FP average}
     In example (\ref{ex:recursive first passage sampling}) it is possible to keep
     track of the average because it scales and translates with our base first passage sampler.
 
@@ -1715,7 +1717,7 @@ from (\ref{lem:BM HE}) efficiently and extend this to paths.
 \begin{technique}[Brownian motion path stitching]
     Instead of thinking in sampling first passages  you can also sample
     whole paths to the first passage. Similar to before we need to be
-    able to generate paths for a simple first passage problem and "stich"
+    able to generate paths for a simple first passage problem and "stitch"
     these paths together. An advantage over normally generating paths
     is that a path can be represented by its subpaths and their scalings
     requiring less memory then a fully stored path. This can be useful
@@ -1753,20 +1755,28 @@ from (\ref{lem:BM HE}) efficiently and extend this to paths.
 \subsection{Limitations and Future Work}
 
 It would be interesting to extend proof technique of (\ref{lem:BM HE}) to the full
-Feynman-kac formula. Just adding a source term in the Feynman-kac formula would require
-infinite evaluations of the source term.
+Feynman-kac formula. Just adding a source term $f$ in the Feynman-kac formula adds
+an integral of the source term over the recursion path.
+In equation (\ref{eq:discrete iso heat equation})
+it would add $\frac{\Delta t \Delta x^{2}}{2 \Delta t + \Delta x ^{2}} f(x,t)$
+term. This term can either be kept or Russian rouletted
+to prevent infinite source evaluations in the limit.
+This roughly corresponds to estimating the integral by
+MC integration also requiring knowing finite amount of
+intermediate points of the recursion path
+sampled randomly. These can possibly be obtained from
+the intermediate first passages of recursive first passage sampling or with a smart
+application of path stitching. \\
 
-extending first passage averages sampling to geometric brownian motion
-% Doing the same thing for geometric Brownian motion is difficult because the average
-% behaves bad under transformation unlike the max. You can think of the average
-% as an extra dimension to keep track of. What you would need  for geometric
-% Brownian motion is the  first passage distribution of the average and exit
-% point for every different position of the begin point for subpaths.\\
-% And nothing holds you back of changing methods midway if you didn't
-% the precompute a situation.
-+ discrete scaling idea
 
-recursive passage sampling in higher dimension
+Recursive first passage sampling for Brownian motion can be extended to geometric
+Brownian motion by transforming the space. However, this  transformation breaks
+the symmetries required for the average used in example (\ref{ex:recu FP average}).
+An unsatisfying way to fix this is to approximate base sampler at different points in
+space and at different scales. Just accelerating a classic Euler scheme at critical places
+with a base sampler can reduce precomputation requirements.
+
+
 
 \newpage
 \printbibliography
