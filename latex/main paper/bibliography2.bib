@@ -2214,11 +2214,12 @@ An eigenfunction is a type of eigenvector.},
 	note = {Page Version ID: 1115272845},
 }
 
-@article{gobet_new_nodate,
+@article{gobet_new_2014,
 	title = {A new sequential algorithm for {L2}-approximation and application to {Monte}-{Carlo} integration},
 	abstract = {We design a new stochastic algorithm (called SALT) that sequentially approximates a given function in L2 w.r.t. a probability measure, using a ﬁnite sample of the distribution. By increasing the sets of approximating functions and the simulation eﬀort, we compute a L2-approximation with higher and higher accuracy. The simulation eﬀort is tuned in a robust way that ensures the convergence under rather general conditions. Then, we apply SALT to build eﬃcient control variates for accurate numerical integration. Examples and numerical experiments support the mathematical analysis.},
 	language = {en},
 	author = {Gobet, Emmanuel and Surana, Khushboo},
+	year = {2014},
 	keywords = {monte carlo, SALT},
 	file = {Gobet en Surana - A new sequential algorithm for L2-approximation an.pdf:C\:\\Users\\Admin\\Zotero\\storage\\MFJ99N7L\\Gobet en Surana - A new sequential algorithm for L2-approximation an.pdf:application/pdf},
 }
@@ -4122,12 +4123,14 @@ Modern expositions of the formula can be found in, among other places, the books
 	file = {Novák e.a. - 2018 - Monte Carlo Methods for Volumetric Light Transport.pdf:C\:\\Users\\Admin\\Zotero\\storage\\8Y3IJRVP\\Novák e.a. - 2018 - Monte Carlo Methods for Volumetric Light Transport.pdf:application/pdf},
 }
 
-@article{veach_robust_nodate,
-	title = {{ROBUST} {MONTE} {CARLO} {METHODS} {FOR} {LIGHT} {TRANSPORT} {SIMULATION}},
+@article{veach_robust_1997,
+	title = {Robust {Monte} {Carlo} {Methods} for {Light} {Transport} {Simulation}. {Ph}.{D}. {Dissertation}. {Stanford} {University}.},
 	language = {en},
+	journal = {Robust Monte Carlo Methods for Light Transport Simulation.},
 	author = {Veach, Eric},
-	keywords = {monte carlo, rendering, importance sampling},
-	file = {Veach - ROBUST MONTE CARLO METHODS FOR LIGHT TRANSPORT SIM.pdf:C\:\\Users\\Admin\\Zotero\\storage\\HDZ56Y9U\\Veach - ROBUST MONTE CARLO METHODS FOR LIGHT TRANSPORT SIM.pdf:application/pdf},
+	year = {1997},
+	keywords = {importance sampling, monte carlo, rendering},
+	file = {Veach - 1997 - Robust Monte Carlo Methods for Light Transport Sim.pdf:C\:\\Users\\Admin\\Zotero\\storage\\HDZ56Y9U\\Veach - 1997 - Robust Monte Carlo Methods for Light Transport Sim.pdf:application/pdf},
 }
 
 @article{sabelfeld_random_2017,
@@ -4969,7 +4972,7 @@ Analog computers were widely used in scientific and industrial applications even
 	author = {Jentzen, A. and Neuenkirch, A.},
 	month = feb,
 	year = {2009},
-	keywords = {MC ODE, monte carlo, ODE},
+	keywords = {monte carlo, ODE, MC ODE},
 	pages = {346--359},
 	file = {Jentzen en Neuenkirch - 2009 - A random Euler scheme for Carathéodory differentia.pdf:C\:\\Users\\Admin\\Zotero\\storage\\LFZQS9Q7\\Jentzen en Neuenkirch - 2009 - A random Euler scheme for Carathéodory differentia.pdf:application/pdf},
 }
@@ -5512,4 +5515,28 @@ Perturbation theory is used in a wide range of fields, and reaches its most soph
 	year = {2003},
 	doi = {10.1007/978-3-642-14394-6},
 	file = {Øksendal - 2003 - Stochastic Differential Equations.pdf:C\:\\Users\\Admin\\Zotero\\storage\\GCS3EXST\\Øksendal - 2003 - Stochastic Differential Equations.pdf:application/pdf},
+}
+
+@article{xie_frozen_nodate,
+	title = {Frozen {Gaussian} {Sampling}: {A} {Mesh}-free {Monte} {Carlo} {Method} {For} {Approximating} {Semiclassical} {Schr}¨odinger {Equations}},
+	abstract = {In this paper, we develop a Monte Carlo algorithm named the Frozen Gaussian Sampling (FGS) to solve the semiclassical Schr¨odinger equation based on the frozen Gaussian approximation. Due to the highly oscillatory structure of the wave function, traditional mesh-based algorithms suﬀer from ”the curse of dimensionality”, which gives rise to more severe computational burden when the semiclassical parameter ε is small. The Frozen Gaussian sampling outperforms the existing algorithms in that it is mesh-free in computing the physical observables and is suitable for high dimensional problems. In this work, we provide detailed procedures to implement the FGS for both Gaussian and WKB initial data cases, where the sampling strategies on the phase space balance the need of variance reduction and sampling convenience. Moreover, we rigorously prove that, to reach a certain accuracy, the number of samples needed for the FGS is independent of the scaling parameter ε. Furthermore, the complexity of the FGS algorithm is of a sublinear scaling with respect to the microscopic degrees of freedom and, in particular, is insensitive to the dimension number. The performance of the FGS is validated through several typical numerical experiments, including simulating scattering by the barrier potential, formation of the caustics and computing the high-dimensional physical observables without mesh.},
+	language = {en},
+	author = {Xie, Yantong and Zhou, Zhennan},
+	file = {Xie en Zhou - Frozen Gaussian Sampling A Mesh-free Monte Carlo .pdf:C\:\\Users\\Admin\\Zotero\\storage\\DR2NE79L\\Xie en Zhou - Frozen Gaussian Sampling A Mesh-free Monte Carlo .pdf:application/pdf},
+}
+
+@misc{jankowiak_pathwise_2018,
+	title = {Pathwise {Derivatives} {Beyond} the {Reparameterization} {Trick}},
+	url = {http://arxiv.org/abs/1806.01851},
+	abstract = {We observe that gradients computed via the reparameterization trick are in direct correspondence with solutions of the transport equation in the formalism of optimal transport. We use this perspective to compute (approximate) pathwise gradients for probability distributions not directly amenable to the reparameterization trick: Gamma, Beta, and Dirichlet. We further observe that when the reparameterization trick is applied to the Choleskyfactorized multivariate Normal distribution, the resulting gradients are suboptimal in the sense of optimal transport. We derive the optimal gradients and show that they have reduced variance in a Gaussian Process regression task. We demonstrate with a variety of synthetic experiments and stochastic variational inference tasks that our pathwise gradients are competitive with other methods.},
+	language = {en},
+	urldate = {2023-05-11},
+	publisher = {arXiv},
+	author = {Jankowiak, Martin and Obermeyer, Fritz},
+	month = jul,
+	year = {2018},
+	note = {arXiv:1806.01851 [cs, stat]},
+	keywords = {Computer Science - Machine Learning, Statistics - Machine Learning},
+	annote = {Comment: ICML 2018},
+	file = {Jankowiak en Obermeyer - 2018 - Pathwise Derivatives Beyond the Reparameterization.pdf:C\:\\Users\\Admin\\Zotero\\storage\\E9PELC7L\\Jankowiak en Obermeyer - 2018 - Pathwise Derivatives Beyond the Reparameterization.pdf:application/pdf},
 }
