@@ -19,6 +19,7 @@
 }
 \usepackage[dvips]{epsfig}
 \usepackage{tikz}
+\usepackage{babel}
 
 \usepackage[
 backend=biber,
@@ -52,8 +53,11 @@ style=alphabetic,
 \newpage
 
 \begin{abstract}
-    We will write this at the end. Also need a dutch abstract
+    \selectlanguage{English}
+    This thesis introduces recursive Monte Carlo, mainly with examples on
+    ODEs. (TODO)
 \end{abstract}
+
 
 \section{Introduction}
 
@@ -139,7 +143,7 @@ Notations utilized include:
                   0 & \text{ if } x<0 \\
                   1 & \text{ else }
               \end{cases}.$
-    \item i.i.d. = independent identically distributed
+    \item i.i.d. = independent identically distributed.
     \item $U \sim \text{Uniform}(0,1)$.
     \item BVP = Boundary Value Problem.
     \item FP = First Passage.
@@ -185,7 +189,7 @@ mechanics of these Monte Carlo techniques.
               \cite{ermakov_monte_2021}
               papers study unbiased  methods
               for linear problems and slightly biased for nonlinear based
-              on the Volterra integral equations.
+              on Volterra integral equations.
 
     \end{itemize}
 
@@ -244,7 +248,7 @@ In the ordinary differential equation section, we introduce green functions
 as a tool to transform ordinary differential equations into integral equations.
 We then proceed to present our main algorithm for solving
 linear initial value problems for systems of ordinary differential
-equations (\ref{ex:CV RRMC IVP}). \\
+equations. \\
 
 In the Brownian motion section, we establish the connection
 between Brownian motion and the heat equation using recursive Monte Carlo.
@@ -434,7 +438,7 @@ enhanced with control variates based on the trapezoidal rule.
     of function $f$ over the interval $[x, x+dx]$ as follows:
 
     \begin{equation}
-        \int_{x}^{x+dx} f(s) , ds \approx
+        \int_{x}^{x+dx} f(s) ds \approx
         \frac{f(x) + f(x+dx)}{2} + f(S_x) - f(x) - \frac{S_x - x}{dx}
         \left(f(x+dx) - f(x)\right),
     \end{equation}
@@ -1853,7 +1857,10 @@ An unsatisfying way to fix this is to approximate base sampler at different poin
 space and at different scales. Just accelerating a classic Euler scheme at critical places
 with a base sampler can reduce precomputation requirements.
 
-
+\begin{abstract}
+    \selectlanguage{Dutch}
+    Also need a dutch abstract.
+\end{abstract}
 
 \newpage
 \printbibliography
