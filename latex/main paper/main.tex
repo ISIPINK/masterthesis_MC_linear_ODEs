@@ -46,7 +46,7 @@ style=alphabetic,
 \begin{document}
 
 \begin{comment}
-\title{Recursive Monte Carlo}
+\title{Recursive Monte Carlo for linear ODEs}
 \author{Isidoor Pinillo Esquivel}
 \maketitle
 \end{comment}
@@ -219,24 +219,35 @@ mechanics of these Monte Carlo techniques.
 
 \subsection{Contributions}
 A significant part of this thesis is dedicated to informally introducing recursive Monte Carlo
-with plenty of examples. The key contributions are:
+with plenty of examples.
+The key contribution is an unbiased Monte Carlo method
+(\ref{ex:CV RRMC IVP}) for
+linear initial value problems for systems of ordinary
+differential equations by using recursion in recursion.
+This method achieves a higher order of convergence
+in the time step size that is comparable to explicit
+deterministic methods.
 
-\begin{itemize}
-    \item Coupled recursion (\ref{ex:coupled recursion}) and
-          recursion in recursion (\ref{tech:recu in recu}) reformulations of
-          ideas that appear in the coupling in
-          \cite{vicini_path_2021} and next flight in
-          rendering see \cite{sawhney_grid-free_2022}
-          the next flight version of walk on sphere.
 
-    \item An unbiased Monte Carlo method (\ref{ex:CV RRMC IVP}) for
-          linear initial value problems for systems of ordinary
-          differential equations by using recursion in recursion.
-          This method achieves a higher order of convergence
-          in the time step size that is comparable to explicit
-          deterministic methods.
 
-\end{itemize}
+% The key contributions are:
+
+% \begin{itemize}
+%     \item Coupled recursion (\ref{ex:coupled recursion}) and
+%           recursion in recursion (\ref{tech:recu in recu}) reformulations of
+%           ideas that appear in the coupling in
+%           \cite{vicini_path_2021} and next flight in
+%           rendering see \cite{sawhney_grid-free_2022}
+%           the next flight version of walk on sphere.
+
+%     \item An unbiased Monte Carlo method (\ref{ex:CV RRMC IVP}) for
+%           linear initial value problems for systems of ordinary
+%           differential equations by using recursion in recursion.
+%           This method achieves a higher order of convergence
+%           in the time step size that is comparable to explicit
+%           deterministic methods.
+
+% \end{itemize}
 
 In the background section, we provide an introduction
 to Monte Carlo techniques and a short discussion about a Monte Carlo trapezoidal
@@ -512,7 +523,7 @@ the local truncation error behaves similarly to:
 The main distinction between the standard and MC rule lies in how they
 accumulate local truncation errors into global truncation error. In the standard
 case, there is a loss of one order. When measuring the error of randomized algorithms,
-the root mean square error is typically used, which, in the unbiased case,
+the root-mean-square error is typically used, which, in the unbiased case,
 is equivalent to the standard deviation:
 
 \begin{align}
@@ -525,6 +536,10 @@ is equivalent to the standard deviation:
      & = O(h^{2.5}).
 \end{align}
 
+Note that the meaning of a bound on the error that behaves as $O(h^{2})$ and
+a bound on the root-mean-square error that behaves as $O(h^{2})$ is different.
+A bound on the error implies a bound on the root-mean-square error, but
+the reverse is not true.
 
 \subsection{Unbiased Non-Linearity}
 In this subsection, we present techniques for handling non-linearity.
@@ -747,8 +762,9 @@ particularly interesting and has received relatively little attention.
     In \cite{wu_randomised_2020}, an improvement of half
     order for a MC trapezoidal rule is discussed. We are
     uncertain whether this improvement is similar to ours.
-    Further examination would be needed. We expect that
-    our approach requires more smoothness.
+    Further examination would be needed.
+    Our MC trapezoidal rule easily generalizes to higher
+    dimensions.
 \end{related}
 
 Our current method for handling non-linearity, as demonstrated
@@ -1179,13 +1195,13 @@ this behavior.
     then the following integral equations hold:
 
     \begin{equation}
-        y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , t>t_{n}.
+        y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , \quad t>t_{n}.
     \end{equation}
 
     Turn these in the following class of RRVEs:
 
     \begin{equation}
-        Y_{n}(t) = y(t_{n}) + (t-t_{n})Y_{n}((t-t_{n})U+t_{n}), t>t_{n}.
+        Y_{n}(t) = y(t_{n}) + (t-t_{n})Y_{n}((t-t_{n})U+t_{n}), \quad t>t_{n}.
     \end{equation}
 
     A problem with these RRVEs is that we do not know $y(t_{n})$.
@@ -1193,7 +1209,7 @@ this behavior.
     which we keep frozen in the inner recursion:
     \begin{align}
         \label{eq:RRMC IVP inner}
-        Y_{n}(t) & = y_{n} + (t-t_{n})Y_{n}((t-t_{n})U+t_{n}), t>t_{n} \\
+        Y_{n}(t) & = y_{n} + (t-t_{n})Y_{n}((t-t_{n})U+t_{n}), \quad t>t_{n} \\
         y_{n}    & = \begin{cases}
                          Y_{n-1}(t_{n}) & \text{ if } n \neq 0 \\
                          y(t_{0})       & \text{ if } n = 0
@@ -1223,7 +1239,7 @@ this behavior.
 While a $1.5$ order of convergence is commendable,
 it raises the question of how to attain even higher convergence orders.
 It is possible to emulate classical methods in order to
-achieve higher order of convergence. This can be accomplished by eliminating
+achieve a higher order of convergence. This can be accomplished by eliminating
 lower order terms using control variates, as demonstrated in the MC trapezoidal
 rule (see \ref{MCtrap}).
 
@@ -1231,10 +1247,10 @@ rule (see \ref{MCtrap}).
     Let us control variate example (\ref{ex:RRMC IVP}).
 
     \begin{equation}
-        y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , t>t_{n}.
+        y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , \quad t>t_{n}.
     \end{equation}
 
-    We build a control variate with a lower order approximation
+    We build a control variate with a lower-order approximation
     of the integrand:
 
     \begin{align}
@@ -1274,7 +1290,7 @@ rule (see \ref{MCtrap}).
 RRMC is biased for our approach to non-linear problems.
 The inner recursions are correlated because they use the same
 information from the outer recursions, this does not mean that reducing
-root mean square error by splitting does not work, you just have to be careful
+root-mean-square error by splitting does not work, you just have to be careful
 with the bias. We conjecture that the bias in RRMC converges faster than the
 variance when decreasing $h$.
 
@@ -1331,7 +1347,7 @@ variance when decreasing $h$.
 %     (\ref{fig:mainD explosion}).
 %     In alternating RRMC we use integral equations of overlapping domains see Figure
 %     (\ref{fig:alternating RRMC}) and communicate boundary conditions in the outer recursion.
-%     \begin{figure}[ht!]
+%     \begin{figure}[h!]
 %         \centering
 %         \includegraphics[width=0.8\textwidth]{tikz figures/local RRMC/axis.pdf}
 %         \caption{}
@@ -1422,7 +1438,7 @@ it to be ineffective.
         \int_{t_{n}}^{t}  e^{D(s-t)}(A+D)x(t_{n})ds = D^{-1}(I-e^{D(t_{n}-t)})(A+D)x(t_{n}).
     \end{equation}
 
-    Note that $D$ may be chosen differently for every recursion.
+    Note that $D$ may be chosen differently for every outer recursion.
 \end{definition}
 
 \begin{example}[DRRMC] \label{ex:DRRMC}
@@ -1468,7 +1484,7 @@ it to be ineffective.
     (\ref{eq: CV DRRMC}) implemented with recursion in recursion
     on Figure \ref{fig:DRRMC}.
 
-    \begin{figure}[ht!]
+    \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/DRRMC.png}
         \caption{Log-log plot of the error of example (\ref{ex:DRRMC}).
@@ -1709,7 +1725,7 @@ from (\ref{lem:BM HE}) efficiently and extend this to paths.
     for a parabolic barrier by simulating Brownian motion with the Euler scheme. We plotted
     this in Figure \ref{fig:Euler first passage para}.
 
-    \begin{figure}[ht!]
+    \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/Euler first passage para.png}
         \caption{ $50$ realizations of Euler first passage sampling with step size $0.001$.}
@@ -1760,7 +1776,7 @@ from (\ref{lem:BM HE}) efficiently and extend this to paths.
     than the maximum. \\
     \pythoncode{python code/sample_recu_para.py}
 
-    \begin{figure}[ht!]
+    \begin{figure}[h!]
         \centering
         \includegraphics[width=1\textwidth]{plots/recursive first passage para.png}
         \caption{ $50000$ of realizations of recursive first passage sampling produced
@@ -1791,7 +1807,7 @@ from (\ref{lem:BM HE}) efficiently and extend this to paths.
     In example (\ref{ex:recursive first passage sampling}) it is possible to keep
     track of the average because it scales and translates with our base first passage sampler.
 
-    \begin{figure}[ht!]
+    \begin{figure}[h!]
         \centering
         \includegraphics[width=1\textwidth]{plots/recursive first passage average para.png}
         \caption{ $10000$ of realizations of recursive first passage sampling (for the average).
@@ -1818,7 +1834,7 @@ from (\ref{lem:BM HE}) efficiently and extend this to paths.
     This is the same as example (\ref{ex:recursive first passage sampling}) but now we have
     to keep track of the whole resampled Euler scheme generated paths.
 
-    \begin{figure}[ht!]
+    \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/path stitching para.png}
         \caption{ $10$ paths build with path stitching build out of
@@ -1867,7 +1883,7 @@ with a base sampler can reduce precomputation requirements.
 
 % \selectlanguage{Dutch}
 \begin{abstract}
-    Also need a dutch abstract.
+    \input{dutch_abstract.tex}
 \end{abstract}
 
 % \selectlanguage{English}
