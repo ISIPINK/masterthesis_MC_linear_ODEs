@@ -148,7 +148,7 @@ Notations utilized include:
                   0 & \text{ if } x<0 \\
                   1 & \text{ else }
               \end{cases}$
-    \item i.i.d. = independent identically distributed.
+    \item i.i.d. = independent identically distributed
     \item $U \sim \text{Uniform}(0,1)$
     \item IVP = Initial Value Problem
     \item MC = Monte Carlo
@@ -169,7 +169,7 @@ by \citeauthor{sawhney_grid-free_2022}
 which introduces the walk-on-sphere method for solving second-order
 elliptic PDEs with varying coefficients and Dirichlet boundary conditions.
 Their techniques have shown high accuracy even in the presence of geometrically
-complex boundary conditions. We focus on studying the underlying
+complex boundary conditions. We focus on the underlying
 mechanics of these Monte Carlo techniques.
 
 \begin{related}[MC for IVPs ODEs]
@@ -182,8 +182,7 @@ mechanics of these Monte Carlo techniques.
 
         \item \citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011}
               \cite{daun_randomized_2011} paper describes a randomized algorithm that
-              achieves optimal order of convergence, in the sense
-              of classical methods, by using polynomial
+              achieves optimal order of convergence by using polynomial
               extrapolation and control variates.
 
         \item \citeauthor{ermakov_monte_2019}'s \citeyear{ermakov_monte_2019}
@@ -399,9 +398,14 @@ additive branching recursion in RRVEs (refer to (\ref{ex:coupled splitting})).
 \begin{definition}[control variates] \label{CV}
     Define control variating $f(X)$ with $\tilde{f}$ an approximation of $f$ as:
     \begin{equation}
-        f(X) \rightarrow f(X)-\tilde{f}(X) + E[\tilde{f}(X)].
+        f(X) \rightarrow (f-\tilde{f})(X) + E[\tilde{f}(X)].
     \end{equation}
+
+    Note that control variating requires the evaluation of
+    $E[\tilde{f}(X)]$. When this is estimated instead of evaluated
+    exactly, we refer to it as $2$-level MC.
 \end{definition}
+
 
 \begin{example}[control variate on (\ref{recursive RV})] \label{ex:CV}
     To create a control variate for Equation (\ref{recursive RV}) that
@@ -439,7 +443,8 @@ enhanced with control variates based on the trapezoidal rule.
 \begin{definition}[MC trapezoidal rule]
     We define the MC trapezoidal rule for approximating the integral
     of function $f$ over the interval $[x, x+\Delta x]$ with a Russian roulette rate
-    $l$ as follows:
+    $l$ and $\tilde{f}$ the linear approximation of $f$ corresponding
+    to the trapezoidal rule as follows:
 
     \begin{align}
          & \int_{x}^{x+\Delta x} f(s) ds                                       \\
@@ -474,12 +479,12 @@ there are $\text{Binomial}(n,\frac{1}{l})$ additional function calls.
     and a Russian roulette rate $l$ as follows:
 
     \begin{align}
-        \int_{a}^{b} f(s) ds \approx \Delta x \sum_{x} & \frac{f(x) + f(x+dx)}{2}      \\
+        \int_{a}^{b} f(s) ds \approx \Delta x \sum_{x} & \frac{f(x) + f(x+\Delta x)}{2} \\
                                                        & + l B\left(\frac{1}{l}\right)
-        \left(f(S_x) - f(x) - \frac{S_x - x}{dx}(f(x+dx) - f(x))\right),
+        \left(f(S_x) - f(x) - \frac{S_x - x}{\Delta x}(f(x+\Delta x) - f(x))\right),
     \end{align}
 
-    where $S_x \sim \text{Uniform}(x,x+dx)$.
+    where $S_x \sim \text{Uniform}(x,x+\Delta x)$.
 
 \end{definition}
 
@@ -1597,7 +1602,7 @@ Figure \ref{fig:Euler first passage para} shows how the Dirichlet condition
 is defined for parabola but reverse in time.
 
 
-\begin{lemma}[Brownian motion and heat equation] \label{lem:BM HE}
+\begin{lemma}[Brownian motion and the heat equation] \label{lem:BM HE}
     For problem (\ref{def:heat equation}) if $ |\psi|< \infty$
     there holds
 
@@ -1881,13 +1886,13 @@ space and at different scales. Just accelerating a classic Euler scheme at criti
 with a base sampler can reduce precomputation requirements.
 
 
+\newpage
 % \selectlanguage{Dutch}
 \begin{abstract}
     \input{dutch_abstract.tex}
 \end{abstract}
 
 % \selectlanguage{English}
-\newpage
 \printbibliography
 \newpage
 
