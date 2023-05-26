@@ -340,7 +340,7 @@ less computationally expensive approximation sometimes.
 
 \begin{pythonn}[implementation of (\ref{ex: russian roulette})] \label{RRpython}
     \pythoncode{python code/RR_ydy.py}
-    Interestingly, $Y(t)$ is constrained to take on only integer values.
+    Interestingly, $\forall t \le 1:Y(t)$ is constrained to take on only integer values.
     This is visually clear in Figure \ref{fig:russian roulette}.
     \begin{figure}[h!]
         \centering
@@ -744,9 +744,9 @@ particularly interesting and has received relatively little attention.
 
 \begin{technique}[SALT]
     Sequential Approximation in L-Two (SALT) is an adaptive MC technique
-    that builds control variates with a (bi-) orthonormal basis. The
+    that builds control variates with a (bi-)orthonormal basis. The
     rough idea behind it is that calculating coefficients for
-    a (bi-) orthonormal basis can be found by MC integration and
+    a (bi-)orthonormal basis can be found by MC integration and
     the current estimate of those coefficients can accelerate MC integration.
     It can be seen as an interesting case of stochastic gradient descent.
 \end{technique}
@@ -768,8 +768,6 @@ particularly interesting and has received relatively little attention.
     order for a MC trapezoidal rule is discussed. We are
     uncertain whether this improvement is similar to ours.
     Further examination would be needed.
-    Our MC trapezoidal rule easily generalizes to higher
-    dimensions.
 \end{related}
 
 Our current method for handling non-linearity, as demonstrated
@@ -789,24 +787,24 @@ each with its own set of benefits and drawbacks.
 % When it comes to recursive
 % MC, tree regrowing is particularly noteworthy.
 
-\begin{technique}[tree regrowing]
+\begin{technique}[checkpointing]
     The structure of branching recursion can be captured by a tree. Storing that tree
     in memory can be expensive. In recursion, you only need to retrace steps
-    $1$ by $1$ therefore you only need local parts of the recursion tree. Tree
-    regrowing tries to alleviate memory issues by instead storing the whole
+    $1$ by $1$ therefore you only need local parts of the recursion tree.
+    Checkpointing tries to alleviate memory issues by instead storing the whole
     tree only storing seeds (of the random generator) of parts of the
     tree and growing them when needed.
 \end{technique}
 
 
 \begin{related}[branching tail recursion]
-    Tree regrowing appears in
+    Checkpointing appears in
     \cite{vicini_path_2021}.
-    This blog discusses branching tail recursion:
-    \url{https://jeroenvanwijgerden.me/post/recursion-1/}.
+    % This blog discusses branching tail recursion:
+    % \url{https://jeroenvanwijgerden.me/post/recursion-1/}.
 \end{related}
 
-\section{Ordinary Differential Equations }
+\section{Ordinary Differential Equations}
 
 %\subsection{Linear Recursive Integrals}
 %We have an lgorithm in mind for this case based on coupled recursion on disjunct sets.
@@ -1229,8 +1227,6 @@ this behavior.
 
 \begin{pythonn}[implementation of (\ref{ex:RRMC IVP})] \label{py:RRMC IVP}
     \pythoncode{python code/RRMC_IVP.py}
-    We measured the convergence speed to be $O\left(\frac{h^{1.5}}{\sqrt{\text{nsim}}}
-        \right)$.
 
     \begin{figure}[h!]
         \centering
@@ -1241,9 +1237,11 @@ this behavior.
     \end{figure}
 \end{pythonn}
 
-While a $1.5$ order of convergence is commendable,
+We measured the convergence speed of example (\ref{ex:RRMC IVP}) to
+be $O\left(\frac{h^{1.5}}{\sqrt{\text{nsim}}} \right)$.
+While a $1.5$ order of convergence is commendable for an unbiased method,
 it raises the question of how to attain even higher convergence orders.
-It is possible to emulate classical methods in order to
+It is possible to emulate classical methods to
 achieve a higher order of convergence. This can be accomplished by eliminating
 lower order terms using control variates, as demonstrated in the MC trapezoidal
 rule (see \ref{MCtrap}).
@@ -1282,7 +1280,8 @@ rule (see \ref{MCtrap}).
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/CV RRMC IVP.png}
-        \caption{Log-log plot of example (\ref{ex:CV RRMC IVP}).}
+        \caption{Log-log plot of the error for example
+            (\ref{ex:CV RRMC IVP}) at $Y(10)$.}
         \label{fig:CV RRMC IVP}
     \end{figure}
 \end{example}
