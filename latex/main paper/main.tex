@@ -126,7 +126,7 @@ which can be used as an unbiased stopping mechanism.
 \end{pythonn}
 
 One issue with (\ref{python eps ydy}) is that the variance
-increases rapidly as $t$ increases. However, this issue is resolved
+increases rapidly as $t$ increases. This issue gets resolved
 later (see (\ref{ex:RRMC IVP})). It is important to note that
 (\ref{python eps ydy}) retains desirable properties of unbiased Monte
 Carlo methods, such as being embarrassingly parallel and having simple
@@ -549,7 +549,7 @@ the reverse is not true.
 \subsection{Unbiased Non-Linearity}
 In this subsection, we present techniques for handling non-linearity.
 It may appear that unbiased approaches are only applicable to linear
-problems. However, by utilizing independent samples, it becomes possible to handle
+problems. By utilizing independent samples, it becomes possible to handle
 polynomial non-linearities.
 
 While transforming non-linearities into polynomials may not always be straightforward,
@@ -618,7 +618,7 @@ or approximate polynomial non-linearities.
             \left(1+ ...\right)
             \right)
             \right)
-        \right]              \\
+            \right]
     \end{align}
     What is inside the expectation is something that we can simulate with simulations of $X_{j}$.
 \end{example}
@@ -1517,7 +1517,7 @@ that RRMC in this form outperforms other classic methods.
 The reason for this is that RRMC involves
 many function calls in the inner recursion without updating the current control
 variate. Proper testing requires precise tuning of the MC techniques utilized.
-However, we do believe that RRMC could potentially offer advantages in atypical scenarios.
+We do believe that RRMC could potentially offer advantages in atypical scenarios.
 In the following example, we examine an ODE with a random parameter.
 
 \begin{example}[random ODEs] \label{ex:random ode}
@@ -1603,13 +1603,13 @@ is defined for parabola but reverse in time.
 
 
 \begin{lemma}[Brownian motion and the heat equation] \label{lem:BM HE}
-    For problem (\ref{def:heat equation}) if $ |\psi|< \infty$
-    there holds
+    For problem (\ref{def:heat equation}) if $ |\psi|$ is bounded
+    then there holds:
 
     \begin{equation}
         u(x,t)=E[\psi(Y_{\tau},\tau) | Y_{t} =x].
     \end{equation}
-    With $dY_{s} = dW_{-s},\tau = \sup\{s | (Y_{s},s) \notin \Omega\}$ .
+    With $dY_{s} = dW_{-s},\tau = \sup\{s | (Y_{s},s) \notin \Omega\}$.
 \end{lemma}
 
 
@@ -1653,7 +1653,7 @@ is defined for parabola but reverse in time.
              & \text{ else }.
         \end{cases}
     \end{equation}
-    This is a RRVE, $Z$ has finite variance because $ |\psi|< \infty$
+    This is a RRVE, $Z$ has finite variance because $ |\psi|$ is bounded
     and $E[Z(x,t)]$ is the solution to the discretized heat equation. Taking the limit
     makes the discrete solution converge to the real solution.
     For (\ref{eq:RRVE discrete heat equation }) the limit
