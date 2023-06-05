@@ -1,0 +1,118 @@
+\documentclass[20pt]{beamer}
+\usepackage[]{bookmark}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage[dutch]{babel}
+\usepackage{sansmathaccent}
+\usepackage{graphicx}
+
+\pdfmapfile{+sansmathaccent.map}
+
+\title{RMC voor lineaire ODEs}
+\author{Isidoor Pinillo Esquivel }
+\usetheme{Madrid}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}
+    \frametitle{Grid-Free MC}
+    \begin{itemize}
+        \item toepassingen
+        \item voordelen
+        \item limitaties
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{MC}
+    \begin{itemize}
+        \item voorbeeld
+        \item toepassingen
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Russische Roulette}
+    \begin{itemize}
+        \item SGD
+        \item voorbeeld
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Control variate}
+    \begin{itemize}
+        \item SGD
+        \item voorbeeld
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{RMSE vs fout begrenzing}
+    \begin{itemize}
+        \item verschil
+        \item steins paradox (yt video) lastig om over na te denken
+        \item MSE decompositie
+        \item tabel: $0$ variantie vs $0$ bias
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Trapezium MC}
+    \begin{itemize}
+        \item def
+        \item kleine afleiding
+        \item tabel: $0$ variantie vs $0$ bias
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Unbiased non-linearity}
+    \begin{itemize}
+        \item exponentiele voorbeeld + screenshot paper
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{RMC voorbeeld}
+    \vspace{-2cm}
+    \begin{align}
+        \action<+->{y'            & =y  }                        \\
+        \action<+->{y(t)          & =y(0)+ \int_{0}^{t} y(s)ds } \\
+        \action<+->{\text{wil } Y & : E[Y(t)] = y(t)}            \\
+        \action<+->{Y(t)          & =y(0)+tY(S) } \label{RRVE}   \\
+        \action<.->{S             & \sim \text{Uniform}(0,t)}
+    \end{align}
+\end{frame}
+
+\begin{frame}
+    \frametitle{RMC voorbeeld}
+    \vspace{-2cm}
+    \begin{align}
+        \action<+->{Y(t)    & =y(0)+tY(S) }             \\
+        \action<+->{ \infty & \text{ recursie } }       \\
+        \action<+->{ Y(t)   & = 1 + B(t)Y(Ut)}          \\
+        \action<.->{ t      & < 1}                      \\
+        \action<.->{B(t)    & \sim \text{Bernoulli}(t)}
+    \end{align}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{RRMC voorbeeld}
+\end{frame}
+
+\begin{frame}
+    \frametitle{DRRMC voorbeeld}
+\end{frame}
+
+\end{document}
