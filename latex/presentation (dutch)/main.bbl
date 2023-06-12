@@ -1,0 +1,95 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global}
+    \entry{sawhney_grid-free_2022}{article}{}
+      \name{author}{4}{}{%
+        {{un=0,uniquepart=base,hash=2f14a29767d9121420ab32c1dc4fae87}{%
+           family={Sawhney},
+           familyi={S\bibinitperiod},
+           given={Rohan},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=16a31f21d272318a250fcde2ebc04400}{%
+           family={Seyb},
+           familyi={S\bibinitperiod},
+           given={Dario},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=a4203652e4fe6f9a55d6d2f8dcedf6af}{%
+           family={Jarosz},
+           familyi={J\bibinitperiod},
+           given={Wojciech},
+           giveni={W\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=581404e2a130ce3b3520c26831476f4e}{%
+           family={Crane},
+           familyi={C\bibinitperiod},
+           given={Keenan},
+           giveni={K\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \strng{namehash}{1a79943f7173870c3084734502fbe4ac}
+      \strng{fullhash}{99773f2c850731c2a2b8c6751d0465a0}
+      \strng{bibnamehash}{1a79943f7173870c3084734502fbe4ac}
+      \strng{authorbibnamehash}{1a79943f7173870c3084734502fbe4ac}
+      \strng{authornamehash}{1a79943f7173870c3084734502fbe4ac}
+      \strng{authorfullhash}{99773f2c850731c2a2b8c6751d0465a0}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Partial differential equations (PDEs) with spatially varying coefficients arise throughout science and engineering, modeling rich heterogeneous material behavior. Yet conventional PDE solvers struggle with the immense complexity found in nature, since they must first discretize the problem---leading to spatial aliasing, and global meshing/sampling that is costly and error-prone. We describe a method that approximates neither the domain geometry, the problem data, nor the solution space, providing the exact solution (in expectation) even for problems with extremely detailed geometry and intricate coefficients. Our main contribution is to extend the walk on spheres (WoS) algorithm from constant- to variable-coefficient problems, by drawing on techniques from volumetric rendering. In particular, an approach inspired by null-scattering yields unbiased Monte Carlo estimators for a large class of 2nd order elliptic PDEs, which share many attractive features with Monte Carlo rendering: no meshing, trivial parallelism, and the ability to evaluate the solution at any point without solving a global system of equations.}
+      \field{issn}{0730-0301, 1557-7368}
+      \field{journaltitle}{ACM Transactions on Graphics}
+      \field{month}{7}
+      \field{number}{4}
+      \field{title}{Grid-free {Monte} {Carlo} for {PDEs} with spatially varying coefficients}
+      \field{urlday}{17}
+      \field{urlmonth}{9}
+      \field{urlyear}{2022}
+      \field{volume}{41}
+      \field{year}{2022}
+      \field{urldateera}{ce}
+      \field{pages}{1\bibrangedash 17}
+      \range{pages}{17}
+      \verb{doi}
+      \verb 10.1145/3528223.3530134
+      \endverb
+      \verb{file}
+      \verb Sawhney e.a. - 2022 - Grid-free Monte Carlo for PDEs with spatially vary.pdf:C\:\\Users\\Admin\\Zotero\\storage\\52QDH9YB\\Sawhney e.a. - 2022 - Grid-free Monte Carlo for PDEs with spatially vary.pdf:application/pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://dl.acm.org/doi/10.1145/3528223.3530134
+      \endverb
+      \verb{url}
+      \verb https://dl.acm.org/doi/10.1145/3528223.3530134
+      \endverb
+      \keyw{monte carlo,PDE,walk on spheres,rendering}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+
