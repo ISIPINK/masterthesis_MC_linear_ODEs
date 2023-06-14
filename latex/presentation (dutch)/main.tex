@@ -210,11 +210,12 @@
 
 \begin{frame}
     \frametitle{Trapezium Monte Carlo}
-    \vspace{-0.9cm}
+    \vspace{-0.5cm}
+    \fontsize{15}{17}\selectfont
     \begin{equation}
-        \int_{0}^{1} e^{s} ds, \quad \Delta x = h
+        \int_{0}^{1} e^{s} ds, \quad \Delta x = h, \quad l = 100
     \end{equation}
-    \vspace{-1cm}
+    \vspace{-0.5cm}
     \begin{figure}[h]
         \centering
         \includegraphics[width=0.8\textwidth]{"imgs/trapMC.png"}
@@ -223,18 +224,22 @@
 
 \begin{frame}
     \frametitle{Trapezium Monte Carlo}
+    \vspace{-2cm}
     \begin{align}
-        \hspace{0.3cm}\|f\|_2 & \leqslant \sqrt{\|f\|_1 \|f\|_{\infty}} \\
-        \|f\|_2               & = O(h^{p + \frac{d}{2}})                \\
-        \|f\|_{\infty}        & = O(h^{p })                             \\
-                              & \downarrow                              \\
-        \|f\|_1               & = O\left(h^{p+d}\right) ?
+        \action<+->{\|f\|_{\infty}        & = O_{p}(h^{k })                          } \\
+        \action<.->{\|f\|_2               & = O_{p}(h^{k + \frac{d}{2}})  }            \\
+        \action<+->{\hspace{0.3cm}\|f\|_2 & \leqslant \sqrt{\|f\|_1 \|f\|_{\infty}}  } \\
+        \action<+->{                      & \downarrow}                                \\
+        \action<.->{\|f\|_1               & = O_{p}\left(h^{k+d}\right) ?}
     \end{align}
+    \action<+->{\cite{heinrich_optimal_2001}
+    }
 \end{frame}
+
 
 % 3 min
 \begin{frame}
-    \frametitle{RMC voorbeeld}
+    \frametitle{RMC Voorbeeld}
     \vspace{-2cm}
     \begin{align}
         \action<+->{y'            & =y  }                        \\
@@ -246,7 +251,7 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{RMC voorbeeld}
+    \frametitle{RMC Voorbeeld}
     \vspace{-2cm}
     \begin{align}
         \action<+->{Y(t)    & =y(0)+tY(S) }             \\
@@ -255,18 +260,36 @@
         \action<.->{ t      & < 1}                      \\
         \action<.->{B(t)    & \sim \text{Bernoulli}(t)}
     \end{align}
-    tekening
 \end{frame}
 
+\begin{frame}
+    \frametitle{RMC Voorbeeld}
+    \vspace{-1cm}
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=\textwidth]{"imgs/russian roulette example.png"}
+    \end{figure}
+\end{frame}
 
 % 4 min
 \begin{frame}
-    \frametitle{RRMC voorbeeld}
+    \frametitle{RRMC Voorbeeld}
+    \fontsize{15}{17}\selectfont
+    \begin{align}
+        y'       & = y, \quad y(0) = 1, \quad (t_{n})            \\
+        y(t )    & = y(t_{n}) + \int_{t_{n}}^{t}y(s)ds           \\
+        Y_{n}(t) & = y(t_{n}) + (t-t_{n})Y_{n}((t-t_{n})U+t_{n}) \\
+        Y_{n}(t) & = y_{n} + (t-t_{n})Y_{n}((t-t_{n})U+t_{n})    \\
+        y_{n}    & = \begin{cases}
+                         Y_{n-1}(t_{n}) & \text{ if } n \neq 0 \\
+                         y(t_{0})       & \text{ if } n = 0
+                     \end{cases}
+    \end{align}
 \end{frame}
 
 % 6 min
 \begin{frame}
-    \frametitle{Unbiased non-linearity}
+    \frametitle{Unbiased Non-Linearity}
     \begin{itemize}
         \item exponentiele voorbeeld + screenshot paper
         \item VRE
