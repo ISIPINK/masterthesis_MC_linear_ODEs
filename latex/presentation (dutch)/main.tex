@@ -226,11 +226,11 @@
     \frametitle{Trapezium Monte Carlo}
     \vspace{-2cm}
     \begin{align}
-        \action<+->{\|f\|_{\infty}        & = O_{p}(h^{k })                          } \\
-        \action<.->{\|f\|_2               & = O_{p}(h^{k + \frac{d}{2}})  }            \\
+        \action<+->{\|f\|_{\infty}        & = O(h^{k })                          }     \\
+        \action<.->{\|f\|_2               & = O(h^{k + \frac{d}{2}})  }                \\
         \action<+->{\hspace{0.3cm}\|f\|_2 & \leqslant \sqrt{\|f\|_1 \|f\|_{\infty}}  } \\
-        \action<+->{                      & \downarrow}                                \\
-        \action<.->{\|f\|_1               & = O_{p}\left(h^{k+d}\right) ?}
+        \action<+->{                      & \downarrow}   \nonumber                    \\
+        \action<.->{\|f\|_1               & = O\left(h^{k+d}\right) ?}
     \end{align}
     \action<+->{\cite{heinrich_optimal_2001}
     }
@@ -263,7 +263,7 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{RMC Voorbeeld}
+    \frametitle{RMC Plot}
     \vspace{-1cm}
     \begin{figure}[h]
         \centering
@@ -271,31 +271,75 @@
     \end{figure}
 \end{frame}
 
+\begin{frame}
+    \frametitle{Recursie in Recursie}
+
+    \begin{itemize}
+        \item Stochastic Variance Reduced Gradient Descent
+              \begin{align}
+                   & \nabla f(x)   \nonumber                                          \\
+                   & =E[\nabla f_{J}(x)-\nabla f_{J}(\tilde{x})] +\nabla f(\tilde{x})
+              \end{align}
+        \item Next Flight (Rendering)
+    \end{itemize}
+\end{frame}
+
 % 4 min
 \begin{frame}
     \frametitle{RRMC Voorbeeld}
-    \fontsize{15}{17}\selectfont
+    \begin{center}
+        \begin{tikzpicture}
+            \draw (0,0) -- (10,0); % horizontal line
+            \foreach \x in {0,1,...,10} % loop over labels
+            \draw (\x,-0.1) -- (\x,0.1) node[above] {$t_{\x}$}; % draw tick and label
+        \end{tikzpicture}
+    \end{center}
+    \vspace{-0.5cm}
+    \pause
     \begin{align}
-        y'       & = y, \quad y(0) = 1, \quad (t_{n})            \\
-        y(t )    & = y(t_{n}) + \int_{t_{n}}^{t}y(s)ds           \\
-        Y_{n}(t) & = y(t_{n}) + (t-t_{n})Y_{n}((t-t_{n})U+t_{n}) \\
-        Y_{n}(t) & = y_{n} + (t-t_{n})Y_{n}((t-t_{n})U+t_{n})    \\
-        y_{n}    & = \begin{cases}
-                         Y_{n-1}(t_{n}) & \text{ if } n \neq 0 \\
-                         y(t_{0})       & \text{ if } n = 0
-                     \end{cases}
+        \action<+->{
+        y_{n}                       & = \begin{cases}
+                                                Y_{n-1}(t_{n},y_{n-1}) & \text{ als } n \neq 0        \\
+                                                y(t_{0})               & \text{ als } n = 0 \nonumber
+                                            \end{cases} \\
+        }                                                                                     \\
+        \action<+->{ Y_{n}(t,y_{n}) & = y_{n} + \Delta t Y_{n}(S_{n},y_{n}) }
     \end{align}
 \end{frame}
 
-% 6 min
 \begin{frame}
-    \frametitle{Unbiased Non-Linearity}
+    \frametitle{RRMC Plot}
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.8\textwidth]{imgs/RRMC IVP.png}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{CV RRMC Plot}
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.9\textwidth]{imgs/CV RRMC IVP.png}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Limitaties}
     \begin{itemize}
-        \item exponentiele voorbeeld + screenshot paper
-        \item VRE
-        \item Feynman-Kac formule
-        \item Magnus series
+        \item Stabiliteit $\rightarrow$ exp integrator
+        \item Efficiëntie $\rightarrow$ ???
     \end{itemize}
 \end{frame}
+
+% 6 min
+% \begin{frame}
+%     \frametitle{Unbiased Non-Linearity}
+%     \begin{itemize}
+%         \item exponentiele voorbeeld + screenshot paper
+%         \item VRE
+%         \item Feynman-Kac formule
+%         \item Magnus series
+%     \end{itemize}
+% \end{frame}
 
 \end{document}
