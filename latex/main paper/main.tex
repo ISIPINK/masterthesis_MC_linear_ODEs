@@ -31,7 +31,7 @@ style=alphabetic,
 
 \renewcommand{\bibfont}{\footnotesize}
 
-
+\definecolor{darkgreen}{RGB}{0,100,0}
 \usepackage{amsmath,amssymb,amsthm}
 \input{environments.tex}
 
@@ -59,12 +59,23 @@ style=alphabetic,
 
 \begin{abstract}
     \input{english_abstract.tex}
+
+    \textcolor{darkgreen}{
+        This version is where we informally self-criticize, mention shortcomings,
+        doubts and intuition. Comments will be in dark green like this one.
+    } \\
 \end{abstract}
 
 
 \section{Introduction}
 
 \subsection{Introductory Example}
+\textcolor{darkgreen}{
+    The more formal introduction is with
+    Von Neumann series. We maybe should have mentioned
+    Von Neumann series exist.
+} \\
+
 In this subsection, we introduce recursive Monte Carlo
 with the following  initial value problem:
 
