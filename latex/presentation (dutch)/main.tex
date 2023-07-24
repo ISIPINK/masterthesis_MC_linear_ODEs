@@ -68,16 +68,16 @@
 \begin{frame}
     \frametitle{Waarom Monte Carlo?}
     \begin{itemize}
-        \item paralleliseerbaar
-        \item dimensie onafhankelijke convergentie
-        \item complexe geometrie
+        \item Paralleliseerbaar
+        \item Hoge dimensie
+        \item Complexe geometrie
     \end{itemize}
 \end{frame}
 
 \begin{frame}
     \frametitle{Waarom ODEs?}
     \begin{itemize}
-        \item grid-free + tijdafhankelijkheid?
+        \item Grid-free + tijdafhankelijkheid?
         \item ODEs simpeler als PDEs
     \end{itemize}
 \end{frame}
@@ -174,27 +174,27 @@
     \end{align}
 \end{frame}
 
-\begin{frame}
-    \frametitle{Trapezium Monte Carlo}
-    \begin{columns}[t]
-        \begin{column}{0.55\textwidth}
-            \vspace*{-2cm}
-            \begin{figure}[h]
-                \includegraphics[height=0.8\textheight]{"imgs/control_variate.png"}
-            \end{figure}
-        \end{column}
-        \begin{column}{0.45\textwidth}
-            \fontsize{14}{16}\selectfont
-            \begin{align*}
-                \hspace{0.1cm} & \textcolor{blue!95!black}{\int_{x}^{x+\Delta x} f(s) ds}               \\
-                               & = \textcolor{orange!95!black}{\Delta x \frac{f(x) + f(x+\Delta x)}{2}} \\
-                               & +E \left[\textcolor{red!90!black}{l B\left( \frac{1}{l}\right)}
-                    \textcolor{green!80!black}{(f(S_x) - \tilde{f}(S_x))}\right]
-            \end{align*}
-        \end{column}
-    \end{columns}
+% \begin{frame}
+%     \frametitle{Trapezium Monte Carlo}
+%     \begin{columns}[t]
+%         \begin{column}{0.55\textwidth}
+%             \vspace*{-2cm}
+%             \begin{figure}[h]
+%                 \includegraphics[height=0.8\textheight]{"imgs/control_variate.png"}
+%             \end{figure}
+%         \end{column}
+%         \begin{column}{0.45\textwidth}
+%             \fontsize{14}{16}\selectfont
+%             \begin{align*}
+%                 \hspace{0.1cm} & \textcolor{blue!95!black}{\int_{x}^{x+\Delta x} f(s) ds}               \\
+%                                & = \textcolor{orange!95!black}{\Delta x \frac{f(x) + f(x+\Delta x)}{2}} \\
+%                                & +E \left[\textcolor{red!90!black}{l B\left( \frac{1}{l}\right)}
+%                     \textcolor{green!80!black}{(f(S_x) - \tilde{f}(S_x))}\right]
+%             \end{align*}
+%         \end{column}
+%     \end{columns}
 
-\end{frame}
+% \end{frame}
 
 
 \begin{frame}
@@ -222,19 +222,19 @@
     \end{figure}
 \end{frame}
 
-\begin{frame}
-    \frametitle{Trapezium Monte Carlo}
-    \vspace{-2cm}
-    \begin{align}
-        \action<+->{\|f\|_{\infty}        & = O(h^{k })                          }     \\
-        \action<.->{\|f\|_2               & = O(h^{k + \frac{d}{2}})  }                \\
-        \action<+->{\hspace{0.3cm}\|f\|_2 & \leqslant \sqrt{\|f\|_1 \|f\|_{\infty}}  } \\
-        \action<+->{                      & \downarrow}   \nonumber                    \\
-        \action<.->{\|f\|_1               & = O\left(h^{k+d}\right) ?}
-    \end{align}
-    \action<+->{\cite{heinrich_optimal_2001}
-    }
-\end{frame}
+% \begin{frame}
+%     \frametitle{Trapezium Monte Carlo}
+%     \vspace{-2cm}
+%     \begin{align}
+%         \action<+->{\| \text{fout}\|_{\infty} & = O(h^{k })                          }     \\
+%         \action<.->{\|\text{fout}\|_2         & = O(h^{k + \frac{d}{2}})  }                \\
+%         \action<+->{\hspace{0.3cm}\|.\|_2     & \leqslant \sqrt{\|.\|_1 \|.\|_{\infty}}  } \\
+%         \action<+->{                          & \downarrow}   \nonumber                    \\
+%         \action<.->{\|\text{fout}\|_1         & = O\left(h^{k+d}\right) ?}
+%     \end{align}
+%     \action<+->{\cite{heinrich_optimal_2001}
+%     }
+% \end{frame}
 
 
 % 3 min
@@ -275,12 +275,12 @@
     \frametitle{Recursie in Recursie}
 
     \begin{itemize}
+        \item Next Flight (Rendering)
         \item Stochastic Variance Reduced Gradient Descent
               \begin{align}
                    & \nabla f(x)   \nonumber                                          \\
                    & =E[\nabla f_{J}(x)-\nabla f_{J}(\tilde{x})] +\nabla f(\tilde{x})
               \end{align}
-        \item Next Flight (Rendering)
     \end{itemize}
 \end{frame}
 
@@ -326,8 +326,17 @@
 \begin{frame}
     \frametitle{Limitaties}
     \begin{itemize}
-        \item Stabiliteit $\rightarrow$ exp integrator
-        \item Efficiëntie $\rightarrow$ ???
+        \item Stabiliteit $\rightarrow$ \cite{kettunen_unbiased_2021}
+              (efficiënte unbiased $e^{\int A(s) ds } y(0)$ )
+        \item Biased voor non-lineaire ODEs
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Toekomstig Werk}
+    \begin{itemize}
+        \item Random ODEs
+        \item Specifieke ODEs
     \end{itemize}
 \end{frame}
 

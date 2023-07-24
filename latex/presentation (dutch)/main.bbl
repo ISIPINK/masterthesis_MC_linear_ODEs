@@ -19,59 +19,77 @@
 
 \refsection{0}
   \datalist[entry]{nyt/global//global/global}
-    \entry{heinrich_optimal_2001}{misc}{}
-      \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=d2366e969003a688a9301ca3e3117f0b}{%
-           family={Heinrich},
-           familyi={H\bibinitperiod},
-           given={S.},
-           giveni={S\bibinitperiod},
+    \entry{kettunen_unbiased_2021}{article}{}
+      \name{author}{4}{}{%
+        {{un=0,uniquepart=base,hash=23afc84944b4c7d301421491babaf2c2}{%
+           family={Kettunen},
+           familyi={K\bibinitperiod},
+           given={Markus},
+           giveni={M\bibinitperiod},
            givenun=0}}%
-        {{un=0,uniquepart=base,hash=b24aaab3bdeb70cd4bb33570a25f6f13}{%
+        {{un=0,uniquepart=base,hash=2a671231ec21eed769319df74f07e924}{%
+           family={d'Eon},
+           familyi={d\bibinitperiod},
+           given={Eugene},
+           giveni={E\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=0a6b526649063fb6ed8b508d4e46442c}{%
+           family={Pantaleoni},
+           familyi={P\bibinitperiod},
+           given={Jacopo},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=abeaf2fa24d42762b83c477b49325192}{%
            family={Novak},
            familyi={N\bibinitperiod},
-           given={E.},
-           giveni={E\bibinitperiod},
+           given={Jan},
+           giveni={J\bibinitperiod},
            givenun=0}}%
       }
       \list{language}{1}{%
         {en}%
       }
-      \list{publisher}{1}{%
-        {arXiv}%
-      }
-      \strng{namehash}{2c383ea406fc3d938b8c5ac28b2560be}
-      \strng{fullhash}{2c383ea406fc3d938b8c5ac28b2560be}
-      \strng{bibnamehash}{2c383ea406fc3d938b8c5ac28b2560be}
-      \strng{authorbibnamehash}{2c383ea406fc3d938b8c5ac28b2560be}
-      \strng{authornamehash}{2c383ea406fc3d938b8c5ac28b2560be}
-      \strng{authorfullhash}{2c383ea406fc3d938b8c5ac28b2560be}
-      \field{sortinit}{H}
-      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \strng{namehash}{c20a94d70428e39e76c3cd512e39971a}
+      \strng{fullhash}{a0bb3bf88989f8cfe94f40a00a102949}
+      \strng{bibnamehash}{c20a94d70428e39e76c3cd512e39971a}
+      \strng{authorbibnamehash}{c20a94d70428e39e76c3cd512e39971a}
+      \strng{authornamehash}{c20a94d70428e39e76c3cd512e39971a}
+      \strng{authorfullhash}{a0bb3bf88989f8cfe94f40a00a102949}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
       \field{extradatescope}{labelyear}
       \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{abstract}{We survey old and new results about optimal algorithms for summation of finite sequences and for integration of functions from Hoelder or Sobolev spaces. First we discuss optimal deterministic and randomized algorithms. Then we add a new aspect, which has not been covered before on conferences about (quasi-) Monte Carlo methods: quantum computation. We give a short introduction into this setting and present recent results of the authors on optimal quantum algorithms for summation and integration. We discuss comparisons between the three settings. The most interesting case for Monte Carlo and quantum integration is that of moderate smoothness k and large dimension d which, in fact, occurs in a number of important applied problems. In that case the deterministic exponent is negligible, so the n{\textasciicircum}\{-1/2\} Monte Carlo and the n{\textasciicircum}\{-1\} quantum speedup essentially constitute the entire convergence rate. We observe that -- there is an exponential speed-up of quantum algorithms over deterministic (classical) algorithms, if k/d tends to zero; -- there is a (roughly) quadratic speed-up of quantum algorithms over randomized classical algorithms, if k/d is small.}
-      \field{annotation}{Comment: 13 pages, contribution to the 4th International Conference on Monte Carlo and Quasi-Monte Carlo Methods, Hong Kong 2000}
-      \field{month}{5}
-      \field{note}{arXiv:quant-ph/0105114}
-      \field{title}{Optimal {Summation} and {Integration} by {Deterministic}, {Randomized}, and {Quantum} {Algorithms}}
-      \field{urlday}{19}
-      \field{urlmonth}{3}
+      \field{abstract}{We present an in-depth analysis of the sources of variance in state-of-the-art unbiased volumetric transmittance estimators, and propose several new methods for improving their efficiency. These combine to produce a single estimator that is universally optimal relative to prior work, with up to several orders of magnitude lower variance at the same cost, and has zero variance for any ray with non-varying extinction. We first reduce the variance of truncated power-series estimators using a novel efficient application of U-statistics. We then greatly reduce the average expansion order of the power series and redistribute density evaluations to filter the optical depth estimates with an equidistant sampling comb. Combined with the use of an online control variate built from a sampled mean density estimate, the resulting estimator effectively performs ray marching most of the time while using rarely-sampled higher order terms to correct the bias.}
+      \field{annotation}{Comment: 20 pages}
+      \field{issn}{0730-0301, 1557-7368}
+      \field{journaltitle}{ACM Transactions on Graphics}
+      \field{month}{8}
+      \field{note}{arXiv:2102.10294 [cs]}
+      \field{number}{4}
+      \field{title}{An unbiased ray-marching transmittance estimator}
+      \field{urlday}{18}
+      \field{urlmonth}{6}
       \field{urlyear}{2023}
-      \field{year}{2001}
+      \field{volume}{40}
+      \field{year}{2021}
       \field{urldateera}{ce}
+      \field{pages}{1\bibrangedash 20}
+      \range{pages}{20}
+      \verb{doi}
+      \verb 10.1145/3450626.3459937
+      \endverb
       \verb{file}
-      \verb Heinrich en Novak - 2001 - Optimal Summation and Integration by Deterministic.pdf:C\:\\Users\\Admin\\Zotero\\storage\\LK6RKYIX\\Heinrich en Novak - 2001 - Optimal Summation and Integration by Deterministic.pdf:application/pdf
+      \verb Kettunen e.a. - 2021 - An unbiased ray-marching transmittance estimator.pdf:C\:\\Users\\isido\\Zotero\\storage\\6276WE78\\Kettunen e.a. - 2021 - An unbiased ray-marching transmittance estimator.pdf:application/pdf
       \endverb
       \verb{urlraw}
-      \verb http://arxiv.org/abs/quant-ph/0105114
+      \verb http://arxiv.org/abs/2102.10294
       \endverb
       \verb{url}
-      \verb http://arxiv.org/abs/quant-ph/0105114
+      \verb http://arxiv.org/abs/2102.10294
       \endverb
-      \keyw{Mathematics - Numerical Analysis,Quantum Physics,randomized trapezodial,integration}
+      \keyw{Computer Science - Graphics}
     \endentry
     \entry{sawhney_grid-free_2022}{article}{}
       \name{author}{4}{}{%
@@ -133,7 +151,7 @@
       \verb 10.1145/3528223.3530134
       \endverb
       \verb{file}
-      \verb Sawhney e.a. - 2022 - Grid-free Monte Carlo for PDEs with spatially vary.pdf:C\:\\Users\\Admin\\Zotero\\storage\\52QDH9YB\\Sawhney e.a. - 2022 - Grid-free Monte Carlo for PDEs with spatially vary.pdf:application/pdf
+      \verb Sawhney e.a. - 2022 - Grid-free Monte Carlo for PDEs with spatially vary.pdf:C\:\\Users\\isido\\Zotero\\storage\\52QDH9YB\\Sawhney e.a. - 2022 - Grid-free Monte Carlo for PDEs with spatially vary.pdf:application/pdf
       \endverb
       \verb{urlraw}
       \verb https://dl.acm.org/doi/10.1145/3528223.3530134
