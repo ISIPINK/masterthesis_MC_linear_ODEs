@@ -71,9 +71,9 @@ style=alphabetic,
 
 \subsection{Introductory Example}
 \textcolor{darkgreen}{
-    The more formal introduction is with
+    There is a more formal introduction with
     Von Neumann series. We maybe should have mentioned
-    Von Neumann series exist.
+    Von Neumann series exist. See \cite{ermakov_monte_2021}.
 } \\
 
 In this subsection, we introduce recursive Monte Carlo
@@ -174,6 +174,16 @@ Notations utilized include:
 \end{itemize}
 
 \subsection{Related Work}
+
+\textcolor{darkgreen}{
+    There are many papers that we just don't mention because they aren't worth mentioning.
+    This video on Youtube \url{https://youtu.be/r8dWZX8IGw8?t=946}
+    visualizes related works to covid which is nice to get a broad overview. \\
+    Maybe it would also be nice to explain how the primary motivating work and
+    the choices that we made have led to the different topics in all sections which
+    would explain the cohesion of topics.
+} \\
+
 The primary motivating paper for this work is the work
 by \citeauthor{sawhney_grid-free_2022}
 (\citeyear{sawhney_grid-free_2022}) \cite{sawhney_grid-free_2022},
@@ -228,6 +238,10 @@ mechanics of these Monte Carlo techniques.
 % Maybe add a section for the second section?
 
 \subsection{Contributions}
+\textcolor{darkgreen}{
+    Maybe the discussion of how sections connect or should connect should be done here.
+} \\
+
 A significant part of this thesis is dedicated to informally introducing recursive Monte Carlo
 with plenty of examples.
 The key contribution is an unbiased Monte Carlo method
@@ -276,6 +290,7 @@ Additionally, we introduce recursive first passage sampling.
 \section{Background}
 
 \subsection{Modifying Monte Carlo}
+
 In this subsection, we discuss techniques for modifying RRVEs
 in a way that preserves the expected value of the solution while
 acquiring more desirable properties. \\
@@ -446,6 +461,28 @@ additive branching recursion in RRVEs (refer to (\ref{ex:coupled splitting})).
 % need to fix veach reference see bibliography
 
 \subsection{Monte Carlo Trapezoidal Rule}
+
+\textcolor{darkgreen}{
+    When working on this section we had a vague notion of information complexity
+    which corresponds to statistical complexity we do know from a
+    statical learning course from CMU \cite{ryan_t_lecture_2017}.
+    This subsection misses vital references and results (with definitions) of
+    information complexity of integration for different
+    measures of errors, the curse of dimensionality, what this implies
+    for harder problems than integration and the limitations of this way
+    of analyzing algorithms or methods.  We like the chapter on
+    the curse of dimensionality in
+    \cite{foucart_mathematical_2022}.
+    We also think that the quantum results from \cite{heinrich_optimal_2001}
+    are interesting.\\
+    We also love to add methods that
+    exploit smoothness but we aren't comfortable with them.
+    We like the book that \citeauthor{trefethen_approximation_nodate}
+    (also the author of chebfun package in matlab)
+    wrote \cite{trefethen_approximation_nodate} on
+    chebychev polynomial things.
+} \\
+
 In this subsection, we introduce a MC trapezoidal rule that
 exhibits similar convergence behavior to the methods discussed later.
 The MC trapezoidal rule is essentially a regular Monte Carlo method
@@ -558,6 +595,19 @@ A bound on the error implies a bound on the root-mean-square error, but
 the reverse is not true.
 
 \subsection{Unbiased Non-Linearity}
+
+\textcolor{darkgreen}{
+    Missed an important paper of Nvidia for estimating
+    transmittance \cite{kettunen_unbiased_2021}
+    which is just example \ref{ex:exp int} but efficient.
+    It needs to be extended to matrix exponentials
+    this opens the path to exponential integrator
+    methods \cite{hochbruck_exponential_2010} or maybe even methods
+    that directly estimate the magnus expansion. \\
+    Example \ref{ex:nonlinear example} is a bad example
+    to study RMC because it is too nice.
+} \\
+
 In this subsection, we present techniques for handling non-linearity.
 It may appear that unbiased approaches are only applicable to linear
 problems. By utilizing independent samples, it becomes possible to handle
@@ -647,6 +697,16 @@ or approximate polynomial non-linearities.
 \end{related}
 
 \subsection{Recursion}
+
+\textcolor{darkgreen}{
+    We should add alternatives to tail recursion and discuss them. 
+    These do get discussed in our Python notebooks but 
+    we thought that tail recursion would be sufficient. 
+    We noticed later that for big matrices it is more efficient to 
+    execute first the matrix-vector (without any strong unbiased 
+    approximations) products that can't 
+    be done with tail recursion. 
+} \\
 In this subsection, we discuss recursion-related techniques.
 
 \begin{technique}[coupled recursion]
