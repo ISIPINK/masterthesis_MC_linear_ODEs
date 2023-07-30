@@ -289,7 +289,32 @@ Additionally, we introduce recursive first passage sampling.
 
 \section{Background}
 
+\textcolor{darkgreen}{
+    We miss a subsection on stochastic gradient descent (SGD) and
+    stochastic variance reduced gradient descent (SVRGD).
+    In particular, the connection with ODEs see for example continuous
+    gradient descent in \cite{huang_hybrid_2017}. And different ways
+    to apply recursion in recursion on SGD which is very similar to
+    how we use recursion in recursion in the next section.
+} \\
+
 \subsection{Modifying Monte Carlo}
+
+\textcolor{darkgreen}{
+    We didn't add importance sampling because it didn't help and added complexity.
+    One thing that we experimented with was how the time of the recursion calls are
+    distributed. We like to control this distribution, once it is uniform, it is easy
+    to control. We chose a simple Russian roulette that gets the job done for most
+    experiments but don't know exactly how the time of the recursion calls are
+    distributed in that case. \\
+    We have a rough idea but we're not
+    sure we can write a proof for it and we still haven't tested it.
+    It is importance sampling according
+    to a Poisson point process with the right combination of Russian roulette.
+    This should make the time of the recursion calls uniformly distributed
+    and the amount of recursion calls Poisson distributed. This would simplify
+    analyzing the different types of complexities (informational/computational/parallel).\\
+} \\
 
 In this subsection, we discuss techniques for modifying RRVEs
 in a way that preserves the expected value of the solution while
@@ -473,8 +498,10 @@ additive branching recursion in RRVEs (refer to (\ref{ex:coupled splitting})).
     of analyzing algorithms or methods.  We like the chapter on
     the curse of dimensionality in
     \cite{foucart_mathematical_2022}.
-    We also think that the quantum results from \cite{heinrich_optimal_2001}
-    are interesting.\\
+    Quantum information complexity is only slightly better than
+    random information complexity (roughly a quadratic improvement)
+    \cite{heinrich_optimal_2001}.
+    \\
     We also love to add methods that
     exploit smoothness but we aren't comfortable with them.
     We like the book that \citeauthor{trefethen_approximation_nodate}
@@ -699,13 +726,13 @@ or approximate polynomial non-linearities.
 \subsection{Recursion}
 
 \textcolor{darkgreen}{
-    We should add alternatives to tail recursion and discuss them. 
-    These do get discussed in our Python notebooks but 
-    we thought that tail recursion would be sufficient. 
-    We noticed later that for big matrices it is more efficient to 
-    execute first the matrix-vector (without any strong unbiased 
-    approximations) products that can't 
-    be done with tail recursion. 
+    We should add alternatives to tail recursion and discuss them.
+    These do get discussed in our Python notebooks but
+    we thought that tail recursion would be sufficient.
+    We noticed later that for big matrices it is more efficient to
+    execute first the matrix-vector (without any strong unbiased
+    approximations) products. This is clear in example \ref{ex:tail on couple}
+    on line 7 and 8.
 } \\
 In this subsection, we discuss recursion-related techniques.
 
@@ -799,7 +826,7 @@ the recursion calls which may be of interest. To retain some of these intermedia
 values while still partly optimizing for performance, it is possible
 to combine tail recursion with normal recursion.
 
-\begin{pythonn}[tail recursion on (\ref{coupled mat})]
+\begin{pythonn}[tail recursion on (\ref{coupled mat})] \label{ex:tail on couple}
     We implement (\ref{coupled mat}) but this time with tail recursion.
     We collect addition operations in a vector $sol$ and multiplication
     in a matrix $W$. $W$ may be referred to as accumulated weight or throughput.
@@ -809,6 +836,12 @@ to combine tail recursion with normal recursion.
 
 
 \subsection{Limitations and Future Work}
+
+\textcolor{darkgreen}{
+    Don't know what to do with this subsection. Maybe it is better to call it
+    intrestring things that we didn't use yet.
+} \\
+
 There are several MC techniques we did not discuss like quasi-MC and importance sampling.
 We would like to mention SALT  a MC technique that we find
 particularly interesting and has received relatively little attention.
