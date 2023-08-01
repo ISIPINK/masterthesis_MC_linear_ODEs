@@ -144,8 +144,13 @@ Carlo methods, such as being embarrassingly parallel and having simple
 error estimates.
 
 \subsection{Notation}
-Notations utilized include:
 
+\textcolor{darkgreen}{
+    Maybe it is better to match the notation to recent
+    walk on spheres papers. Not sure it is worth it.
+} \\
+
+Notations utilized include:
 \begin{itemize}
     \item $B(p) \sim \text{Bernoulli}(p) =
               \begin{cases}
@@ -632,7 +637,10 @@ the reverse is not true.
     methods \cite{hochbruck_exponential_2010} or maybe even methods
     that directly estimate the magnus expansion. \\
     Example \ref{ex:nonlinear example} is a bad example
-    to study RMC because it is too nice.
+    to study RMC because it is too nice. \\
+    Controlling the distribution of the time of the recursion calls
+    is even harder with branching. The way to extend our idea with the Poisson
+    process is to divide the expected 'intensity' over the branches.
 } \\
 
 In this subsection, we present techniques for handling non-linearity.
@@ -924,6 +932,12 @@ each with its own set of benefits and drawbacks.
 
 
 \subsection{Green Functions}
+
+\textcolor{darkgreen}{
+    This section better goes in the background section. We just need
+    green functions defined.
+} \\
+
 In this subsection, we discuss informally how to turn ODEs into integral equations mainly
 by example. Our main tool for this are green functions.
 Prior to discussing green functions, we offer several
@@ -1113,6 +1127,10 @@ examples.
 % \subsection{Convergence}
 \subsection{Fredholm Integral Equations}
 
+\textcolor{darkgreen}{
+    More related work to coupled splitting is \cite{bakbouk_mean_2023}.
+} \\
+
 The integral equations obtained in the previous subsection are Fredholm integral
 equations of the second kind. In this subsection, we introduce a technique called
 coupled splitting.
@@ -1285,6 +1303,16 @@ coupled splitting in such cases can yield favorable results.
 % ODEs and PDEs we are interested in exploiting locality.
 
 \subsection{Initial Value Problems}
+
+\textcolor{darkgreen}{
+    We should add more metrics to plot for the examples.
+    We didn't really specify a full algorithm for any linear ODE.
+    Each of our examples requires some derivation. We didn't want to commit
+    to an algorithm because the choices that we made were arbitrary
+    and not natural just the bare minimum to get the right behavior.
+} \\
+
+
 Classic IVP solvers rely on shrinking the time steps for
 convergence. In this subsection we build up to
 Recursion in Recursion MC (RRMC) for IVPs that tries to emulate
@@ -1797,6 +1825,12 @@ is defined for parabola but reverse in time.
 % \end{theorem}
 
 \subsection{First Passage Sampling}
+
+\textcolor{darkgreen}{
+    We should probably drop first passage average sampling and path stitching. It is intrestring
+    but not relevant to the direction we working in.
+} \\
+
 In this subsection we build up to sampling $(Y_{\tau},\tau)$
 from (\ref{lem:BM HE}) efficiently and extend this to paths.
 
