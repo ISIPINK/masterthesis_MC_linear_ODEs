@@ -295,12 +295,12 @@ Additionally, we introduce recursive first passage sampling.
 \section{Background}
 
 \textcolor{darkgreen}{
-    We miss a subsection on stochastic gradient descent (SGD) and
+    We miss a subsection on stochastcould ic gradient descent (SGD) and
     stochastic variance reduced gradient descent (SVRGD).
     In particular, the connection with ODEs see for example continuous
     gradient descent in \cite{huang_hybrid_2017}. And different ways
     to apply recursion in recursion on SGD which is very similar to
-    how we use recursion in recursion in the next section.
+    how we could use recursion in recursion in the next section.
 } \\
 
 \subsection{Modifying Monte Carlo}
@@ -1129,6 +1129,8 @@ examples.
 
 \textcolor{darkgreen}{
     More related work to coupled splitting is \cite{bakbouk_mean_2023}.
+    Maybe we should add some experiments where we demonstrate the 2 ways
+    of converging with coupled splitting.
 } \\
 
 The integral equations obtained in the previous subsection are Fredholm integral
@@ -1305,11 +1307,13 @@ coupled splitting in such cases can yield favorable results.
 \subsection{Initial Value Problems}
 
 \textcolor{darkgreen}{
-    We should add more metrics to plot for the examples.
+    We should add more metrics and
+    discuss some trade-offs.
     We didn't really specify a full algorithm for any linear ODE.
     Each of our examples requires some derivation. We didn't want to commit
     to an algorithm because the choices that we made were arbitrary
     and not natural just the bare minimum to get the right behavior.
+    'One does not simply implement a research idea.'
 } \\
 
 
@@ -1496,6 +1500,10 @@ variance when decreasing $h$.
 % \end{related}
 
 \subsection{Limitations and Future Work}
+
+\textcolor{darkgreen}{
+    DRRMC is irrelevant and should be removed.
+} \\
 
 We have not dedicated significant attention, if any at all, to
 the convergence analysis of RMC methods
@@ -1684,6 +1692,11 @@ In the following example, we examine an ODE with a random parameter.
 
 
 \section{Brownian Motion}
+
+\textcolor{darkgreen}{
+    We conjecture that we could use RRMC from the previous section
+    to solve the heat equation and derive (discrete) next-flight walk on spheres.
+} \\
 
 Current RMC algorithms for PDEs are related to Brownian motion. In this section,
 we explore the relationship between the heat equation and Brownian motion,
