@@ -1,3 +1,9 @@
+# data map of zotero collection
+
+We've created a data map using dimension reduction on text embeddings of titles, abstracts, and manual tags of our zotero collection. You can access it here: https://huggingface.co/spaces/ISIPINK/zotero_map. It may take 10 seconds to load.
+
+# Outdated
+
 The following links lead to public research rabbit collections
 they contain paper relevant to this repo.
 
