@@ -173,6 +173,11 @@ complex boundary conditions. We focus on the underlying
 mechanics of these Monte Carlo techniques.
 
 \begin{related}[MC for IVPs ODEs]
+
+    \textcolor{green}{
+        TODO: add relevant papers to solving ODEs
+    }
+
     Monte Carlo methods for initial value problems for systems of ordinary
     differential equations are little studied. The most significant works are:
     \begin{itemize}
@@ -198,25 +203,11 @@ mechanics of these Monte Carlo techniques.
 
 \end{related}
 
-% \begin{related}[MC for linear systems]
-%     MC methods can be employed to tackle an ODE or a PDE indirectly
-%     by using it on the resulting linear system obtained through
-%     a discretization technique. This approach may yield a similar
-%     behavior to the original problem. Sampling the Von Neumann series
-%     is the primary technique utilized for MC methods in linear systems.
-
-%     \begin{itemize}
-%         \item MC methods are common for the page rank problem \cite{zhang_advanced_2021}.
-%         \item 
-%     \end{itemize}
-
-%     mmm
-
-% \end{related}
-
-% Maybe add a section for the second section?
-
 \subsection{Contributions}
+
+\textcolor{green}{
+    TODO: add intuition and motivations to section descriptions.
+}
 A significant part of this thesis is dedicated to informally introducing recursive Monte Carlo
 with plenty of examples.
 The key contribution is an unbiased Monte Carlo method
@@ -263,6 +254,58 @@ between Brownian motion and the heat equation using recursive Monte Carlo.
 Additionally, we introduce recursive first passage sampling.
 
 \section{Background}
+
+\subsection{Monte Carlo}
+
+\textcolor{green}{
+    TODO:
+    \begin{itemize}
+        \item add normal Monte Carlo
+        \item add information theory
+        \item add curse of dimensionality
+    \end{itemize}
+}
+
+In this subsection, we review basic Monte Carlo theory. \\
+
+\begin{definition}[Monte Carlo]
+    define Monto Carlo
+    Basically randomly sampling a function to estimate its integral.
+\end{definition}
+
+Explain how error in Monte Carlo is usually measured.
+\begin{definition}[Root Mean Square Error (RMSE)]
+    Def RMSE.
+\end{definition}
+
+Explain how information complexity was used in devolping quantum algorithms.
+\begin{definition}[Information Complexity]
+    Define information complexity.
+    Rough measure of how many function calls are used.
+\end{definition}
+
+Intuition behind the curse of dimensionality.
+
+\begin{theorem}[Information Curse of Dimensionality (Integration)]
+    State the information curse of dimenstionality for integration for
+    deterministic errors.
+\end{theorem}
+
+\begin{related}[Information Curse of Dimensionality (Integration)]
+    \cite{foucart_mathematical_2022} chapter on the curse of dimensionality.
+\end{related}
+
+Explain why the underlying assumptions of information are relevant.
+And give realistic examples with them.
+
+Explain the limitations using information complexity.
+
+calculate the information complexity of Monte Carlo
+Explain the usual way of comparing efficiency in this Monte Carlo scheme
+and rendering.
+\begin{definition}[Monte Carlo Efficiency]
+    def Monte Carlo efficiency. (cost / variance)
+\end{definition}
 
 \subsection{Modifying Monte Carlo}
 In this subsection, we discuss techniques for modifying RRVEs
@@ -435,6 +478,7 @@ additive branching recursion in RRVEs (refer to (\ref{ex:coupled splitting})).
 % need to fix veach reference see bibliography
 
 \subsection{Monte Carlo Trapezoidal Rule}
+
 In this subsection, we introduce a MC trapezoidal rule that
 exhibits similar convergence behavior to the methods discussed later.
 The MC trapezoidal rule is essentially a regular Monte Carlo method
