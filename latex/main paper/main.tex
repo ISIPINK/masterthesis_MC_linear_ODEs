@@ -206,7 +206,7 @@ mechanics of these Monte Carlo techniques.
 \subsection{Contributions}
 
 \textcolor{green}{
-    TODO: add intuition and motivations to section descriptions.
+    TODO: add intuition and motivations to section descriptions.\\
 }
 A significant part of this thesis is dedicated to informally introducing recursive Monte Carlo
 with plenty of examples.
@@ -268,7 +268,13 @@ Additionally, we introduce recursive first passage sampling.
 
 In this subsection, we review basic Monte Carlo theory. \\
 
+Explain briefly behind Monte Carlo.
 \begin{definition}[Monte Carlo]
+    define Monto Carlo
+    Basically randomly sampling a function to estimate its integral.
+\end{definition}
+
+\begin{definition}[Monte Carlo Integration]
     define Monto Carlo
     Basically randomly sampling a function to estimate its integral.
 \end{definition}
@@ -308,9 +314,17 @@ and rendering.
 \end{definition}
 
 \subsection{Modifying Monte Carlo}
+
 In this subsection, we discuss techniques for modifying RRVEs
 in a way that preserves the expected value of the solution while
 acquiring more desirable properties. \\
+
+Motivate why switching between similar is allowed and it is frequent.
+\begin{notation}[$\cong$]
+    \[
+        X \cong Y \iff E[X]=E[Y]
+        .\]
+\end{notation}
 
 Russian roulette is a MC technique commonly employed in rendering algorithms.
 The concept behind Russian roulette is to replace a RV with a
@@ -323,7 +337,7 @@ less computationally expensive approximation sometimes.
     as follows:
 
     \begin{equation}
-        X \rightarrow
+        X \cong
         \begin{cases}
             \frac{1}{p}(X - (1-p)Y_{1}) & \text{ if } U < p \\
             Y_{2}                       & \text{ else }
@@ -343,24 +357,19 @@ less computationally expensive approximation sometimes.
     which can be computationally costly. To address this, we can modify $Z$ to:
 
     \begin{equation}
-        \tilde{Z} = U + B\left(\frac{1}{100}\right)\frac{f(U)}{10}.
+        Z \cong U + B\left(\frac{1}{100}\right)\frac{f(U)}{10}.
     \end{equation}
 
-    With this modification, $\tilde{Z}$ requires calling $f$ on
-    average once every $100$ simulations, significantly reducing the
-    computational burden compared to simulating $Z$. Although the variance of $\tilde{Z}$
-    increases slightly compared to $Z$, it is more efficient.
-
-\end{example}
-
-\begin{related}[Russian roulette]
-    For example (\ref{ex:simple russian roulette}) it is possible to estimate
+    This RV requires calling $f$ on
+    average once every $100$ simulations. This significantly reduces the
+    computational burden while increasing the variance slightly thereby increasing
+    the MC efficiency.\\
+    Alternatively it is possible to estimate
     the expectance of the $2$ terms of $Z$ separately. Given the variances and
     computational complexity of both terms, you can calculate the asymptotic optimal
-    division of samples for each term. \\
-    In \cite{rath_ears_2022} they approximate optimal Russian roulette and splitting
-    (RRS) factors with fixed-point iterations to maximize the efficiency of a renderer.
-\end{related}
+    division of samples for each term.
+\end{example}
+
 
 \begin{example}[Russian roulette on (\ref{recursive RV})] \label{ex: russian roulette}
     To address the issue of indefinite recursion in equation
@@ -370,8 +379,8 @@ less computationally expensive approximation sometimes.
     in front of the recursive term with $B(t)$ when $t < 1$.
     The modified recursive expression for $Y(t)$ becomes:
 
-    \begin{equation}
-        Y(t) =
+    \begin{equation}\label{eq:rr example}
+        y(t) \cong Y(t) =
         \begin{cases}
             1 + B(t)Y(Ut) & \text{ if } t < 1 \\
             1 + tY(Ut)    & \text{ else}
@@ -381,7 +390,7 @@ less computationally expensive approximation sometimes.
 
 \vspace{0.2cm}
 
-\begin{pythonn}[implementation of (\ref{ex: russian roulette})] \label{RRpython}
+\begin{pythonn}[implementation of (\ref{eq:rr example})] \label{RRpython}
     \pythoncode{python code/RR_ydy.py}
     Interestingly, $\forall t \le 1:Y(t)$ is constrained to take on only integer values.
     This is visually clear in Figure \ref{fig:russian roulette}.
@@ -403,7 +412,7 @@ reduces the variance.
     Splitting $X$ refers to utilizing multiple $X_{j} \sim X$ (not necessarily independent) to
     reduce variance by taking their average:
     \begin{equation}
-        \bar{X} = \frac{1}{N} \sum_{j=1}^{N} X_{j}.
+        X \cong \frac{1}{N} \sum_{j=1}^{N} X_{j}.
     \end{equation}
 \end{definition}
 
@@ -419,7 +428,7 @@ additive branching recursion in RRVEs (refer to (\ref{ex:coupled splitting})).
     into two parts as follows:
 
     \begin{equation}
-        Y(t) = 1 + \frac{t}{2}(Y_{1}(Ut) + Y_{2}(Ut)),
+        y(t) \cong Y(t) = 1 + \frac{t}{2}(Y_{1}(Ut) + Y_{2}(Ut)),
     \end{equation}
 
     where $Y_{1}(t)$ and $Y_{2}(t)$ are i.i.d. with $Y(t)$.
@@ -441,7 +450,7 @@ additive branching recursion in RRVEs (refer to (\ref{ex:coupled splitting})).
 \begin{definition}[control variates] \label{CV}
     Define control variating $f(X)$ with $\tilde{f}$ an approximation of $f$ as:
     \begin{equation}
-        f(X) \rightarrow (f-\tilde{f})(X) + E[\tilde{f}(X)].
+        f(X) \cong (f-\tilde{f})(X) + E[\tilde{f}(X)].
     \end{equation}
 
     Note that control variating requires the evaluation of
@@ -479,6 +488,14 @@ additive branching recursion in RRVEs (refer to (\ref{ex:coupled splitting})).
 
 \subsection{Monte Carlo Trapezoidal Rule}
 
+\textcolor{green}{
+    TODO:
+    \begin{itemize}
+        \item explain info complexity composite MC
+        \item add results and references of optimal info complexity
+    \end{itemize}
+}
+
 In this subsection, we introduce a MC trapezoidal rule that
 exhibits similar convergence behavior to the methods discussed later.
 The MC trapezoidal rule is essentially a regular Monte Carlo method
@@ -491,12 +508,12 @@ enhanced with control variates based on the trapezoidal rule.
     to the trapezoidal rule as follows:
 
     \begin{align}
-         & \int_{x}^{x+\Delta x} f(s) ds                                       \\
+         & \int_{x}^{x+\Delta x} f(s) ds                 \\
          & = \int_{x}^{x+\Delta x}  \tilde{f}(s) ds +
-        \int_{x}^{x+\Delta x}  f(s) - \tilde{f}(s) ds                          \\
+        \int_{x}^{x+\Delta x}  f(s) - \tilde{f}(s) ds    \\
          & = \Delta x \frac{f(x) + f(x+\Delta x)}{2}
-        + E \left[l B\left( \frac{1}{l}\right)(f(S_x) - \tilde{f}(S_x))\right] \\
-         & \approx \Delta x \frac{f(x) + f(x+\Delta x)}{2}                     \\
+        + E \left[f(S_x) - \tilde{f}(S_x)\right]         \\
+         & \cong \Delta x \frac{f(x) + f(x+\Delta x)}{2} \\
          & + \Delta x l B\left( \frac{1}{l}\right)
         \left(f(S_x) - f(x) - \frac{S_x - x}{\Delta x}
         \left(f(x+\Delta x) - f(x)\right) \right),
@@ -523,8 +540,8 @@ there are $\text{Binomial}(n,\frac{1}{l})$ additional function calls.
     and a Russian roulette rate $l$ as follows:
 
     \begin{align}
-        \int_{a}^{b} f(s) ds \approx \Delta x \sum_{x} & \frac{f(x) + f(x+\Delta x)}{2} \\
-                                                       & + l B\left(\frac{1}{l}\right)
+        \int_{a}^{b} f(s) ds \cong \Delta x \sum_{x} & \frac{f(x) + f(x+\Delta x)}{2} \\
+                                                     & + l B\left(\frac{1}{l}\right)
         \left(f(S_x) - f(x) - \frac{S_x - x}{\Delta x}(f(x+\Delta x) - f(x))\right),
     \end{align}
 
@@ -591,14 +608,11 @@ A bound on the error implies a bound on the root-mean-square error, but
 the reverse is not true.
 
 \subsection{Unbiased Non-Linearity}
-In this subsection, we present techniques for handling non-linearity.
-It may appear that unbiased approaches are only applicable to linear
-problems. By utilizing independent samples, it becomes possible to handle
-polynomial non-linearities.
 
-While transforming non-linearities into polynomials may not always be straightforward,
-it is still possible to develop biased alternative approaches based on linearization
-or approximate polynomial non-linearities.
+In this subsection, we present techniques for handling polynomial non-linearity.
+The backbone for this is simply using independent samples
+$y^{2} \cong Y_{1} Y_{2}$ with $Y_{1}$ independent of $ Y_{2}$ and
+$Y_{1} \cong Y_{2} \cong y$.
 
 
 \begin{example}[$y'=y^{2}$] \label{ex:nonlinear example}
@@ -620,7 +634,7 @@ or approximate polynomial non-linearities.
     we use i.i.d. $Y_1,Y_2 \sim Y$ in following RRVE:
 
     \begin{equation} \label{RRVE: nonlinear example}
-        Y(t) = -1 + (t-1) Y_1(S) Y_2(S),
+        y(t) \cong Y(t) = -1 + (t-1) Y_1(S) Y_2(S),
     \end{equation}
 
     where $S \sim \text{Uniform}(1,t)$.
@@ -667,19 +681,27 @@ or approximate polynomial non-linearities.
     What is inside the expectation is something that we can simulate with simulations of $X_{j}$.
 \end{example}
 
-\vspace{0.2cm}
-\begin{pythonn}[implementation of $e^{E[X]}$ (\ref{ex:exp int})]
-    The following python code estimates $e^{\int_{0}^{t} s^{2}ds}$:
-    \vspace*{0.4cm}
-    \pythoncode{python code/expX.py}
-    %}
-\end{pythonn}
+% don't need proof concept because of NVIDIA
+% \vspace{0.2cm}
+% \begin{pythonn}[implementation of $e^{E[X]}$ (\ref{ex:exp int})]
+%     The following python code estimates $e^{\int_{0}^{t} s^{2}ds}$:
+%     \vspace*{0.4cm}
+%     \pythoncode{python code/expX.py}
+%     %}
+% \end{pythonn}
 
-\begin{related}[unbiased non-linearity]
-    A similar approach to non-linearity can be found in \cite{ermakov_monte_2019}.
+\begin{related}[example \ref{ex:exp int}]
+    NVIDIA has a great paper on optimizing example \ref{ex:exp int}
+    \cite{kettunen_unbiased_2021}.
 \end{related}
 
 \subsection{Recursion}
+\textcolor{green}{
+    TODO:
+    \begin{itemize}
+        \item add forward implementation of recursion using a stack
+    \end{itemize}
+}
 In this subsection, we discuss recursion-related techniques.
 
 \begin{technique}[coupled recursion]
@@ -732,9 +754,6 @@ In this subsection, we discuss recursion-related techniques.
     Example (\ref{ex:coupled recursion}) is inspired by \cite{vicini_path_2021}.
     \cite{vicini_path_2021} propose an efficient unbiased backpropagation
     algorithm for rendering.
-    \cite{yilmazer_solving_2022} extends \cite{vicini_path_2021} to walk on spheres.
-    % Coupling feels close to percolation \cite{duminil-copin_sixty_2019}.
-    % Maybe I should search a paper that coupling in happens
 \end{related}
 
 \begin{technique}[recursion in recursion]\label{tech:recu in recu}
@@ -753,7 +772,7 @@ In this subsection, we discuss recursion-related techniques.
 Most programming languages do support recursion, but it often comes with certain
 limitations such as maximum recursion depth and potential performance issues.
 When applicable, tail recursion can be used to
-implement recursion that addresses these concerns.
+implement recursion that addresses these concerns in some cases.
 
 \begin{technique}[non-branching tail recursion]
     Tail recursion involves reordering all operations
@@ -780,88 +799,7 @@ to combine tail recursion with normal recursion.
     \pythoncode{python code/tailrecu.py}
 \end{pythonn}
 
-
-\subsection{Limitations and Future Work}
-There are several MC techniques we did not discuss like quasi-MC and importance sampling.
-We would like to mention SALT  a MC technique that we find
-particularly interesting and has received relatively little attention.
-
-\begin{technique}[SALT]
-    Sequential Approximation in L-Two (SALT) is an adaptive MC technique
-    that builds control variates with a (bi-)orthonormal basis. The
-    rough idea behind it is that calculating coefficients for
-    a (bi-)orthonormal basis can be found by MC integration and
-    the current estimate of those coefficients can accelerate MC integration.
-    It can be seen as an interesting case of stochastic gradient descent.
-\end{technique}
-
-% \begin{example}[SALT wavelet]
-%     check period 3
-% \end{example}
-
-\begin{related}[SALT]
-    SALT gets discussed in \cite{gobet_new_2014}. Other noteworthy papers on
-    adaptive MC techniques are \cite{he_adaptive_2021} on adaptive important sampling
-    and \cite{salaun_regression-based_2022} on regression-based MC.
-\end{related}
-
-% improving (\ref{ex:exp int})
-
-\begin{related}[MC trapezoidal rule]
-    In \cite{wu_randomised_2020}, an improvement of half
-    order for a MC trapezoidal rule is discussed. We are
-    uncertain whether this improvement is similar to ours.
-    Further examination would be needed.
-\end{related}
-
-Our current method for handling non-linearity, as demonstrated
-in (\ref{ex:exp int}), is rudimentary and only applicable to small
-levels of non-linearity. We have not tested any
-variance reduction techniques in this context. We think that
-major improvements can be made in (\ref{ex:exp int}). \\
-% \begin{example}[fixpoint]
-%     check period 1
-% \end{example}
-
-
-We did not discuss branching tail recursion but
-it is important to improve our approach to handling non-linearity.
-There exist multiple methods of implementing branching tail recursion,
-each with its own set of benefits and drawbacks.
-% When it comes to recursive
-% MC, tree regrowing is particularly noteworthy.
-
-\begin{technique}[checkpointing]
-    The structure of branching recursion can be captured by a tree. Storing that tree
-    in memory can be expensive. In recursion, you only need to retrace steps
-    $1$ by $1$ therefore you only need local parts of the recursion tree.
-    Checkpointing tries to alleviate memory issues by instead storing the whole
-    tree only storing seeds (of the random generator) of parts of the
-    tree and growing them when needed.
-\end{technique}
-
-
-\begin{related}[branching tail recursion]
-    Checkpointing appears in
-    \cite{vicini_path_2021}.
-    % This blog discusses branching tail recursion:
-    % \url{https://jeroenvanwijgerden.me/post/recursion-1/}.
-\end{related}
-
 \section{Ordinary Differential Equations}
-
-%\subsection{Linear Recursive Integrals}
-%We have an lgorithm in mind for this case based on coupled recursion on disjunct sets.
-%
-%\begin{definition}[Volterra equation of the second kind]
-%    A Volterra equation of the second kind for $x$  is of the following form:
-%    $$
-%        x(t)=f(t)+\int_a^t K(t, s) x(s) ds.
-%    $$
-%    Given the kernel  $K(t, s)$  and  $ f(t)$.
-%\end{definition}
-%
-
 
 \subsection{Green Functions}
 In this subsection, we discuss informally how to turn ODEs into integral equations mainly
@@ -933,106 +871,6 @@ examples.
 
 \end{example}
 
-\begin{example}[$y''=y$ mixed boundary conditions]
-    Consider the following ODE:
-    \begin{equation} \label{ddyy}
-        y'' = y, \quad y(0) = 1, \quad y'(1) = e.
-    \end{equation}
-    This equation has the solution $y(t) = e^{t}$.
-    We define the source green function $G(t,x)$ for $y''$
-    and Dirichlet/Neumann boundary conditions as follows:
-
-    \begin{equation}
-        G'' = \delta(t-x), \quad G(0) = 0, \quad G'(1) = 0.
-    \end{equation}
-
-    Solving this equation yields:
-
-    \begin{equation}
-        G(t,x) =
-        \begin{cases}
-            -t & \text{if } t < x   \\
-            -x & \text{if } t \ge x
-        \end{cases}.
-    \end{equation}
-
-    We define the boundary green function $P(t,x)$
-    (for $x \in {0,1}$) for $y''$ and Dirichlet/Neumann
-    boundary conditions as follows:
-    \begin{equation}
-        P'' = 0, \quad \left(P(0,x),P'(1,x) \right) =
-        \begin{cases}
-            (1 , 0) & \text{ if } x=0 \\
-            (0 , 1) & \text{ if } x=1
-        \end{cases}.
-    \end{equation}
-
-    These are a basis for the homogeneous solutions.
-    $P(t,x)$ can be solved from its definition:
-
-    \begin{equation}
-        P(t,x) =
-        \begin{cases}
-            1 & \text{ if } x=0 \\
-            t & \text{ if } x=1
-        \end{cases}.
-    \end{equation}
-
-    At this point, it may not be clear, but with this set of green functions,
-    we can form the following integral equation for (\ref{ddyy}):
-    \begin{equation} \label{int ddyy}
-        y(t) = P(t,0)y(0) + P(t,1)y(1) + \int_{0}^{1}G(t,s) y(s) ds.
-    \end{equation}
-
-    Equation (\ref{int ddyy}) can be expressed as:
-    \begin{equation} \label{RRVE ddyy}
-        Y(t) = 1 + te + l B\left(\frac{1}{l}\right)G(t,S)Y(S),
-    \end{equation}
-    where $S \sim U$ and $l>1 \in \mathbb{R}$. We visualize
-    equation (\ref{RRVE ddyy}) in Figure \ref{fig:ddyy}.
-
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{plots/ddyy.png}
-        \caption{Recursive calls of (\ref{RRVE ddyy}), $l=2$ when
-            calling $Y(0.5)$ $300$ times.}
-        \label{fig:ddyy}
-    \end{figure}
-
-\end{example}
-
-\begin{related}[$y''=y$ mixed boundary conditions]
-    \cite{sawhney_walk_2023} discusses an algorithm for mixed boundary conditions.
-\end{related}
-
-
-%\begin{definition}[boundary green function]
-%    we write this later
-%    %   The boundary green function of a linear differential problem with linear boundary
-%    %   conditions.
-%\end{definition}
-%
-%\begin{definition}[source green function]
-%    we write this later
-%    %    For
-%    %    \[
-%    %        L(y(z)) = f
-%    %        .\]
-%    %    with $L$ a linear differential operator, $z$ a point in the input space of $y$
-%    %    ,$f$ arbitrary and linear boundary conditions.
-%    %    We define the source green function $G(z,s)$ with following property
-%    %    \[
-%    %        L(G(z,s))=\delta(z-s).
-%    %        .\C
-%    %    and null boundary conditions.
-%\end{definition}
-%
-%
-%\begin{example}[numerical green functions]
-%    There will be probably some green functions that we need
-%    that don't have an analytic expression yet.
-%\end{example}
-
 % Green's function vs green function (check chatgpt for the answer)
 \begin{definition}[green function]
     Vaguely speaking, we define the green function as a type
@@ -1052,6 +890,14 @@ examples.
 
 % \subsection{Convergence}
 \subsection{Fredholm Integral Equations}
+
+\textcolor{green}{
+    TODO:
+    \begin{itemize}
+        \item explain better the graph for coupled splitting
+        \item add better explaination to coupled splitting
+    \end{itemize}
+}
 
 The integral equations obtained in the previous subsection are Fredholm integral
 equations of the second kind. In this subsection, we introduce a technique called
@@ -1215,14 +1061,45 @@ coupled splitting in such cases can yield favorable results.
 \begin{related}[coupled splitting]
     Coupled splitting is partly inspired by how \cite{sabelfeld_sparsified_2009}
     reduces variance by using bigger submatrices.
-    Coupled splitting does not work for walk on sphere because
-    of the dynamically changing domain. A technique based on reusing samples
-    such as coupled splitting for walk on sphere gets discussed
-    in \cite{miller_boundary_2023}.
+    Reusing samples for walk on sphere gets discussed
+    in \cite{miller_boundary_2023} and \cite{bakbouk_mean_2023}.
 \end{related}
 
-% explaining that coupled split is cool for global problems but for
-% ODEs and PDEs we are interested in exploiting locality.
+Figure \ref{fig:coupled splitting}
+resembles fixed-point iterations, leading us to hypothesize
+that coupled splitting can achieve convergence in most cases
+where a fixed-point argument holds true and the convergence
+speed is very similar to fix-points methods until the accuracy
+of the stochastic approximation of the operator is reached
+(the approximate operator bottleneck). The approximation of the operator
+can be improved by increasing coupled splitting amount when
+approaching the bottleneck. Alternatively when reaching
+the bottleneck it is possible to rely on MC convergence.
+
+\begin{related}[convergence coupled splitting]
+    See \cite{gupta_convergence_2021} for a discussion on the convergence
+    of recursive stochastic algorithms. We highly recommend watching
+    the corresponding video \cite{abhishek_gupta_recursive_2020} before reading
+    the paper.
+\end{related}
+
+Coupled splitting was originally motivated to help with
+convergence. It didn't increase the convergence domain for
+the example shown in Figure \ref{fig:mainD explosion}.\\
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plots/mainD explosion.png}
+    \caption{The logarithmic percentage error of $Y(0)$ for
+    (\ref{RRVE:main dirichlet}), with $l=1.2$ and initial conditions
+    $y(-k)=e^{-k}$ and $y(k)=e^{k}$, displays an exponential
+    increase until approximately $k=1.5$, beyond which additional
+    simulations fail to reduce the error, indicating that the variance
+    doesn't exist.}
+    \label{fig:mainD explosion}
+\end{figure}
+
+
 
 \subsection{Initial Value Problems}
 Classic IVP solvers rely on shrinking the time steps for
@@ -1414,42 +1291,6 @@ the convergence analysis of RMC methods
 for Fredholm equations. Figure \ref{fig:mainD explosion} illustrates
 that arbitrary RMC do not converge. \\
 
-Coupled splitting was tested on the example shown in Figure
-\ref{fig:mainD explosion}, but it did not contribute to the
-convergence of the method. This suggests that a fix point argument
-would not be effective for this particular example with this
-Russian roulette setup. \\
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.8\textwidth]{plots/mainD explosion.png}
-    \caption{The logarithmic percentage error of $Y(0)$ for
-    (\ref{RRVE:main dirichlet}), with $l=1.2$ and initial conditions
-    $y(-k)=e^{-k}$ and $y(k)=e^{k}$, displays an exponential
-    increase until approximately $k=1.5$, beyond which additional
-    simulations fail to reduce the error, indicating that the variance
-    doesn't exist.}
-    \label{fig:mainD explosion}
-\end{figure}
-
-
-Figure \ref{fig:coupled splitting}
-resembles fixed-point iterations, leading us to hypothesize
-that coupled splitting can achieve convergence in most cases
-where a fixed-point argument holds true and the convergence
-speed is very similar to fix-points methods until the accuracy
-of the stochastic approximation of the operator is reached
-(the approximate operator bottleneck). The approximation of the operator
-can be improved by increasing coupled splitting amount when
-approaching the bottleneck. Alternatively when reaching
-the bottleneck it is possible to rely on MC convergence.
-
-\begin{related}[convergence coupled splitting]
-    See \cite{gupta_convergence_2021} for a discussion on the convergence
-    of recursive stochastic algorithms. We highly recommend watching
-    the corresponding video \cite{abhishek_gupta_recursive_2020} before reading
-    the paper.
-\end{related}
 
 % (Additional
 % iterations beyond the bottleneck do not
