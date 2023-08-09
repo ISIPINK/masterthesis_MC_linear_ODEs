@@ -102,8 +102,13 @@ by \citeauthor{sawhney_grid-free_2022}
 which introduces the walk-on-sphere method for solving second-order
 elliptic PDEs with varying coefficients and Dirichlet boundary conditions.
 Their techniques have shown high accuracy even in the presence of geometrically
-complex boundary conditions. We focus on the underlying
-mechanics of these Monte Carlo techniques.
+complex boundary conditions. We were inspired to apply the underlying
+mechanics of these Monte Carlo techniques to ODEs. \\
+
+We made an interactive data map of the literature read
+mainly in function of this thesis available at
+\url{https://huggingface.co/spaces/ISIPINK/zotero_map}.
+It may take 10 seconds to load. \\
 
 \begin{related}[MC for IVPs ODEs]
 
@@ -465,11 +470,12 @@ additive branching recursion in RRVEs (refer to (\ref{ex:coupled splitting})).
 \begin{example}[control variate on (\ref{recursive RV})] \label{ex:CV}
     To create a control variate for Equation (\ref{recursive RV}) that
     effectively reduces variance, we employ the approximation
-    $y(t) \approx 1+t$ and define the modified recursive term as follows:
+    $y(t) \approx \tilde{y} =1+t$ and define the modified recursive term as follows:
 
-    \begin{equation}
-        Y(t) = 1 + t + \frac{t^2}{2} + t(Y(Ut) - 1 - Ut).
-    \end{equation}
+    \begin{align}
+        Y(t) & = 1 + E[\tilde{y}(Ut)] + t(Y(Ut) - \tilde{y}(Ut)) \\
+             & = 1 + t + \frac{t^2}{2} + t(Y(Ut) - 1 - Ut).
+    \end{align}
 
     It is important to note that while we could cancel out the constant term
     of the control variate, doing so would have a negative impact on
@@ -482,12 +488,8 @@ additive branching recursion in RRVEs (refer to (\ref{ex:coupled splitting})).
 \end{pythonn}
 
 \begin{related}[MC modification]
-    Our favorite work that discusses these techniques is \cite{veach_robust_1997}.
-    More interesting MC techniques can be found in rendering.
-    % $2$-level gets discussed in \cite{giles_multilevel_2013} a introductory paper to
-    % multilevel MC.
+    For further reference on these techniques see \cite{veach_robust_1997}.
 \end{related}
-% need to fix veach reference see bibliography
 
 \subsection{Monte Carlo Trapezoidal Rule}
 
@@ -528,7 +530,8 @@ enhanced with control variates based on the trapezoidal rule.
 
 This MC trapezoidal rule has on average $\frac{1}{l}$ more function calls than
 the normal trapezoidal rule. For the composite rule with $n$ intervals,
-there are $\text{Binomial}(n,\frac{1}{l})$ additional function calls.
+there are $\text{Binomial}(n,\frac{1}{l})$ additional function calls
+(repeated Bernoulli experiments).
 
 % The composite MC trapezoidal rule, defined as the sum of MC trapezoidal rules
 % on equally divided intervals, can be computationally expensive. Each interval
@@ -569,14 +572,9 @@ there are $\text{Binomial}(n,\frac{1}{l})$ additional function calls.
     \end{figure}
 \end{pythonn}
 
-We postulate that this MC composite rule enhances the convergence
-rate by $0.5$ orders compared to the standard composite rule for each dimension,
-provided that the appropriate conditions of smoothness are met.
-To substantiate this conjecture, we shall outline our rationale concerning
-the accumulation of unbiased polynomial errors.\\
-
 For the sake of simplicity, we reduce the study of the local truncation error
 to the following expression:
+
 \begin{equation}
     \int_{0}^{h} s^{2}ds = O(h^{3}).
 \end{equation}
@@ -610,10 +608,15 @@ a bound on the root-mean-square error that behaves as $O(h^{2})$ is different.
 A bound on the error implies a bound on the root-mean-square error, but
 the reverse is not true.
 
+\begin{related}[Monte Carlo Trapezoidal Rule]
+    The optimal information complexity for integration in the
+    randomized setting is known see \cite{heinrich_optimal_2001}.
+\end{related}
+
 \subsection{Unbiased Non-Linearity}
 
 In this subsection, we present techniques for handling polynomial non-linearity.
-The backbone for this is simply using independent samples
+The backbone for this is using independent samples
 $y^{2} \cong Y_{1} Y_{2}$ with $Y_{1}$ independent of $ Y_{2}$ and
 $Y_{1} \cong Y_{2} \cong y$.
 
@@ -790,9 +793,9 @@ The non-branching recursion presented in the RRVEs
 can be implemented with tail recursion due to the associativity of
 all operations ($(xy)z = x(yz)$) involved. However, tail recursion
 may not always be desirable as it discards intermediate values of
-the recursion calls which may be of interest. To retain some of these intermediate
-values while still partly optimizing for performance, it is possible
-to combine tail recursion with normal recursion.
+the recursion calls which may be of interest or can increase
+computational cost. To retain some of these intermediate
+values, it is possible to combine tail recursion with normal recursion.
 
 \begin{pythonn}[tail recursion on (\ref{coupled mat})]
     We implement (\ref{coupled mat}) but this time with tail recursion.
@@ -1259,143 +1262,16 @@ variance when decreasing $h$.
 \end{pythonn}
 
 
-% \subsection{BVPs ODEs}
-
-% Now we hope we can imitate what we did for IVPs to get converging RMC
-% algorithms for BVPs. The $2$ essential trick that we used for RRMC IVP are
-% integral representations on subdomains and unbiased estimators for the linear
-% conditions. \\
-
-% TODO: fix it or leave it out
-% \begin{example}[alternating RRMC]
-%     We demonstrate alternating RRMC on example (\ref{main dirichlet})
-%     with $y(-2)=e^{-2}$ and $y(2)=e^{2}$ which didn't have convergence on
-%     (\ref{fig:mainD explosion}).
-%     In alternating RRMC we use integral equations of overlapping domains see Figure
-%     (\ref{fig:alternating RRMC}) and communicate boundary conditions in the outer recursion.
-%     \begin{figure}[h!]
-%         \centering
-%         \includegraphics[width=0.8\textwidth]{tikz figures/local RRMC/axis.pdf}
-%         \caption{}
-%         \label{fig:alternating RRMC}
-%     \end{figure}
-% \end{example}
-
-% \begin{related}
-%     Schwarz alternating method, walk on rectangles paper.
-% \end{related}
-
-\subsection{Limitations and Future Work}
+\section{Limitations and Future Work}
 
 We have not dedicated significant attention, if any at all, to
 the convergence analysis of RMC methods
 for Fredholm equations. Figure \ref{fig:mainD explosion} illustrates
 that arbitrary RMC do not converge. \\
 
-
-% (Additional
-% iterations beyond the bottleneck do not
-% bring the solution closer but they still remain unbiased with low variance)
-
 Similarly to classic methods, RRMC struggles with big negative coefficients in front
 of the recursive parts which may appear in
-stiff problems. We tested DRRMC as a potential remedy but we conclude
-it to be ineffective.
-
-\begin{definition}[DRRMC]
-    Consider a general linear ODE IVP problem:
-    \begin{equation}
-        x' = Ax+g, \quad x(0)= x_{0}.
-    \end{equation}
-    Sometimes repeatedly multiplying by $A$ is unstable.
-    Diagonal RRMC adds a positive diagonal matrix $D$
-    to $A$ and hopes that it stabilizes.
-
-    \begin{equation}
-        x' + Dx = (A+D)x+g.
-    \end{equation}
-
-    The following integral equation can be derived by using integrating factor:
-
-    \begin{equation}\label{eq:int eq DRRMC}
-        x(t)= e^{D(t_{n}-t)}x(t_{n}) + \int_{t_{n}}^{t} e^{D(s-t)}(A+D)x(s)ds+\int_{t_{n}}^{t} e^{D(s-t)}g(s)ds.
-    \end{equation}
-
-    Remember that the exponential of a diagonal matrix is the exponential of its elements.
-    The recursive integral has the following trivial control variate:
-
-    \begin{equation}\label{eq: CV DRRMC}
-        \int_{t_{n}}^{t}  e^{D(s-t)}(A+D)x(t_{n})ds = D^{-1}(I-e^{D(t_{n}-t)})(A+D)x(t_{n}).
-    \end{equation}
-
-    Note that $D$ may be chosen differently for every outer recursion.
-\end{definition}
-
-\begin{example}[DRRMC] \label{ex:DRRMC}
-    Consider:
-    \begin{equation}
-        x'= Ax, x(0)=
-        \begin{bmatrix}
-            1 \\
-            0
-        \end{bmatrix}.
-    \end{equation}
-
-    With
-
-    \begin{equation}
-        A = \begin{bmatrix}
-            0     & 1     \\
-            -1000 & -1001
-        \end{bmatrix}.
-    \end{equation}
-
-    This has the following solution:
-
-    \begin{equation}
-        x(t) = \frac{1}{999}
-        \begin{bmatrix}
-            -  e^{-1000t}+ 1000 e^{-t} \\
-            1000 e^{-1000t}- 1000e^{-t}
-        \end{bmatrix}.
-    \end{equation}
-
-    We choose $D$ fixed over all outer recursions:
-
-    \begin{equation}
-        D = \begin{bmatrix}
-            1 & 0    \\
-            0 & 1000
-        \end{bmatrix}.
-    \end{equation}
-
-    We make the convergence plot for this example with
-    integral equation  (\ref{eq:int eq DRRMC}) with control variate
-    (\ref{eq: CV DRRMC}) implemented with recursion in recursion
-    on Figure \ref{fig:DRRMC}.
-
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{plots/DRRMC.png}
-        \caption{Log-log plot of the error of example (\ref{ex:DRRMC}).
-            We plotted the second component of the error transparent.
-        }
-        \label{fig:DRRMC}
-    \end{figure}
-
-\end{example}
-
-% TODO: 
-% (critical path and how to measure performance)  see period 6 tests
-
-\begin{related}[DRRMC]
-    DRRMC is inspired by  $\bar{\sigma}$ parameter in \cite{sawhney_grid-free_2022} but
-    instead of importance sampling we use control variates to deal with
-    nonlinearity introduced by the exponential because it needs to work over
-    an entire vector at the same time. Ideas from exponential integrator methods may
-    improve DRRMC.
-\end{related}
-
+stiff problems.
 In addition to the challenges with stiff problems, we have not conducted
 a comparison between RRMC and traditional methods, and we do not anticipate
 that RRMC in this form outperforms other classic methods.
@@ -1435,9 +1311,6 @@ In the following example, we examine an ODE with a random parameter.
 \begin{pythonn}[implementation of (\ref{ex:random ode})]
     \pythoncode{python code/random_ODE.py}
 \end{pythonn}
-
-
-\section{Limitations and Future Work}
 
 \subsection{Heat Equation}
 In this subsection, we introduce the relation between the heat equation and
