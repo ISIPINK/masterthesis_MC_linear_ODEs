@@ -64,73 +64,6 @@ style=alphabetic,
 
 \section{Introduction}
 
-\subsection{Introductory Example}
-In this subsection, we introduce recursive Monte Carlo
-with the following  initial value problem:
-
-\begin{equation} \label{ydy}
-    y' = y, \quad y(0) = 1.
-\end{equation}
-
-By integrating both sides of equation (\ref{ydy}), we obtain:
-
-\begin{equation} \label{Integral ydy}
-    y(t) = 1 + \int_{0}^{t} y(s) ds.
-\end{equation}
-
-Equation (\ref{Integral ydy}) represents a recursive integral equation,
-specifically a linear Volterra integral equation of the second type.
-By estimating the recursive integral in equation (\ref{Integral ydy})
-using Monte Carlo, we derive the following estimator:
-
-\begin{equation}
-    Y(t) = 1 + t  y(Ut),
-\end{equation}
-
-where $U \sim \text{Uniform}(0,1)$.
-If $y$ is well-behaved, then $E[Y(t)] = y(t)$,
-but we cannot directly simulate $Y(t)$ without access
-to $y(s)$ for $s < t$. However, we can replace $y$ with
-an unbiased estimator without affecting $E[Y(t)] = y(t)$,
-by the law of total expectation ($E[X] = E[E[X|Z]]$).
-By replacing $y$ with $Y$ itself, we obtain a recursive
-expression for $Y$:
-
-\begin{equation} \label{recursive RV}
-    Y(t) = 1 + t  Y(Ut).
-\end{equation}
-
-Equation (\ref{recursive RV}) is a recursive random variable
-equation. If one were to try to simulate $Y$ with equation (\ref{recursive RV}),
-it would recurse indefinitely.
-To overcome this, approximate
-$Y(t) \approx 1$ near $t = 0$ introducing minimal bias.
-Later, we will discuss Russian roulette (\ref{Russian roulette}),
-which can be used as an unbiased stopping mechanism.
-
-\vspace*{0.2cm}
-
-\begin{pythonn}[implementation of (\ref{recursive RV})] \label{python eps ydy}
-    \pythoncode{python code/eps_ydy.py}
-    To gain insight into realizations of recursive random variable equations,
-    it can be helpful to plot
-    all recursive calls $(t,Y(t))$, as shown in Figure \ref{fig:intro example}
-    for this implementation.
-
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{plots/intro example.png}
-        \caption{Recursive calls of (\ref{python eps ydy})}
-        \label{fig:intro example}
-    \end{figure}
-\end{pythonn}
-
-One issue with (\ref{python eps ydy}) is that the variance
-increases rapidly as $t$ increases. This issue gets resolved
-later (see (\ref{ex:RRMC IVP})). It is important to note that
-(\ref{python eps ydy}) retains desirable properties of unbiased Monte
-Carlo methods, such as being embarrassingly parallel and having simple
-error estimates.
 
 \subsection{Notation}
 Notations utilized include:
@@ -206,8 +139,10 @@ mechanics of these Monte Carlo techniques.
 \subsection{Contributions}
 
 \textcolor{green}{
-    TODO: add intuition and motivations to section descriptions.\\
+    TODO: add intuition and motivations to the beginning of sections
+    and do section descriptions here.\\
 }
+
 A significant part of this thesis is dedicated to informally introducing recursive Monte Carlo
 with plenty of examples.
 The key contribution is an unbiased Monte Carlo method
@@ -312,6 +247,74 @@ and rendering.
 \begin{definition}[Monte Carlo Efficiency]
     def Monte Carlo efficiency. (cost / variance)
 \end{definition}
+
+\subsection{Recursive Monte Carlo}
+In this subsection, we introduce recursive Monte Carlo
+with the following  initial value problem:
+
+\begin{equation} \label{ydy}
+    y' = y, \quad y(0) = 1.
+\end{equation}
+
+By integrating both sides of equation (\ref{ydy}), we obtain:
+
+\begin{equation} \label{Integral ydy}
+    y(t) = 1 + \int_{0}^{t} y(s) ds.
+\end{equation}
+
+Equation (\ref{Integral ydy}) represents a recursive integral equation,
+specifically a linear Volterra integral equation of the second type.
+By estimating the recursive integral in equation (\ref{Integral ydy})
+using Monte Carlo, we derive the following estimator:
+
+\begin{equation}
+    Y(t) = 1 + t  y(Ut),
+\end{equation}
+
+where $U \sim \text{Uniform}(0,1)$.
+If $y$ is well-behaved, then $E[Y(t)] = y(t)$,
+but we cannot directly simulate $Y(t)$ without access
+to $y(s)$ for $s < t$. However, we can replace $y$ with
+an unbiased estimator without affecting $E[Y(t)] = y(t)$,
+by the law of total expectation ($E[X] = E[E[X|Z]]$).
+By replacing $y$ with $Y$ itself, we obtain a recursive
+expression for $Y$:
+
+\begin{equation} \label{recursive RV}
+    Y(t) = 1 + t  Y(Ut).
+\end{equation}
+
+Equation (\ref{recursive RV}) is a recursive random variable
+equation. If one were to try to simulate $Y$ with equation (\ref{recursive RV}),
+it would recurse indefinitely.
+To overcome this, approximate
+$Y(t) \approx 1$ near $t = 0$ introducing minimal bias.
+Later, we will discuss Russian roulette (\ref{Russian roulette}),
+which can be used as an unbiased stopping mechanism.
+
+\vspace*{0.2cm}
+
+\begin{pythonn}[implementation of (\ref{recursive RV})] \label{python eps ydy}
+    \pythoncode{python code/eps_ydy.py}
+    To gain insight into realizations of recursive random variable equations,
+    it can be helpful to plot
+    all recursive calls $(t,Y(t))$, as shown in Figure \ref{fig:intro example}
+    for this implementation.
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.8\textwidth]{plots/intro example.png}
+        \caption{Recursive calls of (\ref{python eps ydy})}
+        \label{fig:intro example}
+    \end{figure}
+\end{pythonn}
+
+One issue with (\ref{python eps ydy}) is that the variance
+increases rapidly as $t$ increases. This issue gets resolved
+later (see (\ref{ex:RRMC IVP})). It is important to note that
+(\ref{python eps ydy}) retains desirable properties of unbiased Monte
+Carlo methods, such as being embarrassingly parallel and having simple
+error estimates.
 
 \subsection{Modifying Monte Carlo}
 
@@ -1078,9 +1081,7 @@ the bottleneck it is possible to rely on MC convergence.
 
 \begin{related}[convergence coupled splitting]
     See \cite{gupta_convergence_2021} for a discussion on the convergence
-    of recursive stochastic algorithms. We highly recommend watching
-    the corresponding video \cite{abhishek_gupta_recursive_2020} before reading
-    the paper.
+    of recursive stochastic algorithms.
 \end{related}
 
 Coupled splitting was originally motivated to help with
@@ -1436,40 +1437,11 @@ In the following example, we examine an ODE with a random parameter.
 \end{pythonn}
 
 
-\section{Brownian Motion}
-
-Current RMC algorithms for PDEs are related to Brownian motion. In this section,
-we explore the relationship between the heat equation and Brownian motion,
-and discuss how recursive first-passage sampling fits into the picture.
-
+\section{Limitations and Future Work}
 
 \subsection{Heat Equation}
 In this subsection, we introduce the relation between the heat equation and
 Brownian motion.
-
-% \begin{definition}[Brownian motion]
-%     Define Brownian motion $W_{t}$ as the limit/logical generalization
-%     when $n \rightarrow \infty$ of the following discrete process is defined as:
-%     \begin{equation}
-%         \begin{cases}
-%             X_{t}^{n} = X_{t-\frac{1}{n}}^{n} + Z_{n} \\
-%             X^{n}_{0}=0
-%         \end{cases}.
-%     \end{equation}
-%     With $Z_{n}\sim N(0,\frac{1}{n})$ i.i.d . From this definition it is easily seen that
-%     $W_{t} \sim N(0,t)$.
-% \end{definition}
-
-
-\begin{lemma}[self-affinity Brownian motion] \label{lem:self affine}
-    Brownian motion is a self-affine random process, which implies
-    that any subpath can be translated and scaled in such a way
-    that its distribution matches that of the entire path.
-
-    \begin{equation}
-        \forall c \in \mathbb{R}^{+}_{0}: \frac{W_{ct}}{\sqrt{c}} \sim W_{t}.
-    \end{equation}
-\end{lemma}
 
 \begin{definition}[$1$D heat equation Dirichlet] \label{def:heat equation}
     We define the $1$D heat equation for $u$ on connected domain $\Omega$
@@ -1480,11 +1452,6 @@ Brownian motion.
     Given $u(x,t)=\psi(x,t) ,\forall (x,t) \in \partial \Omega: t<\sup \{
         t| (x,t) \in \Omega\}$ .
 \end{definition}
-
-% maybe should improve this 
-Figure \ref{fig:Euler first passage para} shows how the Dirichlet condition
-is defined for parabola but reverse in time.
-
 
 \begin{lemma}[Brownian motion and the heat equation] \label{lem:BM HE}
     For problem (\ref{def:heat equation}) if $ |\psi|$ is bounded
@@ -1548,226 +1515,11 @@ is defined for parabola but reverse in time.
     Finishing the proof.
 \end{proof}
 
-% maybe with the source
-
 \begin{related}
     (\ref{lem:BM HE}) is a subcase of the Feynman-Kac formula.
     For a proof and an in-depth discussion of the Feynman-Kac formula
     see \cite{oksendal_stochastic_2003}. \\
 \end{related}
-
-
-% \begin{theorem}[Feynman-Kac formula (wikipedia)] \label{thrm:feymankac}
-%     Consider the partial differential equation
-%     \begin{equation}
-%         \frac{\partial u}{\partial t}(x, t)+\mu(x, t) \frac{\partial u}{\partial x}(x, t)+\frac{1}{2} \sigma^2(x, t) \frac{\partial^2 u}{\partial x^2}(x, t)-V(x, t) u(x, t)+f(x, t)=0,
-%     \end{equation}
-%     defined for all $x \in \mathbb{R}$ and $t \in[0, T]$, subject to the terminal condition
-%     \begin{equation}
-%         u(x, T)=\psi(x),
-%     \end{equation}
-%     where $\mu, \sigma, \psi, V, f$ are known functions, $T$ is a parameter, and $u: \mathbb{R} \times[0, T] \rightarrow \mathbb{R}$ is the unknown. Then the Feynman-Kac formula tells us that the solution can be written as a conditional expectation
-%     \begin{equation}
-%         u(x, t)=E^Q\left[\int_t^T e^{-\int_t^r V\left(X_\tau, \tau\right) d \tau} f\left(X_r, r\right) d r+e^{-\int_t^T V\left(X_\tau, \tau\right) d \tau} \psi\left(X_T\right) \mid X_t=x\right]
-%     \end{equation}
-%     under the probability measure $Q$ such that $X$ is an Itô process driven by the equation
-%     \begin{equation}
-%         d X_t=\mu(X, t) d t+\sigma(X, t) d W_t^Q
-%     \end{equation}
-%     with $W^Q(t)$ is a Wiener process (also called Brownian motion) under $Q$, and the initial condition for $X(t)$ is $X(t)=x$.
-% \end{theorem}
-
-\subsection{First Passage Sampling}
-In this subsection we build up to sampling $(Y_{\tau},\tau)$
-from (\ref{lem:BM HE}) efficiently and extend this to paths.
-
-\begin{definition}[first passage time] \label{def:first passage time}
-    Define the first passage time for a process $X_{t}$ for a set of valid states
-    $V$ as
-    \begin{equation}
-        \text{FPt}(X_{t},V)=\inf \{t>0| (X_{t},t) \notin V \}
-        .
-    \end{equation}
-    Note that the first passage time is a RV itself.
-\end{definition}
-
-\begin{definition}[first passage] \label{def:first passage}
-    Define the first passage for a process $X_{t}$ for a set of valid states
-    $V$ as
-    \begin{equation}
-        \text{FP}(X_{t},V)=(X_{\tau},\tau), \tau = \text{FPt}(X_{t},V)
-        .
-    \end{equation}
-\end{definition}
-
-\begin{theorem}
-    The the density of first passages of Brownian motion for  exiting a  boundary is  the
-    Dirichlet boundary green function for the heat equation.
-\end{theorem}
-
-\begin{proof}
-    Follows from (\ref{lem:BM HE}).
-\end{proof}
-
-\begin{example}[Euler first passage sampling]
-    In this example, we approximately sample the first passage of Brownian motion
-    for a parabolic barrier by simulating Brownian motion with the Euler scheme. We plotted
-    this in Figure \ref{fig:Euler first passage para}.
-
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{plots/Euler first passage para.png}
-        \caption{ $50$ realizations of Euler first passage sampling with step size $0.001$.}
-        \label{fig:Euler first passage para}
-    \end{figure}
-\end{example}
-
-\begin{lemma} \label{lem: FP order}
-    When a process has more valid states the first passage time gets larger i.e.
-    \begin{equation}
-        V_{1} \subset V_{2} \Rightarrow
-        \text{FPt}(X_{t}(\omega),V_{1}) \le  \text{FPt}(X_{t}(\omega),V_{2}) .
-    \end{equation}
-    The $\omega$ is to indicate we mean the same realization of $X_{t}$.
-\end{lemma}
-
-
-\begin{technique}[recursive first passage sampling]
-    Recursive first passage sampling involves sampling an initial,
-    simpler first passage, the base that includes fewer valid states. Using
-    this sampled first passage as a starting point, we
-    then perform the same sampling process until the sampled
-    first passage is almost invalid.
-\end{technique}
-
-
-\begin{example}[recursive first passage sampling] \label{ex:recursive first passage sampling}
-    In this example, we sample the first passage of Brownian motion from a parabolic barrier
-    with recursive first passage sampling.
-    For the simpler first passage sampler, we scale and translate
-    samples from a triangular barrier so its
-    valid states are contained in the parabola generated
-    by the Euler scheme. The precomputed samples are created
-    by (\ref{py:euler FP sampling}) and used to produce first passages
-    in (\ref{py:recu FP sampling}).
-
-\end{example}
-
-\begin{pythonn}[Euler first passage sampling] \label{py:euler FP sampling}
-    \pythoncode{python code/sample_euler_triangle.py}
-\end{pythonn}
-
-\begin{pythonn}[recursive first passage sampling] \label{py:recu FP sampling}
-    The maximum scaling of the triangular barrier that fits
-    in the parabola is derived through (\ref{lem:self affine})
-    and using the fact that a parabola domain is convex. To dampen barrier
-    overstepping of (\ref{py:euler FP sampling}) we use a smaller scaling
-    than the maximum. \\
-    \pythoncode{python code/sample_recu_para.py}
-
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=1\textwidth]{plots/recursive first passage para.png}
-        \caption{ $50000$ of realizations of recursive first passage sampling produced
-            by (\ref{py:recu FP sampling}). The precomputed sample of $5000$ first
-            passages of a triangular barrier uses the Euler scheme with
-            step size $0.001$.}
-        \label{fig:recursive first passage para}
-    \end{figure}
-\end{pythonn}
-
-\begin{related}[recursive first passage sampling]
-    The original walk on spheres is a recursive first passage algorithm.
-    Recursive first passage sampling for
-    Brownian motion is discussed in \cite{herrmann_first-passage_2016}
-    and by transformation also first passage problems for the
-    Ornstein-Uhlenbeck process.
-    % To add jumps you can use \cite{herrmann_exact_2021}.
-    An alternative to resampling from an Euler scheme is to use tabulated
-    inverse cumulative probability functions,
-    as demonstrated in \cite{hwang_simulationtabulation_2001}.
-\end{related}
-
-% For recursive first passage sampling for high dimensional Brownian motion
-% there symmetry trick to be pulled off
-
-
-\begin{example}[recursive first passage average sampling] \label{ex:recu FP average}
-    In example (\ref{ex:recursive first passage sampling}) it is possible to keep
-    track of the average because it scales and translates with our base first passage sampler.
-
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=1\textwidth]{plots/recursive first passage average para.png}
-        \caption{ $10000$ of realizations of recursive first passage sampling (for the average).
-            The precomputed sample of $1000$ first passages and averages of a triangular barrier
-            uses the Euler scheme with step size $0.001$.}
-        \label{fig:recursive first passage average para}
-    \end{figure}
-\end{example}
-
-
-\begin{technique}[Brownian motion path stitching]
-    Instead of thinking of sampling the first passages you can also sample
-    whole paths to the first passage. Similar to before we need to be
-    able to generate paths for a simple first passage problem and "stitch"
-    these paths together. An advantage over normally generating paths
-    is that a path can be represented by its subpaths and their scalings
-    requiring less memory than a fully stored path. This can be useful
-    in case you need to look back to a part of the path.
-    The only downsides are that the time steps are inhomogeneous
-    and it requires storing paths for the simpler first passage problem.
-\end{technique}
-
-\begin{example}[path stitching parabola]
-    This is the same as example (\ref{ex:recursive first passage sampling}) but now we have
-    to keep track of the whole resampled Euler scheme generated paths.
-
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{plots/path stitching para.png}
-        \caption{ $10$ paths build with path stitching build out of
-            precomputed Euler scheme generated paths with step size $0.01$.}
-        \label{fig:path stitching para}
-    \end{figure}
-\end{example}
-
-% For plotting the path we needed to accesses to all of its points.  
-
-% A way around scaling base samples is limiting scaling to a
-% discrete set and pick the biggest scaling that fits, instead
-% of generating base samples for $1$ scale and scaling it dynamically
-% precompute all the discrete scalings. \\
-
-
-\begin{related}[path stitching]
-    Path stitching appears frequently in rendering and also in \cite{das_sarma_fast_2015}
-    and \cite{ji_reusing_2012}.
-\end{related}
-
-\subsection{Limitations and Future Work}
-
-It would be interesting to extend proof technique of (\ref{lem:BM HE}) to the full
-Feynman-Kac formula. Just adding a source term $f$ in the Feynman-Kac formula adds
-an integral of the source term over the recursion path.
-In equation (\ref{eq:discrete iso heat equation})
-it would add $\frac{\Delta t \Delta x^{2}}{2 \Delta t + \Delta x ^{2}} f(x,t)$
-term. This term can either be kept or Russian rouletted
-to prevent infinite source evaluations in the limit.
-This roughly corresponds to estimating the integral by
-MC integration also requires knowing a finite amount of
-intermediate points of the recursion path
-sampled randomly. These can possibly be obtained from
-the intermediate first passages of recursive first passage sampling or with a smart
-application of path stitching. \\
-
-
-Recursive first passage sampling for Brownian motion can be extended to geometric
-Brownian motion by transforming the space. However, this transformation breaks
-the symmetries required for the average used in the example (\ref{ex:recu FP average}).
-An unsatisfying way to fix this is to approximate the base sampler at different points in
-space and at different scales. Just accelerating a classic Euler scheme at critical places
-with a base sampler can reduce precomputation requirements.
 
 
 \newpage
