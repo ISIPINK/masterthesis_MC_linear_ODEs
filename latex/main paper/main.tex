@@ -103,43 +103,80 @@ which introduces the walk-on-sphere method for solving second-order
 elliptic PDEs with varying coefficients and Dirichlet boundary conditions.
 Their techniques have shown high accuracy even in the presence of geometrically
 complex boundary conditions. We were inspired to apply the underlying
-mechanics of these Monte Carlo techniques to ODEs. \\
+mechanics of these Monte Carlo techniques to ODEs to explore
+parallel in time and the possibility to extend their techniques
+to other types of PDEs. \\
 
 We made an interactive data map of the literature read
 mainly in function of this thesis available at
 \url{https://huggingface.co/spaces/ISIPINK/zotero_map}.
 It may take 10 seconds to load. \\
 
-\begin{related}[MC for IVPs ODEs]
+The latest paper that we found on an unbiased IVP solver is by
+\citeauthor{ermakov_monte_2021}'s \citeyear{ermakov_monte_2021}
+\cite{ermakov_monte_2021}  that study an unbiased method for
+a Cauchy problem for large systems of linear differential
+equations for describing queuing systems. Similarly to us
+they base their solver on Volterra integral equations.\\
 
-    \textcolor{green}{
-        TODO: add relevant papers to solving ODEs
-    }
+Other literature is a bit further away.
+The most important fields we draw from are:
 
-    Monte Carlo methods for initial value problems for systems of ordinary
-    differential equations are little studied. The most significant works are:
-    \begin{itemize}
-        \item \citeauthor{jentzen_random_2009}'s \citeyear{jentzen_random_2009}
-              \cite{jentzen_random_2009} paper describes a random Euler scheme for
-              weak smoothness conditions.
+\begin{itemize}
+    \item rendering and walk-on-sphere/first passage literature
+          which contain many practical recursive
+          Monte Carlo techniques,
 
-        \item \citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011}
-              \cite{daun_randomized_2011} paper describes a randomized algorithm that
-              achieves optimal order of convergence by using polynomial
-              extrapolation and control variates.
+    \item  Stochastic Gradient Descent literature
+          that is connected through continuous gradient descent/Newton
+          which we first encountered in \cite{huang_hybrid_2017},
 
-        \item \citeauthor{ermakov_monte_2019}'s \citeyear{ermakov_monte_2019}
-              \cite{ermakov_monte_2019}
-              and \citeauthor{ermakov_monte_2021}'s \citeyear{ermakov_monte_2021}
-              \cite{ermakov_monte_2021}
-              papers study unbiased  methods
-              for linear problems and slightly biased methods for nonlinear based
-              on Volterra integral equations.
+    \item  information complexity literature which was
+          unexpected to us, there are some intrestring
+          biased algorithms for ODEs that achieve optimal
+          information complexity rates in the randomized case,
+          similar to us
+          \citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011}
+          \cite{daun_randomized_2011} uses control variates
+          to achieve optimal order of convergence.
+\end{itemize}
 
-    \end{itemize}
+A recurrent theme in these fields is that informational
+optimal algorithms and unbiased algorithms
+are of theoretical importance and lead to more
+efficient algorithms in the long run.
 
 
-\end{related}
+% \begin{related}[MC for IVPs ODEs]
+
+%     \textcolor{green}{
+%         TODO: add relevant papers to solving ODEs
+%     }
+
+%     Monte Carlo methods for initial value problems for systems of ordinary
+%     differential equations are little studied. The most significant works are:
+%     \begin{itemize}
+%         \item \citeauthor{jentzen_random_2009}'s \citeyear{jentzen_random_2009}
+%               \cite{jentzen_random_2009} paper describes a random Euler scheme for
+%               weak smoothness conditions.
+
+%         \item \citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011}
+%               \cite{daun_randomized_2011} paper describes a randomized algorithm that
+%               achieves optimal order of convergence by using polynomial
+%               extrapolation and control variates.
+
+%         \item \citeauthor{ermakov_monte_2019}'s \citeyear{ermakov_monte_2019}
+%               \cite{ermakov_monte_2019}
+%               and \citeauthor{ermakov_monte_2021}'s \citeyear{ermakov_monte_2021}
+%               \cite{ermakov_monte_2021}
+%               papers study unbiased  methods
+%               for linear problems and slightly biased methods for nonlinear based
+%               on Volterra integral equations.
+
+%     \end{itemize}
+
+
+% \end{related}
 
 \subsection{Contributions}
 
@@ -148,15 +185,16 @@ It may take 10 seconds to load. \\
     and do section descriptions here.\\
 }
 
-A significant part of this thesis is dedicated to informally introducing recursive Monte Carlo
-with plenty of examples.
+A significant part of this thesis is dedicated to
+informally introducing recursive Monte Carlo
+and applying variance reduction techniques for ODEs.
 The key contribution is an unbiased Monte Carlo method
 (\ref{ex:CV RRMC IVP}) for
 linear initial value problems for systems of ordinary
-differential equations by using recursion in recursion.
-This method achieves a higher order of convergence
-in the time step size that is comparable to explicit
-deterministic methods.
+differential equations by using recursion in recursion
+and variance reduction techniques.
+We conjecture that this method achieves optimal information
+complexity.
 
 
 
@@ -179,19 +217,19 @@ deterministic methods.
 
 % \end{itemize}
 
-In the background section, we provide an introduction
-to Monte Carlo techniques and a short discussion about a Monte Carlo trapezoidal
-rule. We also discuss coupled recursion and recursion in recursion. \\
+% In the background section, we provide an introduction
+% to Monte Carlo techniques and a short discussion about a Monte Carlo trapezoidal
+% rule. We also discuss coupled recursion and recursion in recursion. \\
 
-In the ordinary differential equation section, we introduce green functions
-as a tool to transform ordinary differential equations into integral equations.
-We then proceed to present our main algorithm for solving
-linear initial value problems for systems of ordinary differential
-equations. \\
+% In the ordinary differential equation section, we introduce green functions
+% as a tool to transform ordinary differential equations into integral equations.
+% We then proceed to present our main algorithm for solving
+% linear initial value problems for systems of ordinary differential
+% equations. \\
 
-In the Brownian motion section, we establish the connection
-between Brownian motion and the heat equation using recursive Monte Carlo.
-Additionally, we introduce recursive first passage sampling.
+% In the Brownian motion section, we establish the connection
+% between Brownian motion and the heat equation using recursive Monte Carlo.
+% Additionally, we introduce recursive first passage sampling.
 
 \section{Background}
 
