@@ -133,7 +133,7 @@ The most important fields we draw from are:
 
     \item  information complexity literature which was
           unexpected to us, there are some intrestring
-          biased algorithms for ODEs that achieve optimal
+          biased algorithms applied on ODEs that achieve optimal
           information complexity rates in the randomized case,
           similar to us
           \citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011}
@@ -187,7 +187,8 @@ efficient algorithms in the long run.
 
 A significant part of this thesis is dedicated to
 informally introducing recursive Monte Carlo
-and applying variance reduction techniques for ODEs.
+and applying variance reduction techniques for ODEs. \\
+
 The key contribution is an unbiased Monte Carlo method
 (\ref{ex:CV RRMC IVP}) for
 linear initial value problems for systems of ordinary
@@ -233,12 +234,11 @@ complexity.
 
 \section{Background}
 
-\subsection{Monte Carlo}
+\subsection{Monte Carlo Integration}
 
 \textcolor{green}{
     TODO:
     \begin{itemize}
-        \item add normal Monte Carlo
         \item add information theory
         \item add curse of dimensionality
     \end{itemize}
@@ -246,21 +246,75 @@ complexity.
 
 In this subsection, we review basic Monte Carlo theory. \\
 
-Explain briefly behind Monte Carlo.
-\begin{definition}[Monte Carlo]
-    define Monto Carlo
-    Basically randomly sampling a function to estimate its integral.
+Monte Carlo integration is an algorithm that
+uses random sampling to estimate an integral.
+
+\begin{definition}[Uniform Monte Carlo Integration]
+    We define uniform Monte Carlo integration of
+    $f:\mathbb{R}^{n} \rightarrow \mathbb{R}^{m}$
+    over $\Omega \subset \mathbb{R}^{n}$ as
+    an estimation of the average of $f(U)$, with
+    $U \sim \text{Uniform}(\Omega)$. Combined
+    with the Best Linear Unbiased Estimators (BLUEs) for the average, Monte Carlo Integration
+    in that case can be summarized in the following formula:
+    \begin{equation}
+        \int_{\Omega} f(s)ds \approx \frac{1}{n} \sum_{i=1}^{n}f(U_{j}),
+    \end{equation}
+    where $n$ is the amount of samples used.
 \end{definition}
 
-\begin{definition}[Monte Carlo Integration]
-    define Monto Carlo
-    Basically randomly sampling a function to estimate its integral.
-\end{definition}
+Because estimators are Random Variables (RV)
+the cost and error also are RVs. In most cases
+these RVs are hard to impossible to get.
+Directly making comparisons between estimators based on these
+RVs is hard, there is no Pareto front we can draw.
+Instead statistics of these variables are used
+to do comparisons.\\
 
-Explain how error in Monte Carlo is usually measured.
+Accuracy comparisons between estimators
+are usually done with (root) mean square error.
 \begin{definition}[Root Mean Square Error (RMSE)]
-    Def RMSE.
+    We define the RMSE of an estimator $\tilde{\theta}$ for $\theta$  as follows:
+    \begin{equation}
+        \text{RMSE}(\tilde{\theta}) = \sqrt{E[||\tilde{\theta}-\theta||^{2}_{2}]}.
+    \end{equation}
 \end{definition}
+
+Even comparisons based on RMSE can be counterintuitive look at
+Stein's paradox for example. We will
+limit us to $1$ dimensional unbiased estimators, so that RMSE becomes the variance.
+It is easy to estimate the variance wich we use to
+get confidence intervals via Chebyshev's inequality or
+in the case of the BLUE via approximate normal distribution.  \\
+
+Average (FLOPs or time)/simulation are very common cost statistics.
+We can imagine (memory or wall time) at risk (similar to value at risk) to be useful
+to keep track of. The statistics are problem dependent.
+If we limit ourselves to BLUEs with big sample size and
+finite variance assumption on error and simulation time.
+Memory needs to be just enough to evaluate $f$ and to keep an accumulation
+of the sum which is negligible.
+Computation across simulations is embarrassingly parallel which
+make them well suited to a GPU implementation. These assumptions get you
+pretty close to optimal solutions and are very practical for high dimensions
+or complex domains. There is a linear trade off between average simulation
+time and variance which allows us to define a relative efficiency statistic.
+
+\begin{definition}[Relative Monte Carlo Efficiency]
+    Define relative Monte Carlo efficiency of an
+    estimator $F$ as follows:
+    \begin{equation}
+        \epsilon[F]=\frac{1}{\text{Var}[F] T[F]},
+    \end{equation}
+    with $T$ the average simulation time.
+\end{definition}
+
+\begin{related}[Relative Monte Carlo Efficiency]
+    For a reference see \cite{veach_robust_1997}.
+\end{related}
+
+For smooth $1$ dimensional integration is the linear trade off between
+variance and average simulation time is not even close to optimal.
 
 Explain how information complexity was used in devolping quantum algorithms.
 \begin{definition}[Information Complexity]
@@ -270,12 +324,12 @@ Explain how information complexity was used in devolping quantum algorithms.
 
 Intuition behind the curse of dimensionality.
 
-\begin{theorem}[Information Curse of Dimensionality (Integration)]
+\begin{theorem}[Curse of Dimensionality]
     State the information curse of dimenstionality for integration for
     deterministic errors.
 \end{theorem}
 
-\begin{related}[Information Curse of Dimensionality (Integration)]
+\begin{related}[Curse of Dimensionality]
     \cite{foucart_mathematical_2022} chapter on the curse of dimensionality.
 \end{related}
 
@@ -285,11 +339,6 @@ And give realistic examples with them.
 Explain the limitations using information complexity.
 
 calculate the information complexity of Monte Carlo
-Explain the usual way of comparing efficiency in this Monte Carlo scheme
-and rendering.
-\begin{definition}[Monte Carlo Efficiency]
-    def Monte Carlo efficiency. (cost / variance)
-\end{definition}
 
 \subsection{Recursive Monte Carlo}
 In this subsection, we introduce recursive Monte Carlo
