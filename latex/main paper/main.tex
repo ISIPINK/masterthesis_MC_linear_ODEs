@@ -168,18 +168,10 @@ We conjecture that this method achieves optimal IBC.
 
 \subsection{Monte Carlo Integration}
 
-\textcolor{green}{
-    TODO:
-    \begin{itemize}
-        \item add information theory
-        \item add curse of dimensionality
-    \end{itemize}
-}
-
 In this subsection, we review basic MC theory. \\
 
-MC integration is an algorithm that
-uses random sampling to estimate an integral.
+MC integration is any way to
+use random sampling to estimate an integral.
 
 \begin{definition}[Uniform Monte Carlo Integration]
     We define uniform Monte Carlo integration of
@@ -192,7 +184,7 @@ uses random sampling to estimate an integral.
     \begin{equation}
         \int_{\Omega} f(s)ds \approx \frac{1}{n} \sum_{i=1}^{n}f(U_{j}),
     \end{equation}
-    where $n$ is the amount of samples used.
+    where $n$ is the amount of samples used and $U_{j}$ i.i.d. $U$.
 \end{definition}
 
 Because estimators are Random Variables (RV)
@@ -205,7 +197,7 @@ to do comparisons.\\
 
 Accuracy comparisons between estimators
 are usually done with (root) mean square error.
-\begin{definition}[Root Mean Square Error (RMSE)]
+\begin{definition}[Root Mean Square Error]
     We define the Root Mean Square Error (RMSE) of an estimator $\tilde{\theta}$ for $\theta$  as follows:
     \begin{equation} \label{eq:BLUE}
         \text{RMSE}(\tilde{\theta}) = \sqrt{E[||\tilde{\theta}-\theta||^{2}_{2}]}.
@@ -223,7 +215,7 @@ Average (FLOPs or time)/simulation are very common cost statistics.
 We can imagine (memory or wall time) at risk (similar to value at risk) to be useful
 to keep track of. The statistics are problem dependent.
 
-If we limit ourselves to \ref{eq:BLUE} with big sample size and
+If we limit ourselves to equation (\ref{eq:BLUE}) with big sample size and
 finite variance assumption on error and simulation time.
 Memory needs to be just enough to evaluate $f$ and to keep an accumulation
 of the sum which is negligible.
@@ -248,36 +240,24 @@ for comparing estimators.
 \end{related}
 
 For smooth $1$ dimensional integration the linear trade off between
-variance and average simulation time is not even close to optimal. \\
-% need a reference to later
-An other popular way to compare algorithms is Information-Based Complexity (IBC).
-IBC is a way to describe asymptotically (for increasing accuracy/function calls)
-the trade-off between the amount of function calls needed and accuracy.
+variance and average simulation time is not even close to optimal see
+theorem \ref{thrm:order trap}. \\
+In those case comparing with Information-Based Complexity (IBC)
+makes more sense. We won't define IBC rigorously.
 
-
-Explain how information complexity was used in devolping quantum algorithms.
-\begin{definition}[Information Complexity]
-    Define information complexity.
-    Rough measure of how many function calls are used.
+\begin{definition}[Information-Based Complexity]
+    IBC is a way to describe asymptotically (for increasing accuracy/function calls)
+    the trade-off between the average amount of function calls (information)
+    needed and accuracy.
 \end{definition}
 
-Intuition behind the curse of dimensionality.
-
-\begin{theorem}[Curse of Dimensionality]
-    State the information curse of dimenstionality for integration for
-    deterministic errors.
-\end{theorem}
-
-\begin{related}[Curse of Dimensionality]
-    \cite{foucart_mathematical_2022} chapter on the curse of dimensionality.
-\end{related}
-
-Explain why the underlying assumptions of information are relevant.
-And give realistic examples with them.
-
-Explain the limitations using information complexity.
-
-calculate the information complexity of Monte Carlo
+\begin{example}[IBC of equation (\ref{eq:BLUE})]
+    In equation (\ref{eq:BLUE}) the function calls trades of
+    linearly with variance. For $n$ function calls
+    the RMSE $= O\left(\frac{1}{\sqrt{n}}\right)$ or equivalently if we want a
+    RMSE of $\varepsilon$ we would need $O\left(\frac{1}{\varepsilon^{2}}\right)$
+    function calls.
+\end{example}
 
 \subsection{Recursive Monte Carlo}
 In this subsection, we introduce recursive Monte Carlo
@@ -340,20 +320,20 @@ which can be used as an unbiased stopping mechanism.
     \end{figure}
 \end{pythonn}
 
-One issue with (\ref{python eps ydy}) is that the variance
+Notice that the variance of (\ref{python eps ydy})
 increases rapidly as $t$ increases. This issue gets resolved
-later (see (\ref{ex:RRMC IVP})). It is important to note that
-(\ref{python eps ydy}) retains desirable properties of unbiased Monte
-Carlo methods, such as being embarrassingly parallel and having simple
-error estimates.
+later (see (\ref{ex:RRMC IVP})).
 
 \subsection{Modifying Monte Carlo}
 
 In this subsection, we discuss techniques for modifying RRVEs
 in a way that preserves the expected value of the solution while
-acquiring more desirable properties. \\
+acquiring more desirable properties. These techniques are only
+effective when applied in a smart way by using prior information
+about the problem or information about costs. \\
 
-Motivate why switching between similar is allowed and it is frequent.
+We will be frequently interchanging RVs with the same expectance.
+That is why we introduce the following notation.
 \begin{notation}[$\cong$]
     \[
         X \cong Y \iff E[X]=E[Y]
@@ -398,10 +378,10 @@ less computationally expensive approximation sometimes.
     average once every $100$ simulations. This significantly reduces the
     computational burden while increasing the variance slightly thereby increasing
     the MC efficiency.\\
-    Alternatively it is possible to estimate
+    In this  case it is also possible to estimate
     the expectance of the $2$ terms of $Z$ separately. Given the variances and
     computational complexity of both terms, you can calculate the asymptotic optimal
-    division of samples for each term.
+    division of samples for each term. But this isn't the case anymore with RMC.
 \end{example}
 
 
@@ -554,24 +534,12 @@ enhanced with control variates based on the trapezoidal rule.
 \end{definition}
 
 
-This MC trapezoidal rule has on average $\frac{1}{l}$ more function calls than
-the normal trapezoidal rule. For the composite rule with $n$ intervals,
-there are $\text{Binomial}(n,\frac{1}{l})$ additional function calls
-(repeated Bernoulli experiments).
-
-% The composite MC trapezoidal rule, defined as the sum of MC trapezoidal rules
-% on equally divided intervals, can be computationally expensive. Each interval
-% requires an additional function call compared to the regular composite MC
-% trapezoidal rule. However, by aggressively applying Russian roulette into
-% the normal trapezoidal rule, the increase in function calls can be made
-% arbitrarily small.
-
 \begin{definition}[composite MC trapezoidal rule] \label{MCtrap}
     Define the composite MC trapezoidal rule for approximating the integral
     of function $f$ over the interval $[a, b]$ with $n$ intervals
     and a Russian roulette rate $l$ as follows:
 
-    \begin{align}
+    \begin{align} \label{eq:MCtrap}
         \int_{a}^{b} f(s) ds \cong \Delta x \sum_{x} & \frac{f(x) + f(x+\Delta x)}{2} \\
                                                      & + l B\left(\frac{1}{l}\right)
         \left(f(S_x) - f(x) - \frac{S_x - x}{\Delta x}(f(x+\Delta x) - f(x))\right),
@@ -590,16 +558,39 @@ there are $\text{Binomial}(n,\frac{1}{l})$ additional function calls
         \centering
         \includegraphics[width=0.8\textwidth]{plots/MCtrap.png}
         \caption{Log-log plot of the error of (\ref{MCtrap}) for
-        $\int_{0}^{1}e^{s}ds$ with $l=100$ at which the additional function
-        calls are negligible. At floating point accuracy,
+        $\int_{0}^{1}e^{s}ds$ with $l=100$. At floating point accuracy,
         the convergence ceases.
         }
         \label{fig:MCtrap}
     \end{figure}
 \end{pythonn}
 
-For the sake of simplicity, we reduce the study of the local truncation error
-to the following expression:
+Figure \ref{fig:MCtrap} suggest that the order of convergence of RMSE of the
+MC trapezoidal rule is better by $0.5$ as the normal trapezoidal rule.
+The MC trapezoidal rule has on average $\frac{1}{l}$ more function calls than
+the normal trapezoidal rule. For the composite rule with $n$ intervals,
+there are $\text{Binomial}(n,\frac{1}{l})$ additional function calls
+(repeated Bernoulli experiments). So they use up to a constant the same amount
+of function calls. This implies an advantage in IBC. \\
+
+\begin{theorem}[Order Trapezoidal MC Rule] \label{thrm:order trap}
+    The composite trapezoidal MC rule that uses on
+    average $n$ function calls has
+    \begin{equation}
+        \text{RMSE} =O\left(\frac{1}{n^{2.5}} \right) .
+    \end{equation}
+\end{theorem}
+
+\begin{proof}
+    Start from equation (\ref{eq:MCtrap}). The RMSE is the variance
+    so we can ignore addition by non random terms.
+    \begin{align}
+        \text{RMSE} & =\text{Var}\left( \sum_{x}  l B\left(\frac{1}{l}\right)
+        \left(f(S_x)  - \frac{S_x}{\Delta x}(f(x+\Delta x) - f(x))\right)\right)
+    \end{align}
+\end{proof}
+
+For the sake of simplicity, we only study polynomial integration:
 
 \begin{equation}
     \int_{0}^{h} s^{2}ds = O(h^{3}).
@@ -630,8 +621,8 @@ is equivalent to the standard deviation:
 \end{align}
 
 Note that the meaning of a bound on the error that behaves as $O(h^{2})$ and
-a bound on the root-mean-square error that behaves as $O(h^{2})$ is different.
-A bound on the error implies a bound on the root-mean-square error, but
+a bound on the RMSE that behaves as $O(h^{2})$ is different.
+A bound on the error implies a bound on the RMSE, but
 the reverse is not true.
 
 \begin{related}[Monte Carlo Trapezoidal Rule]
@@ -1397,17 +1388,17 @@ Brownian motion.
 
 \end{document}
 
-% Base your answers on the thesis. Cite the subsections 
-% you use in your answers your questions.
-% corresponding to the questions.
-% Add the questions before the answer, answer as a markdown file.
-% Use subnumerings in numbering the question that works in a markdown file.
+% Base your answers on the thesis.  
+% Answer as a markdown file.
+% Use subnumerings in mark down form in numbering the question 
+% that works in a markdown file. Keep use different headers 
+% in markdown. Briefly explain your answers. 
 %
 % # Content tests
 % 0.1. How does the main algorithm work of the thesis?
 % 0.2. What is the biggest limitation of the main algorithm of the thesis?
 % 0.3. How important is coupled splitting to the thesis?
-% 0.4. How and where does Stein's paradox pop up in the thesis?
+% 0.4. How does Stein's paradox pop up in the thesis? (see subsection on MC integration)
 % 0.5. Rate the language of the thesis.
 % 0.6. List the 5 unclearest parts of the thesis.
 % 0.7. What is special about the Monte Carlo trapezoidal rule?
@@ -1418,6 +1409,12 @@ Brownian motion.
 % 0.12. How does the thesis define tail recursion?
 % 0.13. How does the thesis define Green's functions? 
 % 0.14. Summarize convergence behavior of the main algorithm.
+% 0.15. List your 5 favorite/intrestring parts of the thesis.
+% 0.16. What seem to be missing in the thesis?
+% 0.17. Any abbreviation that should/shouldn't be used?
+% 0.18. List 5 inaccuracies things in the thesis.
+% 0.19. List 5 controversial things in the thesis.
+% 0.20. List 5 suggestions to improve the thesis.
 %
 % # Feedback 1
 % 1.1 Does the thesis differentiate between the original contributions and prior work? 
@@ -1425,20 +1422,22 @@ Brownian motion.
 % 1.3 Does the thesis has a good conclusion?
 % 1.4 Does everything gets defined in the thesis?
 % 1.5 Are there symbols that don't get defined in the thesis?
-% 1.6 What are the advantages of the solvers in the subsetion of intial value problems 
+% 1.6 What are the advantages of the solvers in the subsection of initial value problems 
 % compared to classical solver?
 % 1.7 Are the explanations for the graphs in the thesis sufficient?
+% 1.8 Do equations, examples, definition, etc get referenced with consistent notation?
+% 1.9 List 2 uncommon abbreviations that don't get introduced the first time they get used. 
 %
 % # Feedback 2
 % 2.1 Has the elementary theory of Monte Carlo been covered in the thesis?
-% 2.2 In the subsection of recursive Monte Carlo why is there indefinete 
+% 2.2 In the subsection of recursive Monte Carlo why is there indefinite 
 % recursion?
 % 2.3 Does the thesis give the necessary references to concepts?
 % 2.4 Does additive branching gets explained clearly?
-% 2.5 What is the russian roulette rate ?
+% 2.5 What is the Russian roulette rate ?
 % 2.6 Does the local truncation error get defined ?
 
-% # Quality assurance/Requirements
+% # Requirements
 % 3.1 Title Page: Does the thesis have a title page? 
 % 3.2 Table of Contents: Does the thesis include a table of contents?
 % 3.3 Introduction: 
@@ -1492,3 +1491,4 @@ Brownian motion.
 % 3.14 Overall Contribution:
 % - Does the thesis contribute significantly to the field's body of knowledge and understanding?
 % - Is the thesis likely to be cited and referenced by others in the field?
+

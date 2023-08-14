@@ -1,179 +1,130 @@
-Here are the questions and answers with numbering for the questions but not the answers:
+Here are my answers to your questions:
 
-# Content tests
+# Content Tests
 
-0.1. How does the main algorithm work of the thesis?
+0.1. The main algorithm of the thesis is Recursive Monte Carlo (RMC) applied to linear ODEs. It involves turning the ODE into an integral equation, then estimating the recursive integral with Monte Carlo to obtain a recursive random variable equation (RRVE). Variance reduction techniques like control variates and Russian roulette are used to improve the RRVE.
 
-The main algorithm of the thesis is Recursive Monte Carlo (RMC) for solving linear ODEs. It works by first converting the ODE into an integral equation using Green's functions. Then RMC is used to estimate the recursive integral, resulting in a Recursive Random Variable Equation (RRVE) that can be simulated to obtain an unbiased estimate of the solution. Techniques like Russian Roulette, control variates, and recursion in recursion are used to improve the RRVE.
+0.2. The biggest limitation is that convergence analysis of RMC for general Fredholm equations is lacking. It is unclear when the methods will converge.
 
-0.2. What is the biggest limitation of the main algorithm of the thesis?
+0.3. Coupled splitting is presented as a technique to help convergence of RMC. However, in the example shown, it did not expand the convergence domain. Its importance to the overall thesis seems limited.
 
-The biggest limitation of the main algorithm is that it has not been rigorously analyzed for convergence, especially in the case of Fredholm integral equations. Figures in the thesis suggest that naive RMC does not always converge. Convergence analysis and ways to ensure convergence need further research.
+0.4. Stein's paradox is mentioned briefly to illustrate that even RMSE comparisons can be counterintuitive. It does not feature significantly in the thesis.
 
-0.3. How important is coupled splitting to the thesis?
+0.5. The language is quite technical overall but generally clear when read carefully. There are some parts that could benefit from more intuitive explanations.
 
-Coupled splitting is presented as a technique to help improve convergence of RMC for some Fredholm equations, but it is not central to the main algorithm. The thesis conjectures it could be valuable for certain problems but does not rely heavily on it.
+0.6. Some of the unclearest parts:
 
-0.4. How and where does Stein's paradox pop up in the thesis?
+- The abstract could be clarified.
+- The introduction and background sections jump quickly into technical details without much intuition or motivation.
+- The convergence analysis is limited, making the overall behavior of the algorithms unclear.
+- The coupled splitting explanation and example could be expanded.
 
-Stein's paradox is not discussed in the thesis.
+  0.7. The Monte Carlo trapezoidal rule uses control variates based on the trapezoidal rule to eliminate bias and achieve faster convergence than standard MC integration.
 
-0.5. Rate the language of the thesis.
+  0.8. The primary motivating work introduces Walk-on-Spheres for solving PDEs, which shows high accuracy even with complex geometries.
 
-The language of the thesis is generally clear and accessible. Some parts could benefit from more intuitive explanations and motivations. Overall the quality is good.
+  0.9. Russian Roulette is defined as replacing a random variable with a cheaper approximation probabilistically, in a way that preserves the expected value.
 
-0.6. List the 5 unclearest parts of the thesis.
+  0.10. Control variates are defined as replacing a function of a random variable with the difference of the function and its approximation, plus the expected value of the approximation.
 
-Some of the unclearest parts of the thesis are:
+  0.11. For the exponential of expectance, the Taylor series of the exponential is manipulated to replace the expectance powers with products of independent samples. The Bernoulli processes control the order.
 
-- The introduction of Green's functions could use more intuition.
-- The explanation behind Figure 8 is unclear.
-- The computational complexity and how it differs from classic methods is not analyzed.
-- The assumptions behind relative MC efficiency are not stated.
-- The convergence analysis is limited.
+  0.12. Tail recursion is reordering operations so no computation happens after the recursive call, allowing iteration without stack buildup.
 
-0.7. What is special about the Monte Carlo trapezoidal rule?
+  0.13. Green's functions are defined informally as kernels used to solve linear problems with linear conditions. They satisfy null conditions with a delta source term.
 
-The Monte Carlo trapezoidal rule achieves an order of convergence in the root mean square error similar to the deterministic trapezoidal rule by eliminating the bias in the local truncation error.
+  0.14. The convergence behavior of the main algorithm is unclear and requires further analysis. Some examples like coupled splitting suggest limitations.
 
-0.8. What is the main advantage of the primary motivating work?
+  0.15. My favorite parts:
 
-The primary motivating work introduces Walk-on-Spheres for solving PDEs, which is accurate even with complex geometries. It inspired applying similar MC techniques to ODEs.
+- The interactive literature map
+- The intuition and examples for recursive Monte Carlo
+- The control variate RRMC example
+- The connection between heat equation and Brownian motion
 
-0.9. How does the thesis define Russian Roulette?
+  0.16. Some things that seem to be missing or limited:
 
-Russian Roulette is defined as replacing a random variable with a less expensive approximation randomly, in a way that preserves the expected value.
+- More motivation/intuition in intro sections
+- Convergence analysis
+- Comparison to classical methods
+- More explanation of coupled splitting
 
-0.10. How does the thesis define control variates?
+  0.17. No uncommon abbreviations stand out. The list of abbreviations covers the important ones.
 
-Control variates are defined as modifying an estimator by subtracting out an approximation of it and adding back the expected value of the approximation.
+  0.18. I don't see any clear inaccuracies. The definitions and explanations seem technically correct as far as I can tell.
 
-0.11. Summarize the approach for the second example in the unbiased non-linearity section.
+  0.19. Nothing seems especially controversial. The limitations around convergence analysis are fairly openly acknowledged.
 
-For the nonlinear example $y' = y^2$, the solution is represented as a recursive integral which is estimated using $Y_1Y_2$ with $Y_1, Y_2 \stackrel{iid}{\sim} Y$ to handle the nonlinearity.
+  0.20. Some suggestions:
 
-0.12. How does the thesis define tail recursion?
-
-Tail recursion is defined as reordering operations in recursion so there are no operations after the recursive call, allowing iterative implementation.
-
-0.13. How does the thesis define Green's functions?
-
-Green's functions are kernel functions defined by linear differential equations and conditions, which when integrated against source terms give solutions to related linear differential equations.
-
-0.14. Summarize the convergence behavior of the main algorithm.
-
-The convergence behavior of the main algorithm is limited. For some problems the variance seems to explode, while for others empirical convergence rates around 1.5 are demonstrated, but rigorous convergence results are missing.
+- Add more intuition and motivation early on
+- Include a convergence analysis section
+- Compare performance to classical methods
+- Expand the explanation and example for coupled splitting
+- Clarify the abstract
 
 # Feedback 1
 
-1.1. Does the thesis differentiate between the original contributions and prior work?
+1.1. Yes, the thesis generally differentiates between original contributions and prior work. The introduction summarizes the relevant literature.
 
-The thesis does a reasonable job distinguishing between original work and background material used. The original contributions could be highlighted more clearly in the introduction.
+1.2. The overview is reasonably good, but could benefit from more intuitive explanations in the background sections.
 
-1.2. Does the thesis has a good overview?
+1.3. The conclusion is limited. More discussion of limitations, comparisons, and future work would strengthen it.
 
-The overview is decent, with a map of relevant literature and summary of key contributions and techniques. A more detailed roadmap in the introduction could improve navigability.
+1.4. Most things are defined, but some terms like "information-based complexity" could use a more explicit definition.
 
-1.3. Does the thesis has a good conclusion?
+1.5. I did not notice any major undefined symbols. The notation list covers the important ones.
 
-The conclusion is limited, mainly just stating open problems and future work. A summary of key achievements and open questions would strengthen it.
+1.6. The advantages compared to classical solvers are not discussed in detail. This could be expanded on.
 
-1.4. Does everything gets defined in the thesis?
+1.7. Some key graphs lack sufficient explanation in the caption or text, like the coupled splitting example. But overall they are decent.
 
-Most concepts get defined, but some more intuitive explanations behind definitions would help.
+1.8. The notation seems consistent, with equations, examples, etc. numbered and referenced appropriately.
 
-1.5. Are there symbols that don't get defined in the thesis?
-
-All symbols appear to be defined.
-
-1.6. What are the advantages of the solvers in the subsetion of intial value problems compared to classical solver?
-
-The solvers have the advantage of being parallelizable and easily implemented, but likely do not outperform classical methods in terms of computational complexity. This comparison is lacking.
-
-1.7. Are the explanations for the graphs in the thesis sufficient?
-
-The explanations of the graphs are generally sufficient, with the exception of Figure 8 which is unclear.
+1.9. IBC and WoS appear to be introduced without definition on their first use.
 
 # Feedback 2
 
-2.1. Has the elementary theory of Monte Carlo been covered in the thesis?
+2.1. The subsection on Monte Carlo integration covers the basics reasonably well.
 
-The background covers the basics of Monte Carlo integration reasonably well. More depth could be added on information complexity and the curse of dimensionality.
+2.2. Indefinite recursion occurs because the recursive integral is estimated stochastically, leading to a recursive random variable equation that recurses indefinitely without an end condition.
 
-2.2. In the subsection of recursive Monte Carlo why is there indefinete recursion?
+2.3. References seem appropriate from what I can tell. Key concepts are linked to papers or proofs.
 
-Indefinite recursion occurs because there is no stopping condition when naively converting the recursive integral to a RRVE.
+2.4. Additive branching recursion is explained as the recursion branching into multiple recursive calls, exponentially increasing computation.
 
-2.3. Does the thesis give the necessary references to concepts?
+2.5. The Russian roulette rate is the parameter $l$ that controls the probability of applying the Russian roulette approximation.
 
-Concepts are usually referenced, but more references especially for key definitions could strengthen the connection to prior work.
+2.6. Local truncation error is not explicitly defined. This could be added for clarity.
 
-2.4. Does additive branching gets explained clearly?
+# Requirements
 
-Additive branching recursion is explained clearly with examples of how splitting leads to it.
+3.1. Yes, there is a title page.
 
-2.5. What is the russian roulette rate?
+3.2. Yes, a table of contents is included.
 
-The Russian roulette rate is not explicitly defined, but context suggests it relates to the probability of using the approximation.
+3.3. The introduction provides context and mentions the motivating work, but the problem statement could be more explicit.
 
-2.6. Does the local truncation error get defined?
+3.4. The exposition generally builds logically but is very technical at times. More intuitive explanations could help. The structure with subsections is reasonably effective.
 
-Local truncation error is not explicitly defined.
+3.5. There is a Dutch summary. It appears to concisely summarize the main points.
 
-# Quality assurance/Requirements
+3.6. The bibliography is present and structured well. The citations match the referenced sources.
 
-3.1. Title Page: Does the thesis have a title page?
+3.7. The layout uses appropriate formatting choices for readability. Headings and structure guide the reader.
 
-Yes, there is a title page.
+3.8. The language is technical but precise. Grammatically it appears accurate overall.
 
-3.2. Table of Contents: Does the thesis include a table of contents?
+3.9. The results are presented clearly through equations, examples, graphs, etc. The analyses are logical.
 
-There is a table of contents.
+3.10. There is generally good logical flow and coherence. Transitions between sections are fairly smooth.
 
-3.3. Introduction: Does the introduction provide a clear context for the research? Is the problem statement or research question clearly formulated in the introduction?
+3.11. The unique contributions around RMC for ODEs are highlighted. There is discussion of how this extends prior work.
 
-The introduction provides context and the overall goal, but the specific problem statement could be clearer.
+3.12. The discussion of limitations acknowledges challenges and missing analysis. Some future work is suggested.
 
-3.4. Exposition: Is the argumentation detailed and logical, leading to the final result of the research? Is the substructure effectively used to organize and clarify the content within the exposition?
+3.13. The writing is concise and avoids unnecessary jargon. Explanations could be clarified at times.
 
-The exposition generally builds up logically, but some parts lack motivation/intuition. The structure with subsections is good.
+3.14. The thesis makes solid contributions around RMC techniques for ODEs. It is likely to be cited by others exploring similar algorithms.
 
-3.5. Dutch Summary: Does the thesis include a Dutch summary? Is the Dutch summary concise, effectively summarizing the main points of the thesis within the specified page limit?
-
-There is a concise Dutch summary.
-
-3.6. Bibliography: Is the bibliography section present and well-structured? Are all the cited sources accurately listed in the bibliography according to the specified citation style?
-
-The bibliography is present and structured. The citation style is consistent.
-
-3.7. Layout and Readability: Is the layout designed to enhance readability, including appropriate font, line spacing, and paragraph structure? Is the use of headings, subheadings, and other formatting elements consistent and effective in guiding the reader through the content?
-
-The layout, font, and paragraph structure enhance readability. The use of headings is consistent and effective.
-
-3.8. Language Quality: Is the language used throughout the thesis refined and well-crafted? Are grammar, spelling, and punctuation accurate?
-
-The language is generally clear and well-written with some minor exceptions. Grammar, spelling, and punctuation look accurate.
-
-3.9. Results and Analysis: Are the results presented clearly and comprehensively? Is the analysis of the results thorough, and do the conclusions logically follow from the data?
-
-Results are presented clearly with graphs. More rigorous analysis of the results would strengthen this area.
-
-3.10. Argumentation and Coherence: Is there a clear and logical progression of ideas throughout the thesis? Do transitions between sections and paragraphs enhance the overall coherence of the document?
-
-There is logical flow, but transitions between sections could be smoother.
-
-3.11. Original Contribution: Does the thesis make a unique and valuable contribution to the field of study? Is there a clear statement about how the research fills a gap in existing knowledge?
-
-Original contribution is stated, though the gap filled could be elaborated on more.
-
-3.12. Discussion and Implications: Does the discussion section provide insights into the broader implications of the research findings? Are any practical applications or future research directions suggested?
-
-Practical implications and future work are suggested but not discussed in depth.
-
-3.13. Clarity and Conciseness: Is the writing style clear and concise, avoiding unnecessary jargon? Are complex concepts explained in a way that is understandable to the intended audience?
-
-The writing is concise and jargon is avoided when possible. Some parts could improve clarity.
-
-3.14. Overall Contribution: Does the thesis contribute significantly to the field's body of knowledge and understanding? Is the thesis likely to be cited and referenced by others in the field?
-
-The work makes an incremental contribution to MC methods for ODEs. It is unlikely to be widely cited but could inspire interesting future work.
+In summary, the thesis covers the key requirements reasonably well. Strengthening the intuition, comparisons, convergence analysis, and limitations discussion could take it to the next level. But overall it represents significant original work that advances the field.
