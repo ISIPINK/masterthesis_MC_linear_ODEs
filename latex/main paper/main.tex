@@ -47,12 +47,6 @@ style=alphabetic,
 \selectlanguage{English}
 \begin{document}
 
-\begin{comment}
-\title{Recursive Monte Carlo for linear ODEs}
-\author{Isidoor Pinillo Esquivel}
-\maketitle
-\end{comment}
-
 \input{titelblad_MP.tex}
 
 \newpage
@@ -205,8 +199,9 @@ are usually done with (root) mean square error.
 \end{definition}
 
 Even comparisons based on RMSE can be counterintuitive look at
-Stein's paradox for example. We will
-limit us to $1$ dimensional unbiased estimators, so that MSE becomes the variance.
+Stein's paradox for example. We will always
+limit us to $1$ dimensional unbiased estimators,
+so that MSE becomes the variance.
 Estimating variance is simple and can be used to
 get confidence intervals via Chebyshev's inequality or
 an approximate normal distribution argument.  \\
@@ -454,13 +449,6 @@ additive branching recursion in RRVEs (refer to (\ref{ex:coupled splitting})).
     \pythoncode{python code/SRR_ydy.py}
 \end{pythonn}
 
-% \begin{definition}[$2$-level MC] \label{2 level}
-%     $2$-level MC on $X$ with parameters $\tilde{X}, Y: E[\tilde{X}]=E[Y]$:
-%     \begin{equation}
-%         X \rightarrow X-\tilde{X} + Y.
-%     \end{equation}
-% \end{definition}
-
 \begin{definition}[control variates] \label{CV}
     Define control variating $f(X)$ with $\tilde{f}$ an approximation of $f$ as:
     \begin{equation}
@@ -519,11 +507,49 @@ enhanced with control variates based on the trapezoidal rule.
          & \cong \Delta x \frac{f(x) + f(x+\Delta x)}{2} \nonumber \\
          & + \Delta x l B\left( \frac{1}{l}\right)
         \left(f(S) - f(x) - \frac{S - x}{\Delta x}
-        \left(f(x+\Delta x) - f(x)\right) \right),
+        \left(f(x+\Delta x) - f(x)\right) \right), \label{eq:MCtrap}
     \end{align}
 
     where $S \sim \text{Uniform}(x,x+\Delta x)$.
 \end{definition}
+
+\begin{lemma}[RMSE MC Trapezoidal Rule] \label{lem:rmse mctrap}
+    The MC trapezoidal rule
+    for a twice differentiable function has
+    \begin{equation}
+        \text{RMSE} =O\left( \Delta x^{3} \right) .
+    \end{equation}
+\end{lemma}
+
+\begin{proof}
+    Start from equation (\ref{eq:MCtrap}). The MSE is the variance
+    so we can ignore addition by constants.
+
+    \begin{equation}
+        \text{MSE} = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
+        \left(f(S) - f(x) - \frac{S - x}{\Delta x}
+        \left(f(x+\Delta x) - f(x)\right) \right)\right)
+    \end{equation}
+    We substitute $S = \Delta x U + x$ and then apply Taylor's theorem
+    finishing the proof:
+
+    \begin{align}
+        \text{MSE} & = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
+        \left(f(xU+x) - f(x) - U
+        \left(f(x+\Delta x) - f(x)\right) \right)\right)                           \\
+                   & = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
+        \left( U \Delta x f'(x)+ \frac{U^{2} \Delta x ^{2}}{2} f''(z_{1})
+        - U \left( \Delta x f'(x) +
+        \Delta x ^{2} f''(z_{2})\right) \right)\right)                             \\
+                   & = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
+        \left( \frac{U^{2} \Delta x ^{2}}{2} f''(z_{1})
+        -  \frac{U\Delta x ^{2}}{2} f''(z_{2}) \right)\right)                      \\
+                   & =\Delta x ^{6} \text{Var}\left(  l B\left( \frac{1}{l}\right)
+        \left( \frac{U^{2} }{2} f''(z_{1})
+        -  \frac{U}{2} f''(z_{2}) \right)\right),
+    \end{align}
+    for some $z_{1} \in [x,S], z_{2} \in [x,x+\Delta x]$.
+\end{proof}
 
 
 \begin{definition}[composite MC trapezoidal rule] \label{MCtrap}
@@ -531,7 +557,7 @@ enhanced with control variates based on the trapezoidal rule.
     of function $f$ over the interval $[a, b]$ for a uniform grid $(x_{j})$ with $n$
     intervals and a Russian roulette rate $l$ as follows:
 
-    \begin{align} \label{eq:MCtrap}
+    \begin{align} \label{eq:cMCtrap}
         \int_{a}^{b} f(s) ds \cong \Delta x \sum_{j=1}^{n} & \frac{f(x_{j}) + f(x_{j}+\Delta x)}{2} \nonumber \\
                                                            & + l B\left(\frac{1}{l}\right)
         \left(f(S_j) - f(x_{j}) - \frac{S_j - x_{j}}{\Delta x}(f(x_{j}+\Delta x) - f(x_{j}))\right),
@@ -565,7 +591,7 @@ there are $\text{Binomial}(n,\frac{1}{l})$ additional function calls
 (repeated Bernoulli experiments). So they use up to a constant the same amount
 of function calls. This implies an advantage in IBC. \\
 
-\begin{theorem}[Order Trapezoidal MC Rule] \label{thrm:order trap}
+\begin{theorem}[RMSE Composite Trapezoidal MC Rule] \label{thrm:order trap}
     The composite trapezoidal MC rule  wth $n$ intervals
     for a twice differentiable function has
     \begin{equation}
@@ -573,20 +599,18 @@ of function calls. This implies an advantage in IBC. \\
     \end{equation}
 
 \end{theorem}
-\textcolor{green}{
-    TODO: I feel like I'm making a mistake against the law of total variance.
-} \\
-The main distinction between the standard and MC rule lies in how they
-accumulate local truncation errors into global truncation error. In the standard
-case, there is a loss of one order but the MC trapezoidal loses only a half order.
+
+The proof uses lemma \ref{lem:rmse mctrap}
+and is similar to the proof of the normal
+trapezoidal rule with main difference being  the
+accumulation of ''local truncation'' errors into ''global truncation'' error.
+Normally there is a loss of one order but the MC trapezoidal loses only a half order
+because the accumulation happens in variance instead of bias.
 
 \begin{align}
-    \sqrt{\text{Var}\left(\sum_{j=1}^{n} \int_{0}^{h} s^{2}ds- h^{3}U_{j}^{2}\right)}
-     & =\sqrt{\text{Var}\left(\sum_{j=1}^{n} h^{3}U_{j}^{2}\right)}   \\
-     & =h^{3} \sqrt{\text{Var}\left( \sum_{j=1}^{n} U_{j}^{2}\right)} \\
-     & =h^{3} \sqrt{ \sum_{j=1}^{n}\text{Var} (U_{j}^{2})}            \\
-     & =h^{3} \sqrt{ n \text{Var}(U^{2})}                             \\
-     & =h^{3} \sqrt{n} \sqrt{ \text{Var}(U^{2})}                      \\
+    \sqrt{\text{Var}\left(\sum_{j=1}^{n} h^{3}U_{j}^{2}\right)}
+     & =h^{3} \sqrt{ \sum_{j=1}^{n}\text{Var} (U_{j}^{2})} \\
+     & =h^{3} \sqrt{ n \text{Var}(U^{2})}                  \\
      & = O(h^{2.5}).
 \end{align}
 
@@ -595,70 +619,14 @@ a bound on the RMSE that behaves as $O(h^{2})$ is different.
 A bound on the error implies a bound on the RMSE, but
 the reverse is not true.
 
-\begin{proof}
-    Start from equation (\ref{eq:MCtrap}). The MSE is the variance
-    so we can ignore addition by constants.
-    \begin{align}
-        \text{MSE} & =\text{Var}\left( \Delta x \sum_{j=1}^{n}  l B\left(\frac{1}{l}\right)
-        \left(f(S_j)  - \frac{S_j -x_{j}}{\Delta x}(f(x_{j}+\Delta x) - f(x_{j}))\right)\right)  \\
-                   & =\Delta x^{2} \sum_{j=1}^{n} \text{Var}\left(   l B\left(\frac{1}{l}\right)
-        \left(f(S_j)  - \frac{S_j -x_{j}}{\Delta x}(f(x_{j}+\Delta x) - f(x_{j}))\right)\right).
-    \end{align}
-    We deal with the Russian roulette part with the law of total variance:
-    \begin{equation}
-        \operatorname{Var}(Y)=\mathrm{E}[\operatorname{Var}(Y \mid X)]+\operatorname{Var}(\mathrm{E}[Y \mid X]).
-    \end{equation}
-    If we assume the outcome of the Russian roulette it naturally removes some terms:
-    \begin{align}
-        \text{MSE} & =\Delta x^{2}\sum_{j=1}^{n}
-        \frac{1}{l}\text{Var}
-        \left(
-        l\left(f(S_j)  - \frac{S_j -x_{j}}{\Delta x}(f(x_{j}+\Delta x) - f(x_{j}))\right)
-        \right)                   \nonumber                                                                                                          \\
-                   & + \text{Var} \left(f(S_j)  - \frac{S_j -x_{j}}{\Delta x}(f(x_{j}+\Delta x) - f(x_{j})) \right)                                  \\
-                   & = (l+1)\Delta x^{2} \sum_{j=1}^{n} \text{Var} \left(f(S_j)  - \frac{S_j -x_{j}}{\Delta x}(f(x_{j}+\Delta x) - f(x_{j})) \right) \\
-                   & = (l+1)\Delta x^{2} \sum_{j=1}^{n} \text{Var} \left(f(S_j)  - \frac{S_j}{\Delta x}(f(x_{j}+\Delta x) - f(x_{j})) \right).
-    \end{align}
-    We substitute $S_j = \Delta x_{j} U_j + x_{j}$ with
-    $U_j$ i.i.d. $U$ and then apply Taylor's theorem (remember we can ignore
-    constants):
-
-    \begin{align}
-         & \frac{\text{MSE}}{(l+1)\Delta x^{2}}   \nonumber                                                                                  \\
-         & =  \sum_{j=1}^{n} \text{Var} \left(f(\Delta x U_j + x_j)  - \frac{\Delta x U_j + x_j}{\Delta x}(f(x_j+\Delta x) - f(x_j)) \right) \\
-         & =  \sum_{j=1}^{n} \text{Var} \left(f(\Delta x U_j + x_j)  -  U_j{\Delta x}(f(x_j+\Delta x) - f(x_j)) \right)                      \\
-         & =  \sum_{j=1}^{n}
-        \text{Var} \left(f(x_j)+\Delta x U_j f'(x_j) +\frac{\Delta x^{2}U^{2}_{j}}{2} f''(z_{1j})
-        -  U_j \left(\Delta x f'(x_j) +\frac{\Delta x^{2}}{2}f''(z_{2j})\right) \right)                                                      \\
-         & =  \sum_{j=1}^{n}
-        \text{Var} \left(\frac{\Delta x^{2}U_j}{2} \left(U_j f''(z_{1j}) - f''(z_{2j}) \right)\right)                                        \\
-         & = \Delta x^{4} \sum_{j=1}^{n}
-        \text{Var} \left(\frac{U_j}{2} \left(U_j f''(z_{1j}) - f''(z_{2j}) \right)\right),
-    \end{align}
-    where $z_{1j} \in [x_j,S_j], z_{2j} \in [x_j, \Delta x+x_j]$. Define the smoothness
-    factor
-    \begin{equation}
-        M^{2} = \max_{j}\text{Var} \left(\frac{U_j}{2} \left(U_j f''(z_{1j}) - f''(z_{2j}) \right)\right)   .
-    \end{equation}
-    We use the smoothness factor to bound the sum and replace $\Delta x = \frac{b-a}{n}$:
-
-    \begin{align}
-        \text{MSE} & \leq (l+1)\Delta x^{6} \sum_{j=1}^{n} M^{2} \\
-                   & =(l+1) \frac{(b-a)^{6}}{n^{6}} n M^{2}      \\
-                   & =(l+1) \frac{(b-a)^{6}}{n^{5}} M^{2}.
-    \end{align}
-
-    Equivalently the RMSE can be bounded finishing the proof:
-    \begin{equation}
-        \text{RMSE} \leq \sqrt{l+1}\frac{(b-a)^{3}}{n^{2.5}} M.
-    \end{equation}
-
-\end{proof}
-
 \begin{related}[Monte Carlo Trapezoidal Rule]
+    With Stein's paradox it is always possible to bias the composite MC trapezoidal
+    rule to achieve lower RMSE
     The optimal IBC for RMSE for some smoothness classes
     are known see \cite{heinrich_optimal_2001}.
 \end{related}
+
+
 
 \subsection{Unbiased Non-Linearity}
 
@@ -697,7 +665,6 @@ $Y_{1} \cong Y_{2} \cong y$.
 
 \vspace*{0.2cm}
 \begin{pythonn}[implementation (\ref{ex:nonlinear example})]\label{py:nonlinear example}
-    %important note while implementing equation (\ref{RRVE yy2})  
     \pythoncode{python code/dyy2.py}
     In this implementation $Y(t)$ only takes values $\{-1,0\}$.
 \end{pythonn}
@@ -733,15 +700,6 @@ $Y_{1} \cong Y_{2} \cong y$.
     \end{align}
     What is inside the expectation is something that we can simulate with simulations of $X_{j}$.
 \end{example}
-
-% don't need proof concept because of NVIDIA
-% \vspace{0.2cm}
-% \begin{pythonn}[implementation of $e^{E[X]}$ (\ref{ex:exp int})]
-%     The following python code estimates $e^{\int_{0}^{t} s^{2}ds}$:
-%     \vspace*{0.4cm}
-%     \pythoncode{python code/expX.py}
-%     %}
-% \end{pythonn}
 
 \begin{related}[example \ref{ex:exp int}]
     NVIDIA has a great paper on optimizing example \ref{ex:exp int}
