@@ -190,11 +190,11 @@ Instead statistics of these variables are used
 to do comparisons.\\
 
 Accuracy comparisons between estimators
-are usually done with (root) mean square error.
-\begin{definition}[Root Mean Square Error]
-    We define the Root Mean Square Error (RMSE) of an estimator $\tilde{\theta}$ for $\theta$  as follows:
+are usually done with (root-)mean-square error (RMSE).
+\begin{definition}[Root-Mean-Square Error]
+    We define the Root-Mean-Square Error (RMSE) of an estimator $\tilde{\theta}$ for $\theta$  as follows:
     \begin{equation} \label{eq:BLUE}
-        \text{RMSE}(\tilde{\theta}) = \sqrt{E[||\tilde{\theta}-\theta||^{2}_{\infty}]}.
+        \text{RMSE}(\tilde{\theta}) = \sqrt{E[||\tilde{\theta}-\theta||^{2}_{2}]}.
     \end{equation}
 \end{definition}
 
@@ -237,8 +237,9 @@ for comparing estimators.
 For smooth $1$ dimensional integration the linear trade off between
 variance and average simulation time is not even close to optimal see
 theorem \ref{thrm:order trap}. \\
-In those case comparing with Information-Based Complexity (IBC)
-makes more sense. We won't define IBC rigorously.
+Comparing better trades offs is usually done with Information-Based Complexity (IBC).
+IBC is more of a qualitative measure and doesn't directly imply
+that an algorithm is practical. We won't define IBC rigorously.
 
 \begin{definition}[Information-Based Complexity]
     IBC is a way to describe asymptotically (for increasing accuracy/function calls)
@@ -253,6 +254,7 @@ makes more sense. We won't define IBC rigorously.
     RMSE of $\varepsilon$ we would need $O\left(\frac{1}{\varepsilon^{2}}\right)$
     function calls.
 \end{example}
+
 
 \subsection{Recursive Monte Carlo}
 In this subsection, we introduce recursive Monte Carlo
@@ -538,18 +540,19 @@ enhanced with control variates based on the trapezoidal rule.
         \left(f(xU+x) - f(x) - U
         \left(f(x+\Delta x) - f(x)\right) \right)\right)                           \\
                    & = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
-        \left( U \Delta x f'(x)+ \frac{U^{2} \Delta x ^{2}}{2} f''(z_{1})
+        \left( U \Delta x f'(x)+ \frac{U^{2} \Delta x ^{2}}{2} f''(Z_{1})
         - U \left( \Delta x f'(x) +
         \Delta x ^{2} f''(z_{2})\right) \right)\right)                             \\
                    & = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
-        \left( \frac{U^{2} \Delta x ^{2}}{2} f''(z_{1})
+        \left( \frac{U^{2} \Delta x ^{2}}{2} f''(Z_{1})
         -  \frac{U\Delta x ^{2}}{2} f''(z_{2}) \right)\right)                      \\
                    & =\Delta x ^{6} \text{Var}\left(  l B\left( \frac{1}{l}\right)
-        \left( \frac{U^{2} }{2} f''(z_{1})
+        \left( \frac{U^{2} }{2} f''(Z_{1})
         -  \frac{U}{2} f''(z_{2}) \right)\right),
     \end{align}
-    for some $z_{1} \in [x,S], z_{2} \in [x,x+\Delta x]$.
+    for some $Z_{1} \in [x,S], z_{2} \in [x,x+\Delta x]$.
 \end{proof}
+Note that the proof doesn't rely on Russian roulette ($l=1$).
 
 
 \begin{definition}[composite MC trapezoidal rule] \label{MCtrap}
@@ -602,7 +605,7 @@ of function calls. This implies an advantage in IBC. \\
 
 The proof uses lemma \ref{lem:rmse mctrap}
 and is similar to the proof of the normal
-trapezoidal rule with main difference being  the
+trapezoidal rule with the main difference being  the
 accumulation of ''local truncation'' errors into ''global truncation'' error.
 Normally there is a loss of one order but the MC trapezoidal loses only a half order
 because the accumulation happens in variance instead of bias.
@@ -621,11 +624,10 @@ the reverse is not true.
 
 \begin{related}[Monte Carlo Trapezoidal Rule]
     With Stein's paradox it is always possible to bias the composite MC trapezoidal
-    rule to achieve lower RMSE
+    rule to achieve lower RMSE.
     The optimal IBC for RMSE for some smoothness classes
     are known see \cite{heinrich_optimal_2001}.
 \end{related}
-
 
 
 \subsection{Unbiased Non-Linearity}
@@ -707,21 +709,12 @@ $Y_{1} \cong Y_{2} \cong y$.
 \end{related}
 
 \subsection{Recursion}
-\textcolor{green}{
-    TODO:
-    \begin{itemize}
-        \item add forward implementation of recursion using a stack
-    \end{itemize}
-}
+
 In this subsection, we discuss recursion-related techniques.
 
 \begin{technique}[coupled recursion]
     The idea behind coupled recursion is sharing recursion calls of
     multiple RRVEs for simulation. This does make them dependent.
-    % It is like assuming $2$ induction hypotheses at the same
-    % time and proving both inductions steps at the same time vs
-    % doing separate induction proofs. Which should be easier
-    % because you have access to more assumptions at the same time.
 \end{technique}
 
 \begin{example}[coupled recursion] \label{ex:coupled recursion}
@@ -762,7 +755,7 @@ In this subsection, we discuss recursion-related techniques.
 \end{pythonn}
 
 \begin{related}[coupled recursion]
-    Example (\ref{ex:coupled recursion}) is inspired by \cite{vicini_path_2021}.
+    Example \ref{ex:coupled recursion} is inspired by \cite{vicini_path_2021}.
     \cite{vicini_path_2021} propose an efficient unbiased backpropagation
     algorithm for rendering.
 \end{related}
@@ -782,8 +775,8 @@ In this subsection, we discuss recursion-related techniques.
 
 Most programming languages do support recursion, but it often comes with certain
 limitations such as maximum recursion depth and potential performance issues.
-When applicable, tail recursion can be used to
-implement recursion that addresses these concerns in some cases.
+There are multiple ways to implement recursion we will discuss tail recursion and
+do an example using a stack.
 
 \begin{technique}[non-branching tail recursion]
     Tail recursion involves reordering all operations
@@ -796,19 +789,35 @@ implement recursion that addresses these concerns in some cases.
 
 The non-branching recursion presented in the RRVEs
 can be implemented with tail recursion due to the associativity of
-all operations ($(xy)z = x(yz)$) involved. However, tail recursion
-may not always be desirable as it discards intermediate values of
-the recursion calls which may be of interest or can increase
-computational cost. To retain some of these intermediate
-values, it is possible to combine tail recursion with normal recursion.
+all operations ($(xy)z = x(yz)$) involved.
 
-\begin{pythonn}[tail recursion on (\ref{coupled mat})]
+\begin{pythonn}[tail recursion on (\ref{coupled mat})] \label{py:tail recursion couple}
     We implement (\ref{coupled mat}) but this time with tail recursion.
     We collect addition operations in a vector $sol$ and multiplication
     in a matrix $W$. $W$ may be referred to as accumulated weight or throughput.
     \vspace{0.3cm}
     \pythoncode{python code/tailrecu.py}
 \end{pythonn}
+
+Tail recursion is not always desirable as it discards intermediate values of
+the recursion calls and can increase
+computational cost.
+To retain some of these intermediate values, it is possible to use tail recursion partially.
+In example \ref{py:tail recursion couple} it would
+be more efficient to avoid matrix multiplication on line $7$. An alternative
+to tail recursion is implementing the recursion with a stack.
+
+\begin{pythonn}[stack recursion on (\ref{coupled mat})] \label{py:stack recursion couple}
+    We implement (\ref{coupled mat}) but this time with a stack.
+    We want to avoid matrix multiplication and only use matrix-vector multiplications.
+    To do this on (\ref{coupled mat}) we need to know $X(Ut)$ when
+    it doesn't get Russian rouletted away. If we sample $Ut$ we can recurse
+    on our reasoning until Russian roulette termination so we need the path
+    of all the samples.
+    \vspace{0.3cm}
+    \pythoncode{python code/stackrecu.py}
+\end{pythonn}
+
 
 \section{Ordinary Differential Equations}
 
@@ -1379,9 +1388,13 @@ Brownian motion.
 % Base your answers on the thesis.  
 % Answer as a markdown file.
 % Use subnumerings in mark down form in numbering the question 
-% that works in a markdown file. Keep use different headers 
-% in markdown. Briefly explain your answers. 
+% that works in a markdown file and use different headers. Like this: 
 %
+% ## Content tests
+% ###  0.1. How does the main algorithm work of the thesis?
+% answer
+%
+% Here are the questions : 
 % # Content tests
 % 0.1. How does the main algorithm work of the thesis?
 % 0.2. What is the biggest limitation of the main algorithm of the thesis?
