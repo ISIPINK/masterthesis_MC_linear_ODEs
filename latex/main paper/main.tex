@@ -60,38 +60,6 @@ style=alphabetic,
 
 \section{Introduction}
 
-
-\subsection{Notation}
-Notations utilized include:
-
-\begin{itemize}
-    \item $B(p) \sim \text{Bernoulli}(p) =
-              \begin{cases}
-                  1 & \text{ if } U<p \\
-                  0 & \text{ else }
-              \end{cases} $
-    \item BVP = Boundary Value Problem
-    \item $ H(x) =
-              \begin{cases}
-                  0 & \text{ if } x<0 \\
-                  1 & \text{ else }
-              \end{cases}$
-    \item i.i.d. = independent identically distributed
-    \item $U \sim \text{Uniform}(0,1)$
-    \item IBC = Information-Based Complexity
-    \item IVP = Initial Value Problem
-    \item MC = Monte Carlo
-    \item ODE = Ordinary Differential Equation
-    \item PDE = Partial Differential Equation
-    \item RMC = Recursive Monte Carlo
-    \item RRMC = Recursion in Recursion Monte Carlo
-    \item RRVE (Recursive Random Variable Equation): An equation that defines a
-          family of random variables in terms of itself
-    \item RV = Random Variable
-    \item Random variables will be denoted with capital letters, e.g., $X$, $Y$ or $Z$.
-    \item WoS = Walk-on-Spheres
-\end{itemize}
-
 \subsection{Related Work}
 The primary motivating paper for this work is the work
 by \citeauthor{sawhney_grid-free_2022}
@@ -109,7 +77,7 @@ mainly in function of this thesis available at
 \url{https://huggingface.co/spaces/ISIPINK/zotero_map}.
 It may take 10 seconds to load. \\
 
-The latest paper that we found on an unbiased IVP solver is by
+The latest paper that we found on an unbiased Intial Value Problem (IVP) solver is by
 \citeauthor{ermakov_monte_2021}'s \citeyear{ermakov_monte_2021}
 \cite{ermakov_monte_2021}  that study an unbiased method for
 a Cauchy problem for large systems of linear ODEs
@@ -164,9 +132,21 @@ We conjecture that this method achieves optimal IBC.
 
 In this subsection, we review basic MC theory. \\
 
+\begin{notation}[Random Variables]
+    Random variables will be denoted with capital letters, e.g., $X$, $Y$ or $Z$.
+\end{notation}
+
+\begin{notation}[$U$]
+    We will be using the uniform distribution very often. So
+    we abbreviate it.
+    \begin{equation}
+        U \sim \text{Uniform}(0,1).
+    \end{equation}
+\end{notation}
+
+
 MC integration is any way to
 use random sampling to estimate an integral.
-
 \begin{definition}[Uniform Monte Carlo Integration]
     We define uniform Monte Carlo integration of
     $f:\mathbb{R}^{n} \rightarrow \mathbb{R}^{m}$
@@ -206,7 +186,7 @@ Estimating variance is simple and can be used to
 get confidence intervals via Chebyshev's inequality or
 an approximate normal distribution argument.  \\
 
-Average (FLOPs or time)/simulation are very common cost statistics.
+Average (floating point operations or time)/simulation are very common cost statistics.
 We can imagine (memory or wall time) at risk (similar to value at risk) to be useful
 to keep track of. The statistics are problem dependent.
 
@@ -292,8 +272,17 @@ expression for $Y$:
     Y(t) = 1 + t  Y(Ut).
 \end{equation}
 
-Equation (\ref{recursive RV}) is a recursive random variable
-equation. If one were to try to simulate $Y$ with equation (\ref{recursive RV}),
+Equation (\ref{recursive RV}) is a Recursive Random Variable
+Equation (RRVE).
+
+\begin{definition}[Recursive Random Variable
+        Equation (RRVE)]
+    A Recursive Random Variable Equation (RRVE) is
+    an equation that defines a
+    family of random variables in terms of itself.
+\end{definition}
+
+If one were to try to simulate $Y$ with equation (\ref{recursive RV}),
 it would recurse indefinitely.
 To overcome this, approximate
 $Y(t) \approx 1$ near $t = 0$ introducing minimal bias.
@@ -355,6 +344,19 @@ less computationally expensive approximation sometimes.
         \end{cases}.
     \end{equation}
 \end{definition}
+
+
+\begin{notation}[$B(p)$]
+    Often Russian roulette will be used with $Y_{1}= Y_{2}= 0$.
+    In that case we use Bernoulli variables to shorten notation.
+    \begin{equation}
+        B(p) \sim \text{Bernoulli}(p) =
+        \begin{cases}
+            1 & \text{ if } U<p \\
+            0 & \text{ else }
+        \end{cases} .
+    \end{equation}
+\end{notation}
 
 \begin{example}[Russian roulette] \label{ex:simple russian roulette}
     Let us consider the estimation of $E[Z]$, where $Z$ is defined as follows:
@@ -826,6 +828,16 @@ In this subsection, we discuss informally how to turn ODEs into integral equatio
 by example. Our main tool for this are green functions.
 Prior to discussing green functions, we offer several
 examples.
+
+\begin{notation}[$H$]
+    We denote the Heaviside step function with:
+    \begin{equation}
+        H(x) = \begin{cases}
+            0 & \text{ if } x<0 \\
+            1 & \text{ else }
+        \end{cases}.
+    \end{equation}
+\end{notation}
 
 \begin{example}[$y'=y$ average condition]
     We will solve the equation:
@@ -1386,6 +1398,8 @@ Brownian motion.
 \end{document}
 
 % Base your answers on the thesis.  
+% You are expert in solving ODEs, WoS, IBC, PDEs giving feedback.
+%
 % Answer as a markdown file.
 % Use subnumerings in mark down form in numbering the question 
 % that works in a markdown file and use different headers. Like this: 
