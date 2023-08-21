@@ -235,7 +235,7 @@ with the following  initial value problem:
 
 
 \begin{equation} \label{ydy}
-    y' = y, \quad y(0) = 1.
+    y_t = y, \quad y(0) = 1.
 \end{equation}
 
 
@@ -632,8 +632,8 @@ the reverse is not true.
 \begin{related}[Monte Carlo Trapezoidal Rule]
     With Stein's paradox it is always possible to bias the composite MC trapezoidal
     rule to achieve lower RMSE.
-    The optimal IBC for RMSE for some smoothness classes
-    are known see \cite{heinrich_optimal_2001}.
+    The optimal IBC for the determenistic, random and quantum case
+    are known see \cite{heinrich_optimal_2001} for some smoothness classes.
 \end{related}
 
 
@@ -645,11 +645,11 @@ $y^{2} \cong Y_{1} Y_{2}$ with $Y_{1}$ independent of $ Y_{2}$ and
 $Y_{1} \cong Y_{2} \cong y$.
 
 
-\begin{example}[$y'=y^{2}$] \label{ex:nonlinear example}
+\begin{example}[$y_t=y^{2}$] \label{ex:nonlinear example}
     Consider the following ODE:
 
     \begin{equation} \label{eq:nonlinear example}
-        y' = y^2, \quad y(1) = -1.
+        y_t = y^2, \quad y(1) = -1.
     \end{equation}
 
     The solution to this equation is given by $y(t) = -\frac{1}{t}$.
@@ -729,8 +729,8 @@ In this subsection, we discuss recursion-related techniques.
     sensitivity of following ODE to a
     parameter $a$:
     \begin{align}
-        y'             & =ay,y(0)=1 \Rightarrow \label{couple recu ex1} \\
-        \partial_{a}y' & = y + a \partial_{a}y \label{couple recu ex2}
+        y_t             & =ay,y(0)=1 \Rightarrow \label{couple recu ex1} \\
+        \partial_{a}y_t & = y + a \partial_{a}y \label{couple recu ex2}
     \end{align}
     Turn (\ref{couple recu ex1}) and (\ref{couple recu ex2}) into RRVEs.
     To emphasize that they are coupled, that they should
@@ -828,34 +828,22 @@ to tail recursion is implementing the recursion with a stack.
 
 \section{Ordinary Differential Equations}
 
-\subsection{Green's Functions}
-In this subsection, we discuss how to turn BVPs into integral equations.
-Our main tool for this are Green's functions. \\
+\subsection{Boundary Value Problems}
+In this subsection, we discuss how to turn BVPs into integral equations and
+then solving them. Our main tool for this are Green's functions. \\
 
-Roughly speaking Green's function are a type
+Roughly speaking Green's functions are a type
 of kernel function used to solve linear problems with linear
-conditions.
-
-\begin{definition}[source Green's function]
-    The source Green's function is the kernel that we
-    place in front of the source term,
-    which we integrate over to obtain the solution.
-    It must also satisfy null
-    linear conditions.
-\end{definition}
-
-\begin{definition}[boundary Green's function]
-    The boundary Green's function is the kernel that we
-    place in front of the linear conditions,
-    which we integrate over to obtain the solution.
-    It must also be a homogenous solution to the problem.
-\end{definition}
-
+conditions (it is also possible to absorb less important non-linear terms in
+the source term). In this context the Green's function are
+like homogenous and particular solutions of a specific problem
+that are combined with integration to solve more general problems.
 
 \begin{related}[Green's function]
     Our notion of Green's function is similar
     to that in \cite{hwang_simulationtabulation_2001}.
 \end{related}
+
 
 \begin{notation}[$H$]
     We denote the Heaviside step function with:
@@ -867,14 +855,18 @@ conditions.
     \end{equation}
 \end{notation}
 
-The specific definition of the Green's functions aren't important in this context.
-To clarify the definitions of the Green's functions let's look at following example.
+\begin{notation}[$\delta$]
+    We denote the Dirac delta function with $\delta(x)$.
+\end{notation}
 
-\begin{example}[$y'=y$ average condition]
+
+To clarify Green's functions let's look at following example.
+
+\begin{example}[$y_t=y$ average condition]
     We will solve the equation:
 
     \begin{equation} \label{ydy int}
-        y' = y,
+        y_t = y,
     \end{equation}
 
     but this time with a different condition:
@@ -884,11 +876,11 @@ To clarify the definitions of the Green's functions let's look at following exam
     \end{equation}
 
     The solution to this equation remains the same: $y(t) = e^{t}$.
-    We define the corresponding source Green's function $G(t,x)$ for $y'$
+    We define the corresponding source Green's function $G(t,x)$ for $y_t$
     and this type of condition as follows:
 
     \begin{equation}
-        G' = \delta(x-t), \quad \int_{0}^{1} G(s,x) ds = 0.
+        G_t = \delta(x-t), \quad \int_{0}^{1} G(s,x) ds = 0.
     \end{equation}
 
     Solving this equation yields:
@@ -901,11 +893,24 @@ To clarify the definitions of the Green's functions let's look at following exam
     Green's function corresponding to a different linear
     differential operator.
 
-    At this point, it may not be clear, but using this Green's function,
+    We define the corresponding boundary Green's function $G(t,x)$ for $y_t$
+    and this type of condition as follows:
+
+    \begin{equation}
+        P_{t} = 0, \quad \int_{0}^{1} P(s) ds = e -1.
+    \end{equation}
+
+    Solving this equation yields:
+
+    \begin{equation}
+        P(t) = e -1.
+    \end{equation}
+
+    The Green's function are constructed such that
     we can form the following integral equation for (\ref{ydy int}):
 
     \begin{equation} \label{int ydy int}
-        y(t) = e - 1 + \int_{0}^{1} G(t,s) y(s) ds.
+        y(t) = P(t) + \int_{0}^{1} G(t,s) y(s) ds.
     \end{equation}
 
     Converting equation (\ref{int ydy int}) into a RRVE
@@ -915,9 +920,7 @@ To clarify the definitions of the Green's functions let's look at following exam
         Y(t) = e - 1 + 2B\left(\frac{1}{2}\right)Y(S)(H(t-S)+S-1),
     \end{equation}
 
-    where $S \sim U$. We will skip the Python implementation
-    of equation (\ref{RRVE ydy int}) as it does not provide any
-    new information. Instead, we will plot realizations of
+    where $S \sim U$. We plot realizations of
     equation (\ref{RRVE ydy int}) in Figure \ref{fig:ydy int}.
 
     \begin{figure}[h!]
@@ -934,21 +937,16 @@ To clarify the definitions of the Green's functions let's look at following exam
 
 \end{example}
 
-
-\subsection{Fredholm Integral Equations}
-
 \textcolor{green}{
     TODO:
     \begin{itemize}
         \item explain better the graph for coupled splitting
-        \item add better explaination to coupled splitting
+        \item add better explanation to coupled splitting
     \end{itemize}
 }
 
-The integral equations obtained in the previous subsection are Fredholm integral
-equations of the second kind. In this subsection, we introduce a technique called
-coupled splitting.
-
+(\ref{int ydy int}) is a Fredholm integral
+equations of the second kind.
 
 \begin{definition}[Fredholm equation of the second kind]
     A Fredholm equation of the second kind for $\varphi$  is of the following form:
@@ -962,13 +960,13 @@ If both $K$ and $f$ satisfy certain regularity conditions, then for sufficiently
 small $\lambda$, it is relatively straightforward to establish the existence
 and uniqueness of solutions using a fixed-point argument.
 
-\begin{example}[Dirichlet $y''=y$] \label{main dirichlet}
-    The following ODE will be the main testing example for
-    boundary value problems:
+\begin{example}[Dirichlet $y_{tt}=y$] \label{main dirichlet}
+    We turn following ODE into Fredholm integral equation of
+    the second kind for testing:
     \begin{equation} \label{eq:main dirichlet}
-        y''=y, \quad y(b_{0}),y(b_{1}).
+        y_{tt}=y, \quad y(b_{0}),y(b_{1}).
     \end{equation}
-    The Green's functions corresponding to $y''$ and Dirichlet conditions are:
+    The Green's functions corresponding to $y_{tt}$ and Dirichlet conditions are:
 
     \begin{align}
         P(t,x) & = \begin{cases}
@@ -991,6 +989,18 @@ and uniqueness of solutions using a fixed-point argument.
     $S \sim \text{Uniform}(b_{1},b_{0})$.
 
 \end{example}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plots/mainD explosion.png}
+    \caption{The logarithmic percentage error of $Y(0)$ for
+    (\ref{RRVE:main dirichlet}), with $l=1.2$ and initial conditions
+    $y(-k)=e^{-k}$ and $y(k)=e^{k}$, displays an exponential
+    increase until approximately $k=1.5$, beyond which additional
+    simulations fail to reduce the error, indicating that the variance
+    doesn't exist.}
+    \label{fig:mainD explosion}
+\end{figure}
 
 
 \begin{example}[coupled splitting on (\ref{main dirichlet})] \label{ex:coupled splitting}
@@ -1091,20 +1101,7 @@ the bottleneck it is possible to rely on MC convergence.
 \end{related}
 
 Coupled splitting was originally motivated to help with
-convergence. It didn't increase the convergence domain for
-the example shown in Figure \ref{fig:mainD explosion}.\\
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.8\textwidth]{plots/mainD explosion.png}
-    \caption{The logarithmic percentage error of $Y(0)$ for
-    (\ref{RRVE:main dirichlet}), with $l=1.2$ and initial conditions
-    $y(-k)=e^{-k}$ and $y(k)=e^{k}$, displays an exponential
-    increase until approximately $k=1.5$, beyond which additional
-    simulations fail to reduce the error, indicating that the variance
-    doesn't exist.}
-    \label{fig:mainD explosion}
-\end{figure}
+convergence.
 
 
 
@@ -1115,11 +1112,11 @@ Recursion in Recursion MC (RRMC) for IVPs that tries to emulate
 this behavior.
 
 
-\begin{example}[RRMC $y'=y$] \label{ex:RRMC IVP}
+\begin{example}[RRMC $y_t=y$] \label{ex:RRMC IVP}
     We demonstrate RRMC for IVPs with
 
     \begin{equation}
-        y' = y, \quad y(0) = 1.
+        y_t = y, \quad y(0) = 1.
     \end{equation}
 
     Imagine we have a time-stepping scheme $(t_{n}), \forall n: t_{n-1} < t_{n}$
@@ -1174,7 +1171,7 @@ achieve a higher order of convergence. This can be accomplished by eliminating
 lower order terms by using control variates, as demonstrated in the MC trapezoidal
 rule (see \ref{MCtrap}).
 
-\begin{example}[CV RRMC $y'=y$]\label{ex:CV RRMC IVP}
+\begin{example}[CV RRMC $y_t=y$]\label{ex:CV RRMC IVP}
     Let us control variate example (\ref{ex:RRMC IVP}).
 
     \begin{equation}
@@ -1185,7 +1182,7 @@ rule (see \ref{MCtrap}).
     of the integrand:
 
     \begin{align}
-        y(s) & = y(t_{n}) + (s-t_{n})y'(t_{n}) + O((s-t_{n})^{2})       \\
+        y(s) & = y(t_{n}) + (s-t_{n})y_t(t_{n}) + O((s-t_{n})^{2})      \\
              & \approx y(t_{n}) + (s-t_{n})f(y(t_{n}),t_{n})            \\
              & \approx y(t_{n}) +
         (s-t_{n})\left(\frac{y(t_{n})-y(t_{n-1})}{t_{n}-t_{n-1}}\right) \\
@@ -1231,7 +1228,7 @@ variance when decreasing $h$.
     Consider the following IVP:
 
     \begin{equation}
-        y' = y^{2} - t^{4} + 2t, \quad y(0) = 0.
+        y_t = y^{2} - t^{4} + 2t, \quad y(0) = 0.
     \end{equation}
 
     The exact solution to this problem is given by $y(t) = t^{2}$.
@@ -1246,16 +1243,16 @@ variance when decreasing $h$.
     we have:
 
     \begin{align}
-        y^2(t) & \approx y^2(t_n) + 2(t-t_n)y(t_n)y'(t_n) + ((t-t_n)y'(t_n))^2 + O((t-t_n)^2) \\
-               & \approx y^2(t_n) + 2(t-t_n)y(t_n)y'(t_n) + O((t-t_n)^2)
+        y^2(t) & \approx y^2(t_n) + 2(t-t_n)y(t_n)y_t(t_n) + ((t-t_n)y_t(t_n))^2 + O((t-t_n)^2) \\
+               & \approx y^2(t_n) + 2(t-t_n)y(t_n)y_t(t_n) + O((t-t_n)^2)
     \end{align}
 
     Integrating the control variate yields:
 
     \begin{align}
-        \int_{t_{n}}^{t} & y^{2}(t_{n}) + 2(s-t_{n})y(t_{n})y'(t_{n}) ds \\
+        \int_{t_{n}}^{t} & y^{2}(t_{n}) + 2(s-t_{n})y(t_{n})y_t(t_{n}) ds \\
                          & = (t-t_{n})y^{2}(t_{n})+
-        2\left(\frac{t^{2}-t_{n}^{2}}{2} -t_{n}(t-t_{n}) \right)y(t_{n})y'(t_{n}).
+        2\left(\frac{t^{2}-t_{n}^{2}}{2} -t_{n}(t-t_{n}) \right)y(t_{n})y_t(t_{n}).
     \end{align}
     We implement this example in (\ref{py:nonlinear RRMC IVP}).
 \end{example}
@@ -1287,7 +1284,7 @@ In the following example, we examine an ODE with a random parameter.
 \begin{example}[random ODEs] \label{ex:random ode}
     Consider the problem given by the initial value problem
     \begin{equation}\label{eq:random ode}
-        Y' = AY, \quad Y(0)=1, \quad A \sim \text{Uniform}(0,1).
+        Y_t = AY, \quad Y(0)=1, \quad A \sim \text{Uniform}(0,1).
     \end{equation}
     The solution to this problem is given by
     $Y(t) = e^{tA}$, which is a RV.
