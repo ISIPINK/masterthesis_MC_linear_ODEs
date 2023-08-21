@@ -136,13 +136,6 @@ In this subsection, we review basic MC theory. \\
     Random variables will be denoted with capital letters, e.g., $X$, $Y$ or $Z$.
 \end{notation}
 
-\begin{notation}[$U$]
-    We will be using the uniform distribution very often. So
-    we abbreviate it.
-    \begin{equation}
-        U \sim \text{Uniform}(0,1).
-    \end{equation}
-\end{notation}
 
 
 MC integration is any way to
@@ -151,14 +144,14 @@ use random sampling to estimate an integral.
     We define uniform Monte Carlo integration of
     $f:\mathbb{R}^{n} \rightarrow \mathbb{R}^{m}$
     over $\Omega \subset \mathbb{R}^{n}$ as
-    an estimation of the average of $f(U)$, with
-    $U \sim \text{Uniform}(\Omega)$. Combined
+    an estimation of the average of $f(S)$, with
+    $S \sim \text{Uniform}(\Omega)$. Combined
     with the Best Linear Unbiased Estimators (BLUEs) for the average, MC Integration
     in that case can be summarized in the following formula:
     \begin{equation}
-        \int_{\Omega} f(s)ds \approx \frac{1}{n} \sum_{i=1}^{n}f(U_{j}),
+        \int_{\Omega} f(s)ds \approx \frac{1}{n} \sum_{i=1}^{n}f(S_{j}),
     \end{equation}
-    where $n$ is the amount of samples used and $U_{j}$ i.i.d. $U$.
+    where $n$ is the amount of samples used and $S_{j}$ i.i.d. $\text{Uniform}(\Omega)$.
 \end{definition}
 
 Because estimators are Random Variables (RV)
@@ -240,9 +233,11 @@ that an algorithm is practical. We won't define IBC rigorously.
 In this subsection, we introduce recursive Monte Carlo
 with the following  initial value problem:
 
+
 \begin{equation} \label{ydy}
     y' = y, \quad y(0) = 1.
 \end{equation}
+
 
 By integrating both sides of equation (\ref{ydy}), we obtain:
 
@@ -256,10 +251,17 @@ By estimating the recursive integral in equation (\ref{Integral ydy})
 using Monte Carlo, we derive the following estimator:
 
 \begin{equation}
-    Y(t) = 1 + t  y(Ut),
+    Y(t) = 1 + t  y(Ut).
 \end{equation}
 
-where $U \sim \text{Uniform}(0,1)$.
+\begin{notation}[$U$]
+    We will be using the uniform distribution very often. So
+    we abbreviate it.
+    \begin{equation}
+        U \sim \text{Uniform}(0,1).
+    \end{equation}
+\end{notation}
+
 If $y$ is well-behaved, then $E[Y(t)] = y(t)$,
 but we cannot directly simulate $Y(t)$ without access
 to $y(s)$ for $s < t$. However, we can replace $y$ with
@@ -305,10 +307,6 @@ which can be used as an unbiased stopping mechanism.
         \label{fig:intro example}
     \end{figure}
 \end{pythonn}
-
-Notice that the variance of (\ref{python eps ydy})
-increases rapidly as $t$ increases. This issue gets resolved
-later (see (\ref{ex:RRMC IVP})).
 
 \subsection{Modifying Monte Carlo}
 
@@ -539,7 +537,7 @@ enhanced with control variates based on the trapezoidal rule.
 
     \begin{align}
         \text{MSE} & = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
-        \left(f(xU+x) - f(x) - U
+        \left(f(\Delta x U+x) - f(x) - U
         \left(f(x+\Delta x) - f(x)\right) \right)\right)                           \\
                    & = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
         \left( U \Delta x f'(x)+ \frac{U^{2} \Delta x ^{2}}{2} f''(Z_{1})
@@ -553,13 +551,20 @@ enhanced with control variates based on the trapezoidal rule.
         -  \frac{U}{2} f''(z_{2}) \right)\right),
     \end{align}
     for some $Z_{1} \in [x,S], z_{2} \in [x,x+\Delta x]$.
+    Note that the proof doesn't rely on Russian roulette ($l=1$).
 \end{proof}
-Note that the proof doesn't rely on Russian roulette ($l=1$).
+
+\begin{related}[proof \ref{lem:rmse mctrap}]
+    An easier to generalize proof can be made by using ''separation of the main part''
+    see lemma 4 of \cite{mathe_monte_nodate}.
+\end{related}
+
 
 
 \begin{definition}[composite MC trapezoidal rule] \label{MCtrap}
     Define the composite MC trapezoidal rule for approximating the integral
-    of function $f$ over the interval $[a, b]$ for a uniform grid $(x_{j})$ with $n$
+    of function $f$ over the interval $[a, b]$ with a uniform grid
+    $(x_{j}) = \text{linspace}(a,b,n)$ with $n$
     intervals and a Russian roulette rate $l$ as follows:
 
     \begin{align} \label{eq:cMCtrap}
@@ -572,15 +577,15 @@ Note that the proof doesn't rely on Russian roulette ($l=1$).
 
 \end{definition}
 
-\begin{pythonn}[implementation of (\ref{MCtrap})]
-    We implement (\ref{MCtrap}) for $\int_{0}^{1}e^{s}ds$.
+\begin{pythonn}[implementation of (\ref{eq:cMCtrap})]
+    We implement (\ref{eq:cMCtrap}) for $\int_{0}^{1}e^{s}ds$.
     \vspace*{0.5cm}
     \pythoncode{python code/trap1.py}
 
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/MCtrap.png}
-        \caption{Log-log plot of the error of (\ref{MCtrap}) for
+        \caption{Log-log plot of the error of (\ref{eq:cMCtrap}) for
         $\int_{0}^{1}e^{s}ds$ with $l=100$. At floating point accuracy,
         the convergence ceases.
         }
@@ -589,12 +594,12 @@ Note that the proof doesn't rely on Russian roulette ($l=1$).
 \end{pythonn}
 
 Figure \ref{fig:MCtrap} suggest that the order of convergence of RMSE of the
-MC trapezoidal rule is better by $0.5$ as the normal trapezoidal rule.
+composite MC trapezoidal rule is better by $0.5$ as the normal composite trapezoidal rule.
 The MC trapezoidal rule has on average $\frac{1}{l}$ more function calls than
 the normal trapezoidal rule. For the composite rule with $n$ intervals,
 there are $\text{Binomial}(n,\frac{1}{l})$ additional function calls
 (repeated Bernoulli experiments). So they use up to a constant the same amount
-of function calls. This implies an advantage in IBC. \\
+of function calls. This means an advantage in IBC measured in RMSE. \\
 
 \begin{theorem}[RMSE Composite Trapezoidal MC Rule] \label{thrm:order trap}
     The composite trapezoidal MC rule  wth $n$ intervals
@@ -613,14 +618,14 @@ Normally there is a loss of one order but the MC trapezoidal loses only a half o
 because the accumulation happens in variance instead of bias.
 
 \begin{align}
-    \sqrt{\text{Var}\left(\sum_{j=1}^{n} h^{3}U_{j}^{2}\right)}
-     & =h^{3} \sqrt{ \sum_{j=1}^{n}\text{Var} (U_{j}^{2})} \\
-     & =h^{3} \sqrt{ n \text{Var}(U^{2})}                  \\
-     & = O(h^{2.5}).
+    \sqrt{\text{Var}\left(\sum_{j=1}^{n}  \Delta x^{3}U_{j}^{2}\right)}
+     & = \Delta x^{3} \sqrt{ \sum_{j=1}^{n}\text{Var} (U_{j}^{2})} \\
+     & = \Delta x^{3} \sqrt{ n \text{Var}(U^{2})}                  \\
+     & = O( \Delta x^{2.5}).
 \end{align}
 
-Note that the meaning of a bound on the error that behaves as $O(h^{2})$ and
-a bound on the RMSE that behaves as $O(h^{2})$ is different.
+Note that the meaning of a bound on the error that behaves as $O(\Delta x^{2})$ and
+a bound on the RMSE that behaves as $O(\Delta x^{2})$ is different.
 A bound on the error implies a bound on the RMSE, but
 the reverse is not true.
 
@@ -823,11 +828,34 @@ to tail recursion is implementing the recursion with a stack.
 
 \section{Ordinary Differential Equations}
 
-\subsection{Green Functions}
-In this subsection, we discuss informally how to turn ODEs into integral equations mainly
-by example. Our main tool for this are green functions.
-Prior to discussing green functions, we offer several
-examples.
+\subsection{Green's Functions}
+In this subsection, we discuss how to turn BVPs into integral equations.
+Our main tool for this are Green's functions. \\
+
+Roughly speaking Green's function are a type
+of kernel function used to solve linear problems with linear
+conditions.
+
+\begin{definition}[source Green's function]
+    The source Green's function is the kernel that we
+    place in front of the source term,
+    which we integrate over to obtain the solution.
+    It must also satisfy null
+    linear conditions.
+\end{definition}
+
+\begin{definition}[boundary Green's function]
+    The boundary Green's function is the kernel that we
+    place in front of the linear conditions,
+    which we integrate over to obtain the solution.
+    It must also be a homogenous solution to the problem.
+\end{definition}
+
+
+\begin{related}[Green's function]
+    Our notion of Green's function is similar
+    to that in \cite{hwang_simulationtabulation_2001}.
+\end{related}
 
 \begin{notation}[$H$]
     We denote the Heaviside step function with:
@@ -838,6 +866,9 @@ examples.
         \end{cases}.
     \end{equation}
 \end{notation}
+
+The specific definition of the Green's functions aren't important in this context.
+To clarify the definitions of the Green's functions let's look at following example.
 
 \begin{example}[$y'=y$ average condition]
     We will solve the equation:
@@ -853,7 +884,7 @@ examples.
     \end{equation}
 
     The solution to this equation remains the same: $y(t) = e^{t}$.
-    We define the corresponding source green function $G(t,x)$ for $y'$
+    We define the corresponding source Green's function $G(t,x)$ for $y'$
     and this type of condition as follows:
 
     \begin{equation}
@@ -867,10 +898,10 @@ examples.
     \end{equation}
 
     It is worth noting that we could have chosen a different
-    green function corresponding to a different linear
+    Green's function corresponding to a different linear
     differential operator.
 
-    At this point, it may not be clear, but using this green function,
+    At this point, it may not be clear, but using this Green's function,
     we can form the following integral equation for (\ref{ydy int}):
 
     \begin{equation} \label{int ydy int}
@@ -894,7 +925,7 @@ examples.
         \includegraphics[width=0.8\textwidth]{plots/ydy int.png}
         \caption{Recursive calls of (\ref{RRVE ydy int}) when
             calling $Y(0.5)$ $300$ times. Points accumulate on
-            the green line due to the Russian roulette,
+            the Green's line due to the Russian roulette,
             and at  $t=0.5$ because it is the starting
             value of the simulation.
         }
@@ -903,24 +934,7 @@ examples.
 
 \end{example}
 
-% Green's function vs green function (check chatgpt for the answer)
-\begin{definition}[green function]
-    Vaguely speaking, we define the green function as a type
-    of kernel function used to solve linear problems with linear
-    conditions. The green function is the kernel that we
-    place in front of the linear conditions or the source term,
-    which we integrate over to obtain the solution. The green
-    function possesses the property of satisfying either null
-    linear conditions and a Dirac delta source term, or vice versa.
-\end{definition}
 
-\begin{related}[green function]
-    Our notion of green function is similar to that in \cite{hwang_simulationtabulation_2001}.
-\end{related}
-
-% maybe an example of difference equation
-
-% \subsection{Convergence}
 \subsection{Fredholm Integral Equations}
 
 \textcolor{green}{
@@ -948,16 +962,13 @@ If both $K$ and $f$ satisfy certain regularity conditions, then for sufficiently
 small $\lambda$, it is relatively straightforward to establish the existence
 and uniqueness of solutions using a fixed-point argument.
 
-% We would like to have MC algorithm that converges in that case. Our best guess is
-% a combination of splitting and coupling.
-
 \begin{example}[Dirichlet $y''=y$] \label{main dirichlet}
     The following ODE will be the main testing example for
     boundary value problems:
     \begin{equation} \label{eq:main dirichlet}
         y''=y, \quad y(b_{0}),y(b_{1}).
     \end{equation}
-    The green functions corresponding to $y''$ and Dirichlet conditions are:
+    The Green's functions corresponding to $y''$ and Dirichlet conditions are:
 
     \begin{align}
         P(t,x) & = \begin{cases}
@@ -969,7 +980,7 @@ and uniqueness of solutions using a fixed-point argument.
                        -\frac{(b_{1}-s)(t-b_{0})}{b_{1}-b_{0}} & \text{if } t<s
                    \end{cases}.
     \end{align}
-    Straight from these green functions you get the following integral equation and RRVE:
+    Straight from these Green's functions you get the following integral equation and RRVE:
     \begin{align} \label{inteq:main dirichlet}
         y(t) & = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1}) +
         \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds,                  \\
