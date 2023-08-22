@@ -937,14 +937,6 @@ To clarify Green's functions let's look at following example.
 
 \end{example}
 
-\textcolor{green}{
-    TODO:
-    \begin{itemize}
-        \item explain better the graph for coupled splitting
-        \item add better explanation to coupled splitting
-    \end{itemize}
-}
-
 (\ref{int ydy int}) is a Fredholm integral
 equations of the second kind.
 
@@ -986,7 +978,8 @@ and uniqueness of solutions using a fixed-point argument.
         + l B\left(\frac{1}{l} \right)(b_{1}-b_{0}) G(t,S)y(S) , \label{RRVE:main dirichlet}
     \end{align}
     where $l \in \mathbb{R}$ the Russian roulette rate is and
-    $S \sim \text{Uniform}(b_{1},b_{0})$.
+    $S \sim \text{Uniform}(b_{1},b_{0})$. In Figure \ref{fig:mainD explosion}
+    we tested convergence of (\ref{RRVE:main dirichlet}).
 
 \end{example}
 
@@ -1002,10 +995,13 @@ and uniqueness of solutions using a fixed-point argument.
     \label{fig:mainD explosion}
 \end{figure}
 
+Coupled splitting is one of the ideas that we tested on example \ref{main dirichlet}.
+Coupled splitting deals with additive branching of splitting by coupling (reusing)
+samples.
 
-\begin{example}[coupled splitting on (\ref{main dirichlet})] \label{ex:coupled splitting}
-    In addition to normal splitting (see Definition \ref{def:splitting}),
-    we can also split the domain in Equation (\ref{inteq:main dirichlet})
+\begin{example}[coupled splitting on example \ref{main dirichlet}] \label{ex:coupled splitting}
+    In addition to normal splitting (see definition \ref{def:splitting}),
+    we can also split the domain in (\ref{inteq:main dirichlet})
     as follows:
 
     \begin{align}\label{inteq:coupled splitting}
@@ -1041,41 +1037,30 @@ and uniqueness of solutions using a fixed-point argument.
         X(S_{1},S_{2}),
     \end{equation}
     where $W$ the right weighting matrix is
-    (see code (\ref{py:coupled splitting})),
-    and $S_{1}$ and $S_{2}$ can be chosen
-    in various ways.
+    (see code \ref{py:coupled splitting}),
+    $S_{1}$ and $S_{2}$ can be chosen
+    in various ways. (\ref{RRVE:coupled splitting}) is unbiased in following way:
+    $X(t_{1},t_{2}) \cong [y(t_{1}) \quad y(t_{2})]^{T}$.
+
 \end{example}
 
 \begin{pythonn}[implementation of (\ref{RRVE:coupled splitting})] \label{py:coupled splitting}
-    We implemented equation (\ref{RRVE:coupled splitting}) in example
-    (\ref{ex:coupled splitting}) with recursion but in this case, it
-    is also possible to implement it forwardly. \\
+    We implemented (\ref{RRVE:coupled splitting}) with recursion but in this case, it
+    is better to implement it forwardly. \\
     \pythoncode{python code/coupled_splitting.py}
 
-    % can probably make a better plot then this one
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/coupled split.png}
         \caption{Recursive calls of equation (\ref{RRVE:coupled splitting}) when
-        calling $X(0)$ once,
-        with a split size of $20$, $S_{j}$ are coupled such
-        they are equally spaced and the coupling is colored.
+        calling $X(0)$ once. We choose $X$ to have $20$ points and
+        colored each call. The $S_{j}$ are coupled such that
+        they are equally spaced.
         The initial conditions for this call are $y(-1)=e^{-1}$ and $y(1)=e^{1}$,
-        with Russian roulette rate $l=1.2$.  }
+        with Russian roulette rate $l=1.2$. }
         \label{fig:coupled splitting}
     \end{figure}
 \end{pythonn}
-
-
-Example (\ref{ex:coupled splitting}) does not
-exploit the locality and smoothness of the problem.
-We conjecture that coupled splitting can be particularly valuable when
-dealing with linear Fredholm equations of the second kind,
-especially in scenarios where MC integration surpasses
-traditional integration methods. This holds true for
-high-dimensional problems, non-smooth kernels, and
-challenging domains. We conjecture that employing
-coupled splitting in such cases can yield favorable results.
 
 \begin{related}[coupled splitting]
     Coupled splitting is partly inspired by how \cite{sabelfeld_sparsified_2009}
@@ -1086,8 +1071,7 @@ coupled splitting in such cases can yield favorable results.
 
 Figure \ref{fig:coupled splitting}
 resembles fixed-point iterations, leading us to hypothesize
-that coupled splitting can achieve convergence in most cases
-where a fixed-point argument holds true and the convergence
+that the convergence
 speed is very similar to fix-points methods until the accuracy
 of the stochastic approximation of the operator is reached
 (the approximate operator bottleneck). The approximation of the operator
@@ -1100,10 +1084,11 @@ the bottleneck it is possible to rely on MC convergence.
     of recursive stochastic algorithms.
 \end{related}
 
-Coupled splitting was originally motivated to help with
-convergence.
 
-
+\begin{related}[IBC integral equations]
+    Optimal IBC is known for integral equations see \cite{heinrich_monte_nodate}
+    for the solution in $1$ point and the global solution.
+\end{related}
 
 \subsection{Initial Value Problems}
 Classic IVP solvers rely on shrinking the time steps for
