@@ -121,7 +121,7 @@ informally introducing Recursive Monte Carlo (RMC)
 and applying variance reduction techniques for ODEs. \\
 
 The key contribution is an unbiased MC method
-(\ref{ex:CV RRMC IVP}) for
+see example \ref{ex:CV RRMC IVP} for
 linear IVPs for systems of ODEs by using recursion in recursion
 and variance reduction techniques.
 We conjecture that this method achieves optimal IBC.
@@ -375,11 +375,16 @@ less computationally expensive approximation sometimes.
     average once every $100$ simulations. This significantly reduces the
     computational burden while increasing the variance slightly thereby increasing
     the MC efficiency.\\
-    In this  case it is also possible to estimate
-    the expectance of the $2$ terms of $Z$ separately. Given the variances and
-    computational complexity of both terms, you can calculate the asymptotic optimal
-    division of samples for each term. But this isn't the case anymore with RMC.
 \end{example}
+
+\begin{related}[example \ref{ex:simple russian roulette}]
+    In example \ref{ex:simple russian roulette} it is also possible to estimate
+    the expectance of the $2$ terms of $Z$ separately. Given the variances and
+    computational cost of both terms, you can calculate the asymptotic optimal
+    division of samples for each term. But this isn't the case anymore with RMC.
+    \cite{rath_ears_2022} presents a method to estimate optimal Russian roulette/splitting
+    factors for renders.
+\end{related}
 
 
 \begin{example}[Russian roulette on (\ref{recursive RV})] \label{ex: russian roulette}
@@ -1147,14 +1152,29 @@ this behavior.
     \end{figure}
 \end{pythonn}
 
-We measured the convergence speed of example (\ref{ex:RRMC IVP}) to
-be $O\left(\frac{h^{1.5}}{\sqrt{\text{nsim}}} \right)$.
-While a $1.5$ order of convergence is commendable for an unbiased method,
-it raises the question of how to attain even higher convergence orders.
-It is possible to emulate classical methods to
-achieve a higher order of convergence. This can be accomplished by eliminating
-lower order terms by using control variates, as demonstrated in the MC trapezoidal
-rule (see \ref{MCtrap}).
+We measured the convergence speed of example \ref{ex:RRMC IVP} to
+be $O\left(h^{1.5} \right)$ in RMSE with $h$ the time step. \\
+Our intuition for this behavior is based on how classical solvers
+work and the MC trapezoidal rule see definition \ref{MCtrap}.
+
+\begin{conjecture}[local RMSE RMC]
+    Consider a general linear IVP
+    \begin{equation}
+        y_{t}(t)= A(t)y(t), y_{t_{0}},
+    \end{equation}
+    with $A$ a matrix then for the corresponding RRVE
+    \begin{equation}
+        y(t) \cong Y(t) = y(t_{0}) + h B \left( \frac{t-t_{0}}{h}\right) A(U(t-t_{0})+t_{0})
+        Y(U(t-t_{0})+t_{0}),
+    \end{equation}
+    there holds
+    \begin{equation}
+        E[||y(t_{1})-Y(t_{1})||^{2}] = O(h^{2}).
+    \end{equation}
+    with $t_{1} = t_{0} + h$.
+\end{conjecture}
+
+
 
 \begin{example}[CV RRMC $y_t=y$]\label{ex:CV RRMC IVP}
     Let us control variate example (\ref{ex:RRMC IVP}).
@@ -1184,7 +1204,7 @@ rule (see \ref{MCtrap}).
     \end{align}
 
     We will not discuss turning this into an RRVE nor the implementation.
-    The implementation is very similar to (\ref{py:nonlinear RRMC IVP}) and
+    The implementation is very similar to TODO and
     Figure \ref{fig:CV RRMC IVP} is a convergence plot for this example.
 
     \begin{figure}[h!]
@@ -1201,51 +1221,6 @@ rule (see \ref{MCtrap}).
     a higher order of convergence.
 \end{related}
 
-RRMC is biased for our approach to non-linear problems.
-The inner recursions are correlated because they use the same
-information from the outer recursions, this does not mean that reducing
-root-mean-square error by splitting does not work, you just have to be careful
-with the bias. We conjecture that the bias in RRMC converges faster than the
-variance when decreasing $h$.
-
-
-\begin{example}[nonlinear RRMC IVP] \label{ex:nonlinear RRMC IVP}
-    Consider the following IVP:
-
-    \begin{equation}
-        y_t = y^{2} - t^{4} + 2t, \quad y(0) = 0.
-    \end{equation}
-
-    The exact solution to this problem is given by $y(t) = t^{2}$.
-    We can express the solution as an integral equation:
-
-    \begin{equation}
-        y(t) = y(t_{n}) + \int_{t_{n}}^{t} y^{2}(s) ds
-        - \frac{t^{5}-t_{n}^{5}}{5} + (t^{2}-t_{n}^{2}).
-    \end{equation}
-
-    By control variating $y^2(s)$ up to the second order using Taylor expansion,
-    we have:
-
-    \begin{align}
-        y^2(t) & \approx y^2(t_n) + 2(t-t_n)y(t_n)y_t(t_n) + ((t-t_n)y_t(t_n))^2 + O((t-t_n)^2) \\
-               & \approx y^2(t_n) + 2(t-t_n)y(t_n)y_t(t_n) + O((t-t_n)^2)
-    \end{align}
-
-    Integrating the control variate yields:
-
-    \begin{align}
-        \int_{t_{n}}^{t} & y^{2}(t_{n}) + 2(s-t_{n})y(t_{n})y_t(t_{n}) ds \\
-                         & = (t-t_{n})y^{2}(t_{n})+
-        2\left(\frac{t^{2}-t_{n}^{2}}{2} -t_{n}(t-t_{n}) \right)y(t_{n})y_t(t_{n}).
-    \end{align}
-    We implement this example in (\ref{py:nonlinear RRMC IVP}).
-\end{example}
-
-\begin{pythonn}[implementation of (\ref{ex:nonlinear RRMC IVP})] \label{py:nonlinear RRMC IVP}
-    \pythoncode{python code/nonlinear_CVRRMC.py}
-\end{pythonn}
-
 
 \section{Limitations and Future Work}
 
@@ -1253,6 +1228,8 @@ We have not dedicated significant attention, if any at all, to
 the convergence analysis of RMC methods
 for Fredholm equations. Figure \ref{fig:mainD explosion} illustrates
 that arbitrary RMC do not converge. \\
+
+RRMS is biased for non-linear problems \\
 
 Similarly to classic methods, RRMC struggles with big negative coefficients in front
 of the recursive parts which may appear in
