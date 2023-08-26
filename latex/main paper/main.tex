@@ -555,7 +555,8 @@ enhanced with control variates based on the trapezoidal rule.
         \left( \frac{U^{2} }{2} f''(Z_{1})
         -  \frac{U}{2} f''(z_{2}) \right)\right),
     \end{align}
-    for some $Z_{1} \in [x,S], z_{2} \in [x,x+\Delta x]$.
+    for some $Z_{1} \in [x,S], z_{2} \in [x,x+\Delta x]$. The variance term is bounded
+    because the variance of a bounded RV is bounded.
     Note that the proof doesn't rely on Russian roulette ($l=1$).
 \end{proof}
 
@@ -1097,7 +1098,7 @@ the bottleneck it is possible to rely on MC convergence.
 
 \subsection{Initial Value Problems}
 Classic IVP solvers rely on shrinking the time steps for
-convergence. In this subsection we build up to
+convergence. In this subsection we introduce
 Recursion in Recursion MC (RRMC) for IVPs that tries to emulate
 this behavior.
 
@@ -1153,29 +1154,30 @@ this behavior.
 \end{pythonn}
 
 We measured the convergence speed of example \ref{ex:RRMC IVP} to
-be $O\left(h^{1.5} \right)$ in RMSE with $h$ the time step. \\
-Our intuition for this behavior is based on how classical solvers
-work and the MC trapezoidal rule see definition \ref{MCtrap}.
+be $O\left(h^{1.5} \right)$ in RMSE with $h$ the step size. Our
+intuition for this behavior is based on how classical solvers
+work and the MC trapezoidal rule.
 
 \begin{conjecture}[local RMSE RMC]
     Consider a general linear IVP
     \begin{equation}
-        y_{t}(t)= A(t)y(t), y_{t_{0}},
+        y_{t}(t)= A(t)y(t)+g(t), y_{t_{0}},
     \end{equation}
-    with $A$ a matrix then for the corresponding RRVE
+    with $A$ a matrix and $g$ a vector function each
+    once differentiable with the corresponding RRVE
     \begin{equation}
-        y(t) \cong Y(t) = y(t_{0}) + h B \left( \frac{t-t_{0}}{h}\right) A(U(t-t_{0})+t_{0})
-        Y(U(t-t_{0})+t_{0}),
+        y(t) \cong Y(t) = y(t_{0}) + h B \left( \frac{t-t_{0}}{h}\right)
+        A(S) Y(S) + g(S),
     \end{equation}
-    there holds
+    with $S \sim \text{Uniform}$ there holds
     \begin{equation}
-        E[||y(t_{1})-Y(t_{1})||^{2}] = O(h^{2}).
+        E[||y(t_{1})-Y(t_{1})||^{2}] = O(h^{2}),
     \end{equation}
     with $t_{1} = t_{0} + h$.
 \end{conjecture}
 
 
-
+We can improve RRMC with control variates.
 \begin{example}[CV RRMC $y_t=y$]\label{ex:CV RRMC IVP}
     Let us control variate example (\ref{ex:RRMC IVP}).
 
@@ -1203,9 +1205,8 @@ work and the MC trapezoidal rule see definition \ref{MCtrap}.
         + \int_{t_{n}}^{t}y(s)-y(t_{n})(1+s-t_{n})ds.
     \end{align}
 
-    We will not discuss turning this into an RRVE nor the implementation.
-    The implementation is very similar to TODO and
-    Figure \ref{fig:CV RRMC IVP} is a convergence plot for this example.
+    We translate this to an RRVE and
+    plot the error for different step sizes on Figure \ref{fig:CV RRMC IVP}.
 
     \begin{figure}[h!]
         \centering
@@ -1221,6 +1222,102 @@ work and the MC trapezoidal rule see definition \ref{MCtrap}.
     a higher order of convergence.
 \end{related}
 
+Similar to explicit solvers, RRMC performs poorly on stiff problems. 
+We attempted to make RRMC more like implicit solvers but this proved difficult. 
+Instead we think that exponential integrators.
+
+\begin{definition}[DRRMC]
+    Consider a general linear ODE IVP problem:
+    \begin{equation}
+        x' = Ax+g, \quad x(0)= x_{0}.
+    \end{equation}
+    Sometimes repeatedly multiplying by $A$ is unstable.
+    Diagonal RRMC adds a positive diagonal matrix $D$
+    to $A$ and hopes that it stabilizes.
+
+    \begin{equation}
+        x' + Dx = (A+D)x+g.
+    \end{equation}
+
+    The following integral equation can be derived by using integrating factor:
+
+    \begin{equation}\label{eq:int eq DRRMC}
+        x(t)= e^{D(t_{n}-t)}x(t_{n}) + \int_{t_{n}}^{t} e^{D(s-t)}(A+D)x(s)ds+\int_{t_{n}}^{t} e^{D(s-t)}g(s)ds.
+    \end{equation}
+
+    Remember that the exponential of a diagonal matrix is the exponential of its elements.
+    The recursive integral has the following trivial control variate:
+
+    \begin{equation}\label{eq: CV DRRMC}
+        \int_{t_{n}}^{t}  e^{D(s-t)}(A+D)x(t_{n})ds = D^{-1}(I-e^{D(t_{n}-t)})(A+D)x(t_{n}).
+    \end{equation}
+
+    Note that $D$ may be chosen differently for every outer recursion.
+\end{definition}
+
+\begin{example}[DRRMC] \label{ex:DRRMC}
+    Consider:
+    \begin{equation}
+        x'= Ax, x(0)=
+        \begin{bmatrix}
+            1 \\
+            0
+        \end{bmatrix}.
+    \end{equation}
+
+    With
+
+    \begin{equation}
+        A = \begin{bmatrix}
+            0     & 1     \\
+            -1000 & -1001
+        \end{bmatrix}.
+    \end{equation}
+
+    This has the following solution:
+
+    \begin{equation}
+        x(t) = \frac{1}{999}
+        \begin{bmatrix}
+            -  e^{-1000t}+ 1000 e^{-t} \\
+            1000 e^{-1000t}- 1000e^{-t}
+        \end{bmatrix}.
+    \end{equation}
+
+    We choose $D$ fixed over all outer recursions:
+
+    \begin{equation}
+        D = \begin{bmatrix}
+            1 & 0    \\
+            0 & 1000
+        \end{bmatrix}.
+    \end{equation}
+
+    We make the convergence plot for this example with
+    integral equation  (\ref{eq:int eq DRRMC}) with control variate
+    (\ref{eq: CV DRRMC}) implemented with recursion in recursion
+    on Figure \ref{fig:DRRMC}.
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.8\textwidth]{plots/DRRMC.png}
+        \caption{Log-log plot of the error of example (\ref{ex:DRRMC}).
+            We plotted the second component of the error transparent.
+        }
+        \label{fig:DRRMC}
+    \end{figure}
+
+\end{example}
+
+% TODO: 
+% (critical path and how to measure performance)  see period 6 tests
+
+\begin{related}[DRRMC]
+    DRRMC is inspired by  $\bar{\sigma}$ parameter in \cite{sawhney_grid-free_2022} but
+    instead of importance sampling we use control variates to deal with
+    nonlinearity introduced by the exponential because it needs to work over
+    an entire vector at the same time.
+\end{related}
 
 \section{Limitations and Future Work}
 
