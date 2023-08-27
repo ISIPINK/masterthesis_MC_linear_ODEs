@@ -69,20 +69,20 @@ elliptic PDEs with varying coefficients and Dirichlet boundary conditions.
 Their techniques have shown high accuracy even in the presence of geometrically
 complex boundary conditions. We were inspired to apply the underlying
 mechanics of these Monte Carlo (MC) techniques to ODEs to explore
-parallel in time and the possibility to extend their techniques
+parallel in time and the possibility of extending their techniques
 to other types of PDEs. \\
 
 We made an interactive data map of the literature read
-mainly in function of this thesis available at
+mainly in the function of this thesis available at
 \url{https://huggingface.co/spaces/ISIPINK/zotero_map}.
 It may take 10 seconds to load. \\
 
-The latest paper that we found on an unbiased Intial Value Problem (IVP) solver is by
+The latest paper that we found on an unbiased Initial Value Problem (IVP) solver is by
 \citeauthor{ermakov_monte_2021}'s \citeyear{ermakov_monte_2021}
 \cite{ermakov_monte_2021}  that study an unbiased method for
 a Cauchy problem for large systems of linear ODEs
-for describing queuing systems. Similarly to us
-they base their solver on Volterra integral equations.\\
+for describing queuing systems. Similarly to us, they
+base their solver on Volterra integral equations.\\
 
 Other literature is a bit further away.
 The most important fields we draw from are:
@@ -94,10 +94,10 @@ The most important fields we draw from are:
 
     \item  stochastic gradient descent literature
           that is connected through continuous gradient descent
-          which we first encountered in \cite{huang_hybrid_2017},
+          see \cite{huang_hybrid_2017} for an introduction,
 
     \item  Information-Based Complexity (IBC) literature which was
-          unexpected to us, there are some intrestring
+          unexpected to us, there are some interesting
           biased algorithms applied on ODEs that achieve optimal
           IBC rates for RMSE for some smoothness classes, similar to us
           \citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011}
@@ -110,11 +110,6 @@ algorithms and unbiased algorithms
 are of theoretical importance.
 
 \subsection{Contributions}
-
-\textcolor{green}{
-    TODO: add intuition and motivations to the beginning of sections
-    and do section descriptions here.\\
-}
 
 A significant part of this thesis is dedicated to
 informally introducing Recursive Monte Carlo (RMC)
@@ -133,13 +128,12 @@ We conjecture that this method achieves optimal IBC.
 In this subsection, we review basic MC theory. \\
 
 \begin{notation}[Random Variables]
-    Random variables will be denoted with capital letters, e.g., $X$, $Y$ or $Z$.
+    Random variables (RVs) will be denoted with capital letters, e.g., $X$, $Y$ or $Z$.
 \end{notation}
 
 
 
-MC integration is any way to
-use random sampling to estimate an integral.
+MC integration is any way to use random sampling to estimate an integral.
 \begin{definition}[Uniform Monte Carlo Integration]
     We define uniform Monte Carlo integration of
     $f:\mathbb{R}^{n} \rightarrow \mathbb{R}^{m}$
@@ -147,33 +141,33 @@ use random sampling to estimate an integral.
     an estimation of the average of $f(S)$, with
     $S \sim \text{Uniform}(\Omega)$. Combined
     with the Best Linear Unbiased Estimators (BLUEs) for the average, MC Integration
-    in that case can be summarized in the following formula:
-    \begin{equation}
+    in that case, can be summarized in the following formula:
+    \begin{equation}\label{eq:BLUE}
         \int_{\Omega} f(s)ds \approx \frac{1}{n} \sum_{i=1}^{n}f(S_{j}),
     \end{equation}
     where $n$ is the amount of samples used and $S_{j}$ i.i.d. $\text{Uniform}(\Omega)$.
 \end{definition}
 
-Because estimators are Random Variables (RV)
-the cost and error also are RVs. In most cases
+Because estimators are RVs
+the cost and error also are RVs. In most cases,
 these RVs are hard to impossible to get.
 Directly making comparisons between estimators based on these
-RVs is hard, there is no Pareto front we can draw.
-Instead statistics of these variables are used
+RVs are hard, there is no Pareto front we can draw.
+Instead, statistics of these variables are used
 to do comparisons.\\
 
 Accuracy comparisons between estimators
 are usually done with (root-)mean-square error (RMSE).
 \begin{definition}[Root-Mean-Square Error]
     We define the Root-Mean-Square Error (RMSE) of an estimator $\tilde{\theta}$ for $\theta$  as follows:
-    \begin{equation} \label{eq:BLUE}
+    \begin{equation}
         \text{RMSE}(\tilde{\theta}) = \sqrt{E[||\tilde{\theta}-\theta||^{2}_{2}]}.
     \end{equation}
 \end{definition}
 
-Even comparisons based on RMSE can be counterintuitive look at
-Stein's paradox for example. We will always
-limit us to $1$ dimensional unbiased estimators,
+Even comparisons based on RMSE can be counterintuitive, look at
+Stein's paradox for example. We will almost always
+limit ourselves to $1$ dimensional unbiased estimators
 so that MSE becomes the variance.
 Estimating variance is simple and can be used to
 get confidence intervals via Chebyshev's inequality or
@@ -181,21 +175,21 @@ an approximate normal distribution argument.  \\
 
 Average (floating point operations or time)/simulation are very common cost statistics.
 We can imagine (memory or wall time) at risk (similar to value at risk) to be useful
-to keep track of. The statistics are problem dependent.
+to keep track of. The statistics are problem-dependent.
 
-If we limit ourselves to equation (\ref{eq:BLUE}) with big sample size and
+If we limit ourselves to (\ref{eq:BLUE}) with big sample size and
 finite variance assumption on error and simulation time.
 Memory needs to be just enough to evaluate $f$ and to keep an accumulation
 of the sum which is negligible.
 Computation across simulations is embarrassingly parallel which
-make them well suited to a GPU implementation. These assumptions get you
+makes them well suited to a GPU implementation. These assumptions get you
 pretty close to optimal solutions and are very practical for high dimensions
-or complex domains. With these assumption and a linear trade off between average simulation
+or complex domains. These assumptions and a linear trade off between average simulation
 time and variance allows us to define a relative efficiency statistic
 for comparing estimators.
 
-\begin{definition}[Relative Monte Carlo Efficiency]
-    Define relative Monte Carlo efficiency of an
+\begin{definition}[Monte Carlo Efficiency]
+    Define Monte Carlo efficiency of an
     estimator $F$ as follows:
     \begin{equation}
         \epsilon[F]=\frac{1}{\text{Var}[F] T[F]},
@@ -203,14 +197,14 @@ for comparing estimators.
     with $T$ the average simulation time.
 \end{definition}
 
-\begin{related}[Relative Monte Carlo Efficiency]
+\begin{related}[Monte Carlo Efficiency]
     For a reference see \cite{veach_robust_1997} page 45.
 \end{related}
 
-For smooth $1$ dimensional integration the linear trade off between
+For smooth $1$ dimensional integration the linear trade-off between
 variance and average simulation time is not even close to optimal see
 theorem \ref{thrm:order trap}. \\
-Comparing better trades offs is usually done with Information-Based Complexity (IBC).
+Comparing better trade-offs is usually done with Information-Based Complexity (IBC).
 IBC is more of a qualitative measure and doesn't directly imply
 that an algorithm is practical. We won't define IBC rigorously.
 
@@ -220,8 +214,8 @@ that an algorithm is practical. We won't define IBC rigorously.
     needed and accuracy.
 \end{definition}
 
-\begin{example}[IBC of equation (\ref{eq:BLUE})]
-    In equation (\ref{eq:BLUE}) the function calls trades of
+\begin{example}[IBC of (\ref{eq:BLUE})]
+    In (\ref{eq:BLUE}) the function calls trades of
     linearly with variance. For $n$ function calls
     the RMSE $= O\left(\frac{1}{\sqrt{n}}\right)$ or equivalently if we want a
     RMSE of $\varepsilon$ we would need $O\left(\frac{1}{\varepsilon^{2}}\right)$
@@ -230,7 +224,7 @@ that an algorithm is practical. We won't define IBC rigorously.
 
 
 \subsection{Recursive Monte Carlo}
-In this subsection, we introduce recursive Monte Carlo
+In this subsection, we introduce Recursive Monte Carlo (RMC)
 with the following  initial value problem:
 
 
@@ -239,16 +233,16 @@ with the following  initial value problem:
 \end{equation}
 
 
-By integrating both sides of equation (\ref{ydy}), we obtain:
+By integrating both sides of (\ref{ydy}), we obtain:
 
 \begin{equation} \label{Integral ydy}
     y(t) = 1 + \int_{0}^{t} y(s) ds.
 \end{equation}
 
-Equation (\ref{Integral ydy}) represents a recursive integral equation,
+(\ref{Integral ydy}) represents a recursive integral equation,
 specifically a linear Volterra integral equation of the second type.
-By estimating the recursive integral in equation (\ref{Integral ydy})
-using Monte Carlo, we derive the following estimator:
+By estimating the recursive integral in (\ref{Integral ydy})
+using MC, we derive the following estimator:
 
 \begin{equation}
     Y(t) = 1 + t  y(Ut).
@@ -274,7 +268,7 @@ expression for $Y$:
     Y(t) = 1 + t  Y(Ut).
 \end{equation}
 
-Equation (\ref{recursive RV}) is a Recursive Random Variable
+(\ref{recursive RV}) is a Recursive Random Variable
 Equation (RRVE).
 
 \begin{definition}[Recursive Random Variable
@@ -284,26 +278,25 @@ Equation (RRVE).
     family of random variables in terms of itself.
 \end{definition}
 
-If one were to try to simulate $Y$ with equation (\ref{recursive RV}),
+If one were to try to simulate $Y$ with (\ref{recursive RV}),
 it would recurse indefinitely.
 To overcome this, approximate
 $Y(t) \approx 1$ near $t = 0$ introducing minimal bias.
-Later, we will discuss Russian roulette (\ref{Russian roulette}),
+Later, we will discuss Russian roulette see definition \ref{Russian roulette},
 which can be used as an unbiased stopping mechanism.
 
 \vspace*{0.2cm}
 
 \begin{pythonn}[implementation of (\ref{recursive RV})] \label{python eps ydy}
     \pythoncode{python code/eps_ydy.py}
-    To gain insight into realizations of recursive random variable equations,
-    it can be helpful to plot
+    To gain insight into the realizations of a RRVE, it can be helpful to plot
     all recursive calls $(t,Y(t))$, as shown in Figure \ref{fig:intro example}
     for this implementation.
 
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/intro example.png}
-        \caption{Recursive calls of (\ref{python eps ydy})}
+        \caption{Recursive calls of code \ref{python eps ydy}}
         \label{fig:intro example}
     \end{figure}
 \end{pythonn}
@@ -314,9 +307,9 @@ In this subsection, we discuss techniques for modifying RRVEs
 in a way that preserves the expected value of the solution while
 acquiring more desirable properties. These techniques are only
 effective when applied in a smart way by using prior information
-about the problem or information about costs. \\
+about the problem or computational costs. \\
 
-We will be frequently interchanging RVs with the same expectance.
+We will be frequently interchanging RVs with the same expected values.
 That is why we introduce the following notation.
 \begin{notation}[$\cong$]
     \[
@@ -330,7 +323,7 @@ less computationally expensive approximation sometimes.
 
 \begin{definition}[Russian roulette] \label{Russian roulette}
     We define Russian roulette on $X$ with free parameters
-    $Y_{1}$, $Y_{2}$ ($E[Y_{1}] = E[Y_{2}]$), $p \in [0,1]$
+    $Y_{1} \cong Y_{2}$, $p \in [0,1]$
     and $U$ independent of $Y_{1}$, $Y_{2}$, $X$
     as follows:
 
@@ -346,7 +339,7 @@ less computationally expensive approximation sometimes.
 
 \begin{notation}[$B(p)$]
     Often Russian roulette will be used with $Y_{1}= Y_{2}= 0$.
-    In that case we use Bernoulli variables to shorten notation.
+    In that case, we use Bernoulli variables to shorten notation.
     \begin{equation}
         B(p) \sim \text{Bernoulli}(p) =
         \begin{cases}
@@ -364,7 +357,7 @@ less computationally expensive approximation sometimes.
     \end{equation}
 
     Here, $f:\mathbb{R} \rightarrow [0,1]$ is an expensive function to compute.
-    Directly estimating $E[Z]$ would involve evaluating $f$ in each simulation,
+    Directly estimating $E[Z]$ would involve evaluating $f$ for each sample,
     which can be computationally costly. To address this, we can modify $Z$ to:
 
     \begin{equation}
@@ -372,7 +365,7 @@ less computationally expensive approximation sometimes.
     \end{equation}
 
     This RV requires calling $f$ on
-    average once every $100$ simulations. This significantly reduces the
+    average once every $100$ samples. This significantly reduces the
     computational burden while increasing the variance slightly thereby increasing
     the MC efficiency.\\
 \end{example}
@@ -381,14 +374,14 @@ less computationally expensive approximation sometimes.
     In example \ref{ex:simple russian roulette} it is also possible to estimate
     the expectance of the $2$ terms of $Z$ separately. Given the variances and
     computational cost of both terms, you can calculate the asymptotic optimal
-    division of samples for each term. But this isn't the case anymore with RMC.
+    division of samples for each term. This isn't the case anymore with RMC.
     \cite{rath_ears_2022} presents a method to estimate optimal Russian roulette/splitting
     factors for renders.
 \end{related}
 
 
 \begin{example}[Russian roulette on (\ref{recursive RV})] \label{ex: russian roulette}
-    To address the issue of indefinite recursion in equation
+    To address the issue of indefinite recursion in
     (\ref{recursive RV}), Russian roulette can be employed
     by approximating the value of $Y$ near $t = 0$ with $1$
     sometimes. Specifically, we replace the coefficient $t$
@@ -413,7 +406,7 @@ less computationally expensive approximation sometimes.
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/russian roulette example.png}
-        \caption{Recursive calls $(t,Y(t))$ of (\ref{RRpython}) }
+        \caption{Recursive calls $(t,Y(t))$ of code \ref{RRpython} }
         \label{fig:russian roulette}
     \end{figure}
 
@@ -437,14 +430,18 @@ necessitating cautious management of terminating the branches promptly to preven
 exponential growth in computational complexity. To accomplish this, termination
 strategies that have been previously discussed can be employed. Subsequently,
 we will explore the utilization of coupled recursion as a technique to mitigate
-additive branching recursion in RRVEs (refer to (\ref{ex:coupled splitting})).
+additive branching recursion in RRVEs (see example \ref{ex:coupled splitting}).
 
-\begin{example}[splitting on (\ref{recursive RV})] \label{ex:splitting}
-    We can "split" the recursive term of Equation (\ref{recursive RV})
+\begin{example}[splitting on (\ref{eq:rr example})] \label{ex:splitting}
+    We can "split" the recursive term of (\ref{eq:rr example})
     into two parts as follows:
 
-    \begin{equation}
-        y(t) \cong Y(t) = 1 + \frac{t}{2}(Y_{1}(Ut) + Y_{2}(Ut)),
+    \begin{equation}\label{eq:splitting}
+        y(t) \cong Y(t) =
+        \begin{cases}
+            1 + \frac{B(t)}{2}(Y_{1}(Ut) + Y_{2}(Ut)) & \text{ if } t < 1 \\
+            1 + \frac{t}{2}(Y_{1}(Ut) + Y_{2}(Ut))    & \text{ else}
+        \end{cases}.
     \end{equation}
 
     where $Y_{1}(t)$ and $Y_{2}(t)$ are i.i.d. with $Y(t)$.
@@ -452,7 +449,7 @@ additive branching recursion in RRVEs (refer to (\ref{ex:coupled splitting})).
 
 \vspace{0.2cm}
 
-\begin{pythonn}[implementation of (\ref{ex:splitting})]
+\begin{pythonn}[implementation of (\ref{eq:splitting})]
     \pythoncode{python code/SRR_ydy.py}
 \end{pythonn}
 
@@ -469,7 +466,7 @@ additive branching recursion in RRVEs (refer to (\ref{ex:coupled splitting})).
 
 
 \begin{example}[control variate on (\ref{recursive RV})] \label{ex:CV}
-    To create a control variate for Equation (\ref{recursive RV}) that
+    To create a control variate for (\ref{recursive RV}) that
     effectively reduces variance, we employ the approximation
     $y(t) \approx \tilde{y} =1+t$ and define the modified recursive term as follows:
 
@@ -484,7 +481,7 @@ additive branching recursion in RRVEs (refer to (\ref{ex:coupled splitting})).
 \end{example}
 
 \vspace*{0.2cm}
-\begin{pythonn}[implementation of (\ref{ex:CV})]
+\begin{pythonn}[implementation of example \ref{ex:CV}]
     \pythoncode{python code/CVRR_ydy.py}
 \end{pythonn}
 
@@ -529,7 +526,7 @@ enhanced with control variates based on the trapezoidal rule.
 \end{lemma}
 
 \begin{proof}
-    Start from equation (\ref{eq:MCtrap}). The MSE is the variance
+    Start from (\ref{eq:MCtrap}). The MSE is the variance
     so we can ignore addition by constants.
 
     \begin{equation}
@@ -561,10 +558,10 @@ enhanced with control variates based on the trapezoidal rule.
 \end{proof}
 
 \begin{related}[proof \ref{lem:rmse mctrap}]
-    An easier to generalize proof can be made by using ''separation of the main part''
+    An easier to generalize proof to other types of control variates
+    can be made by using ''separation of the main part''
     see lemma 4 of \cite{mathe_monte_nodate}.
 \end{related}
-
 
 
 \begin{definition}[composite MC trapezoidal rule] \label{MCtrap}
@@ -599,13 +596,13 @@ enhanced with control variates based on the trapezoidal rule.
     \end{figure}
 \end{pythonn}
 
-Figure \ref{fig:MCtrap} suggest that the order of convergence of RMSE of the
-composite MC trapezoidal rule is better by $0.5$ as the normal composite trapezoidal rule.
+Figure \ref{fig:MCtrap} suggests that the order of convergence of RMSE of the
+composite MC trapezoidal rule is better by $0.5$ than the normal composite trapezoidal rule.
 The MC trapezoidal rule has on average $\frac{1}{l}$ more function calls than
 the normal trapezoidal rule. For the composite rule with $n$ intervals,
 there are $\text{Binomial}(n,\frac{1}{l})$ additional function calls
 (repeated Bernoulli experiments). So they use up to a constant the same amount
-of function calls. This means an advantage in IBC measured in RMSE. \\
+of function calls on average. This means an advantage in IBC measured in RMSE. \\
 
 \begin{theorem}[RMSE Composite Trapezoidal MC Rule] \label{thrm:order trap}
     The composite trapezoidal MC rule  wth $n$ intervals
@@ -636,9 +633,9 @@ A bound on the error implies a bound on the RMSE, but
 the reverse is not true.
 
 \begin{related}[Monte Carlo Trapezoidal Rule]
-    With Stein's paradox it is always possible to bias the composite MC trapezoidal
+    With Stein's paradox, it is always possible to bias the composite MC trapezoidal
     rule to achieve lower RMSE.
-    The optimal IBC for the determenistic, random and quantum case
+    The optimal IBC for the deterministic, random and quantum case
     are known see \cite{heinrich_optimal_2001} for some smoothness classes.
 \end{related}
 
@@ -659,14 +656,14 @@ $Y_{1} \cong Y_{2} \cong y$.
     \end{equation}
 
     The solution to this equation is given by $y(t) = -\frac{1}{t}$.
-    By integrating both sides of equation (\ref{eq:nonlinear example}),
+    By integrating both sides of (\ref{eq:nonlinear example}),
     we obtain the following integral equation:
 
     \begin{equation}
         y(t) = -1 + \int_{1}^{t} y(s) y(s)ds.
     \end{equation}
 
-    To estimate the recursive integral in equation (\ref{eq:nonlinear example}),
+    To estimate the recursive integral in (\ref{eq:nonlinear example}),
     we use i.i.d. $Y_1,Y_2 \sim Y$ in following RRVE:
 
     \begin{equation} \label{RRVE: nonlinear example}
@@ -679,7 +676,7 @@ $Y_{1} \cong Y_{2} \cong y$.
 \end{example}
 
 \vspace*{0.2cm}
-\begin{pythonn}[implementation (\ref{ex:nonlinear example})]\label{py:nonlinear example}
+\begin{pythonn}[implementation of example \ref{ex:nonlinear example}]\label{py:nonlinear example}
     \pythoncode{python code/dyy2.py}
     In this implementation $Y(t)$ only takes values $\{-1,0\}$.
 \end{pythonn}
@@ -693,7 +690,7 @@ $Y_{1} \cong Y_{2} \cong y$.
                  & = 1 + \frac{1}{1}E[X]\left(1+ \frac{1}{2}E[X]
         \left(1+\frac{1}{3}E[X]\left(1+ ...\right)\right)\right). \label{taylor e}
     \end{align}
-    Change the fractions of equation (\ref{taylor e}) to Bernoulli processes
+    Change the fractions of (\ref{taylor e}) to Bernoulli processes
     and replace all $X$ with independent $X_j$ with $E[X]=E[X_{i}]$.
     \begin{align}
         e^{E[X]} & = E
@@ -759,7 +756,7 @@ In this subsection, we discuss recursion-related techniques.
     \end{equation}
 
     Observe how this eliminates the additive branching recursion
-    present in equation (\ref{couple recu ex2}).
+    present in (\ref{couple recu ex2}).
 
 \end{example}
 
@@ -836,13 +833,13 @@ to tail recursion is implementing the recursion with a stack.
 
 \subsection{Boundary Value Problems}
 In this subsection, we discuss how to turn BVPs into integral equations and
-then solving them. Our main tool for this are Green's functions. \\
+then solving them. Our main tool for this is Green's functions. \\
 
 Roughly speaking Green's functions are a type
 of kernel function used to solve linear problems with linear
 conditions (it is also possible to absorb less important non-linear terms in
-the source term). In this context the Green's function are
-like homogenous and particular solutions of a specific problem
+the source term). In this context the Green's functions are
+like homogenous and particular solutions to a specific problem
 that are combined with integration to solve more general problems.
 
 \begin{related}[Green's function]
@@ -866,7 +863,7 @@ that are combined with integration to solve more general problems.
 \end{notation}
 
 
-To clarify Green's functions let's look at following example.
+To clarify Green's functions let's look at the following example.
 
 \begin{example}[$y_t=y$ average condition]
     We will solve the equation:
@@ -895,10 +892,6 @@ To clarify Green's functions let's look at following example.
         G(t,x) = H(t-x) + x - 1.
     \end{equation}
 
-    It is worth noting that we could have chosen a different
-    Green's function corresponding to a different linear
-    differential operator.
-
     We define the corresponding boundary Green's function $G(t,x)$ for $y_t$
     and this type of condition as follows:
 
@@ -912,14 +905,14 @@ To clarify Green's functions let's look at following example.
         P(t) = e -1.
     \end{equation}
 
-    The Green's function are constructed such that
+    The Green's functions are constructed such that
     we can form the following integral equation for (\ref{ydy int}):
 
     \begin{equation} \label{int ydy int}
         y(t) = P(t) + \int_{0}^{1} G(t,s) y(s) ds.
     \end{equation}
 
-    Converting equation (\ref{int ydy int}) into a RRVE
+    Converting (\ref{int ydy int}) into a RRVE
     using RMC, we obtain:
 
     \begin{equation}\label{RRVE ydy int}
@@ -927,7 +920,7 @@ To clarify Green's functions let's look at following example.
     \end{equation}
 
     where $S \sim U$. We plot realizations of
-    equation (\ref{RRVE ydy int}) in Figure \ref{fig:ydy int}.
+    (\ref{RRVE ydy int}) in Figure \ref{fig:ydy int}.
 
     \begin{figure}[h!]
         \centering
@@ -959,7 +952,7 @@ small $\lambda$, it is relatively straightforward to establish the existence
 and uniqueness of solutions using a fixed-point argument.
 
 \begin{example}[Dirichlet $y_{tt}=y$] \label{main dirichlet}
-    We turn following ODE into Fredholm integral equation of
+    We turn the following ODE into Fredholm integral equation of
     the second kind for testing:
     \begin{equation} \label{eq:main dirichlet}
         y_{tt}=y, \quad y(b_{0}),y(b_{1}).
@@ -976,7 +969,7 @@ and uniqueness of solutions using a fixed-point argument.
                        -\frac{(b_{1}-s)(t-b_{0})}{b_{1}-b_{0}} & \text{if } t<s
                    \end{cases}.
     \end{align}
-    Straight from these Green's functions you get the following integral equation and RRVE:
+    Straight from these Green's functions, you get the following integral equation and RRVE:
     \begin{align} \label{inteq:main dirichlet}
         y(t) & = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1}) +
         \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds,                  \\
@@ -1020,7 +1013,7 @@ samples.
     \end{align}
 
     By coupling, we can eliminate the additive branching recursion
-    in the RRVEs corresponding to Equations (\ref{inteq:coupled splitting})
+    in the RRVEs corresponding to (\ref{inteq:coupled splitting})
     and (\ref{inteq:coupled domain splitting}).
     This results in the following RRVE:
 
@@ -1045,7 +1038,7 @@ samples.
     where $W$ the right weighting matrix is
     (see code \ref{py:coupled splitting}),
     $S_{1}$ and $S_{2}$ can be chosen
-    in various ways. (\ref{RRVE:coupled splitting}) is unbiased in following way:
+    in various ways. (\ref{RRVE:coupled splitting}) is unbiased in the following way:
     $X(t_{1},t_{2}) \cong [y(t_{1}) \quad y(t_{2})]^{T}$.
 
 \end{example}
@@ -1058,8 +1051,8 @@ samples.
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/coupled split.png}
-        \caption{Recursive calls of equation (\ref{RRVE:coupled splitting}) when
-        calling $X(0)$ once. We choose $X$ to have $20$ points and
+        \caption{Recursive calls of (\ref{RRVE:coupled splitting}) when
+        calling $X(0)$ once. We chose $X$ to have $20$ points and
         colored each call. The $S_{j}$ are coupled such that
         they are equally spaced.
         The initial conditions for this call are $y(-1)=e^{-1}$ and $y(1)=e^{1}$,
@@ -1071,7 +1064,7 @@ samples.
 \begin{related}[coupled splitting]
     Coupled splitting is partly inspired by how \cite{sabelfeld_sparsified_2009}
     reduces variance by using bigger submatrices.
-    Reusing samples for walk on sphere gets discussed
+    Reusing samples for WoS is discussed
     in \cite{miller_boundary_2023} and \cite{bakbouk_mean_2023}.
 \end{related}
 
@@ -1081,7 +1074,7 @@ that the convergence
 speed is very similar to fix-points methods until the accuracy
 of the stochastic approximation of the operator is reached
 (the approximate operator bottleneck). The approximation of the operator
-can be improved by increasing coupled splitting amount when
+can be improved by increasing the coupled splitting amount when
 approaching the bottleneck. Alternatively when reaching
 the bottleneck it is possible to rely on MC convergence.
 
@@ -1098,7 +1091,7 @@ the bottleneck it is possible to rely on MC convergence.
 
 \subsection{Initial Value Problems}
 Classic IVP solvers rely on shrinking the time steps for
-convergence. In this subsection we introduce
+convergence. In this subsection, we introduce
 Recursion in Recursion MC (RRMC) for IVPs that tries to emulate
 this behavior.
 
@@ -1135,19 +1128,18 @@ this behavior.
                      \end{cases}.
         \label{eq:RRMC IVP outer}
     \end{align}
-    We refer to equation (\ref{eq:RRMC IVP inner}) as the inner recursion and
-    equation (\ref{eq:RRMC IVP outer}) as the outer recursion of the recursion in
+    We refer to (\ref{eq:RRMC IVP inner}) as the inner recursion and
+    (\ref{eq:RRMC IVP outer}) as the outer recursion of the recursion in
     recursion.
 \end{example}
-% maybe measurements of amount of calls to f
 
-\begin{pythonn}[implementation of (\ref{ex:RRMC IVP})] \label{py:RRMC IVP}
+\begin{pythonn}[implementation of example \ref{ex:RRMC IVP}] \label{py:RRMC IVP}
     \pythoncode{python code/RRMC_IVP.py}
 
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/RRMC IVP.png}
-        \caption{Recursive calls of equation (\ref{eq:RRMC IVP outer})
+        \caption{Recursive calls of (\ref{eq:RRMC IVP outer})
             when calling $Y_{\text{out}}(3,h)$ $30$ times for different $h$.  }
         \label{fig:RRMC IVP}
     \end{figure}
@@ -1179,7 +1171,7 @@ work and the MC trapezoidal rule.
 
 We can improve RRMC with control variates.
 \begin{example}[CV RRMC $y_t=y$]\label{ex:CV RRMC IVP}
-    Let us control variate example (\ref{ex:RRMC IVP}).
+    Let us control variate example \ref{ex:RRMC IVP}.
 
     \begin{equation}
         y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , \quad t>t_{n}.
@@ -1222,11 +1214,13 @@ We can improve RRMC with control variates.
     a higher order of convergence.
 \end{related}
 
-Similar to explicit solvers, RRMC performs poorly on stiff problems. 
-We attempted to make RRMC more like implicit solvers but this proved difficult. 
-Instead we think that exponential integrators.
+Similar to explicit solvers, RRMC performs poorly on stiff problems.
+We attempted to make RRMC more like implicit solvers but this proved difficult.
+Instead, we think that an approach more like exponential integrators
+is more viable. We experimented with Diagonal RRMC in this direction with
+little success.
 
-\begin{definition}[DRRMC]
+\begin{definition}[Diagonal RRMC]
     Consider a general linear ODE IVP problem:
     \begin{equation}
         x' = Ax+g, \quad x(0)= x_{0}.
@@ -1242,14 +1236,14 @@ Instead we think that exponential integrators.
     The following integral equation can be derived by using integrating factor:
 
     \begin{equation}\label{eq:int eq DRRMC}
-        x(t)= e^{D(t_{n}-t)}x(t_{n}) + \int_{t_{n}}^{t} e^{D(s-t)}(A+D)x(s)ds+\int_{t_{n}}^{t} e^{D(s-t)}g(s)ds.
+        x(t)= e^{D(t_{n}-t)}x(t_{n}) + \int_{t_{n}}^{t} e^{D(s-t)}(A(s)+D)x(s)ds+\int_{t_{n}}^{t} e^{D(s-t)}g(s)ds.
     \end{equation}
 
     Remember that the exponential of a diagonal matrix is the exponential of its elements.
     The recursive integral has the following trivial control variate:
 
     \begin{equation}\label{eq: CV DRRMC}
-        \int_{t_{n}}^{t}  e^{D(s-t)}(A+D)x(t_{n})ds = D^{-1}(I-e^{D(t_{n}-t)})(A+D)x(t_{n}).
+        \int_{t_{n}}^{t}  e^{D(s-t)}(A(t_{n})+D)x(t_{n})ds = D^{-1}(I-e^{D(t_{n}-t)})(A(t_{n})+D)x(t_{n}).
     \end{equation}
 
     Note that $D$ may be chosen differently for every outer recursion.
@@ -1294,14 +1288,14 @@ Instead we think that exponential integrators.
     \end{equation}
 
     We make the convergence plot for this example with
-    integral equation  (\ref{eq:int eq DRRMC}) with control variate
+    (\ref{eq:int eq DRRMC}) with control variate
     (\ref{eq: CV DRRMC}) implemented with recursion in recursion
     on Figure \ref{fig:DRRMC}.
 
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/DRRMC.png}
-        \caption{Log-log plot of the error of example (\ref{ex:DRRMC}).
+        \caption{Log-log plot of the error of example \ref{ex:DRRMC}.
             We plotted the second component of the error transparent.
         }
         \label{fig:DRRMC}
@@ -1421,7 +1415,7 @@ Brownian motion.
     \end{equation}
 
     Because $u(x+\Delta x,t) \approx u(x-\Delta x,t) \approx u(x,t-\Delta t) \approx$
-    right-hand side of equation (\ref{eq:discrete iso heat equation}) we may Russian roulette
+    right-hand side of (\ref{eq:discrete iso heat equation}) we may Russian roulette
     to remove branching recursion and generate a recursion path instead of a tree.
     \begin{equation} \label{eq:RRVE discrete heat equation }
         Z(x,t) =
