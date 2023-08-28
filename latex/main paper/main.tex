@@ -1220,7 +1220,7 @@ Instead, we think that an approach more like exponential integrators
 is more viable. We experimented with Diagonal RRMC in this direction with
 little success.
 
-\begin{definition}[Diagonal RRMC]
+\begin{definition}[Diagonal RRMC] \label{def:DRRMC}
     Consider a general linear ODE IVP problem:
     \begin{equation}
         x' = Ax+g, \quad x(0)= x_{0}.
@@ -1303,9 +1303,6 @@ little success.
 
 \end{example}
 
-% TODO: 
-% (critical path and how to measure performance)  see period 6 tests
-
 \begin{related}[DRRMC]
     DRRMC is inspired by  $\bar{\sigma}$ parameter in \cite{sawhney_grid-free_2022} but
     instead of importance sampling we use control variates to deal with
@@ -1315,10 +1312,71 @@ little success.
 
 \section{Limitations and Future Work}
 
-We have not dedicated significant attention, if any at all, to
-the convergence analysis of RMC methods
-for Fredholm equations. Figure \ref{fig:mainD explosion} illustrates
-that arbitrary RMC do not converge. \\
+Our goal for this thesis was to learn about and explore some initial ideas we had.
+We ended up limiting the scope to unbiased linear ODE solvers. We think that
+we covered some ground in this domain but there is still much
+obvious work to be done. \\
+
+Maybe before we talk about that we should talk about the why.
+We think that understanding and optimizing unbiased and deterministic linear ODE solvers
+is the key to developing better randomized ODE solvers.
+Randomized ODE solvers are useful for cases with little structure
+where the advantage of IBC is significant.\\
+
+Besides that, it is sometimes convenient to have low-bias access to solutions of
+ODEs. For example, when integrating over a high dimensional parametric ODE problem
+we would need unbiased solutions to do MC integration. The following example is
+a toy problem where unbiased estimates are convenient.
+
+\begin{example} \label{ex:random ode}
+    Consider the following parametric IVP
+    \begin{equation}\label{eq:random ode}
+        y_t = ay, \quad y(0)=1,
+    \end{equation}
+    with $a$ a parameter. The solution to this problem is given by
+    $y(t,a) = e^{ta}$. Imagine we have a belief about $a$ quantized
+    in the following way $a\sim U$. If we want
+    to estimate $E[y(t, U)]$ or in a more general case
+    $E[f(y(t, U))]$ with $f$ analytic directly
+    we need samples of $y(t,U)$. If we don't have a solution for the parametric IVP
+    so we can't sample $y(t,U)$ instead, we use unbiased estimates $Y(t,u)$ of samples
+    of $y(t, u)$ in the following
+    way using the total law of expectation:
+
+    \begin{align}
+        E[f(y(t,U))] & = E[f(y(t,u)) \mid U=u]     \\
+                     & = E[f(E[Y(t,u)]) \mid U=u].
+    \end{align}
+
+    To estimate $E[f(E[Y(t,u)]) \mid U =u]$, we use the approach outlined in
+    example \ref{ex:exp int}. For this example,
+    we can compute the first two moments of $y(t, U)$:
+    \begin{align}
+        E[y(t,U)]      & = \frac{e^t}{t} - \frac{1}{t},      \\
+        E[y^{2}(t, U)] & = \frac{e^{2t}}{2t} - \frac{1}{2t}.
+    \end{align}
+\end{example}
+
+\begin{pythonn}[implementation of example \ref{ex:random ode}]
+    \pythoncode{python code/random_ODE.py}
+\end{pythonn}
+
+One of the main things that could be done is rigor. We think
+that RMC for IVPs is just an informal but easier way to think of an unbiased estimate of
+the Von Neumann series approach.
+\cite{ermakov_monte_2019} has theorems (Theorem $1$ and $2$) that these
+estimates have finite variance and even an expression for it.
+Before reading \cite{ermakov_monte_2019} we
+also derived a similar expression (probably with mistakes)
+by using the law of total variance. This line
+of reasoning wasn't something new see (16) in \cite{rath_ears_2022}.
+
+
+To deal with stiff problems in an unbiased way we would bet on exponential integrator
+methods. The biggest obstacle to implementing them like diagonal RRMC is getting
+unbiased estimates of exponential matrix-vector multiplication. Initially, we came
+up with example \ref{ex:exp int} but some time later we found
+the paper from NVIDIA \cite{kettunen_unbiased_2021} that
 
 RRMS is biased for non-linear problems \\
 
@@ -1334,36 +1392,7 @@ variate. Proper testing requires precise tuning of the MC techniques utilized.
 We do believe that RRMC could potentially offer advantages in atypical scenarios.
 In the following example, we examine an ODE with a random parameter.
 
-\begin{example}[random ODEs] \label{ex:random ode}
-    Consider the problem given by the initial value problem
-    \begin{equation}\label{eq:random ode}
-        Y_t = AY, \quad Y(0)=1, \quad A \sim \text{Uniform}(0,1).
-    \end{equation}
-    The solution to this problem is given by
-    $Y(t) = e^{tA}$, which is a RV.
-    In order to compute expectations of functions of $Y(t)$,
-    we use unbiased estimates $X$ of the simulations of the solution.
 
-    Given an analytic function $f$, we can obtain $E[f(Y(t))]$
-    by conditioning on the value of $A$ and using the
-    law of total expectation:
-    \begin{align}
-        E_A[f(Y(t))] & = E_A[f(Y(t)) \mid A]         \\
-                     & = E_A[f(E_X[X(t,A)]) \mid A].
-    \end{align}
-
-    To estimate $f(E_X[X(t,A)])$, we use the approach outlined in
-    (\ref{ex:exp int}). For the specific example of (\ref{eq:random ode}),
-    we can compute the first two moments of $Y(t)$ as
-    \begin{align}
-        E_A[Y(t)]   & = \frac{e^t}{t} - \frac{1}{t},      \\
-        E_A[Y^2(t)] & = \frac{e^{2t}}{2t} - \frac{1}{2t}.
-    \end{align}
-\end{example}
-
-\begin{pythonn}[implementation of (\ref{ex:random ode})]
-    \pythoncode{python code/random_ODE.py}
-\end{pythonn}
 
 \subsection{Heat Equation}
 In this subsection, we introduce the relation between the heat equation and
