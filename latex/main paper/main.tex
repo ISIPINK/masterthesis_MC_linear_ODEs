@@ -1161,7 +1161,7 @@ work and the MC trapezoidal rule.
         y(t) \cong Y(t) = y(t_{0}) + h B \left( \frac{t-t_{0}}{h}\right)
         A(S) Y(S) + g(S),
     \end{equation}
-    with $S \sim \text{Uniform}$ there holds
+    with $S \sim \text{Uniform}(t_{0},t)$ there holds
     \begin{equation}
         E[||y(t_{1})-Y(t_{1})||^{2}] = O(h^{2}),
     \end{equation}
@@ -1361,16 +1361,33 @@ a toy problem where unbiased estimates are convenient.
     \pythoncode{python code/random_ODE.py}
 \end{pythonn}
 
-One of the main things that could be done is rigor. We think
-that RMC for IVPs is just an informal but easier way to think of an unbiased estimate of
-the Von Neumann series approach.
+One of the elements that is lacking in our findings is rigor.  We think
+that RMC for IVPs is an informal way to think of an unbiased estimate of
+the Von Neumann series to the corresponding Volterra integral equation.
 \cite{ermakov_monte_2019} has theorems (Theorem $1$ and $2$) that these
 estimates have finite variance and even an expression for it.
-Before reading \cite{ermakov_monte_2019} we
+Before being aware of \cite{ermakov_monte_2019} we
 also derived a similar expression (probably with mistakes)
-by using the law of total variance. This line
-of reasoning wasn't something new see (16) in \cite{rath_ears_2022}.
+by using the law of total variance similar to (16) in \cite{rath_ears_2022}.\\
+We think that proving optimal IBC for control variates + RRMC is doable
+but tedious. \cite{daun_randomized_2011} has a proof for optimal IBC in
+the biased non-linear case. The proof we have in mind is using a lower-bound on IBC
+from integration and proving it gets achieved.\\
 
+
+Optimal IBC isn't everything. Optimal IBC doesn't mean optimized. An algorithm that
+uses $1000$ times more function calls has the same IBC. We focused on IBC and made
+choices along the way based on convenience.\\
+
+One minor optimization that we were working on was the time process.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plots/time proces.png}
+    \caption{This histogram depicts how the points
+        on Figure \ref{fig:russian roulette} are distributed over time
+        excluding $t=1$.}
+    \label{fig:time proces}
+\end{figure}
 
 To deal with stiff problems in an unbiased way we would bet on exponential integrator
 methods. The biggest obstacle to implementing them like diagonal RRMC is getting
