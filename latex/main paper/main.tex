@@ -401,8 +401,9 @@ less computationally expensive approximation sometimes.
 
 \begin{pythonn}[implementation of (\ref{eq:rr example})] \label{RRpython}
     \pythoncode{python code/RR_ydy.py}
-    Interestingly, $\forall t \le 1:Y(t)$ is constrained to take on only integer values.
-    This is visually clear in Figure \ref{fig:russian roulette}.
+    Interestingly, $\forall t \le 1:Y(t)$ is exactly the amount of recursion
+    calls to sample $Y(t)$ such that the average amount of function/recursion calls
+    equal $e^{t}$. This is visually clear in Figure \ref{fig:russian roulette}.
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/russian roulette example.png}
@@ -691,7 +692,7 @@ $Y_{1} \cong Y_{2} \cong y$.
         \left(1+\frac{1}{3}E[X]\left(1+ ...\right)\right)\right). \label{taylor e}
     \end{align}
     Change the fractions of (\ref{taylor e}) to Bernoulli processes
-    and replace all $X$ with independent $X_j$ with $E[X]=E[X_{i}]$.
+    and replace all $X$ with independent $X_j \cong X$.
     \begin{align}
         e^{E[X]} & = E
         \left[1 + B\left(\frac{1}{1}\right)E[X_1]
@@ -700,17 +701,17 @@ $Y_{1} \cong Y_{2} \cong y$.
         \left(1+ ...\right)
         \right)
         \right)
-        \right]              \\
-                 & = E\left[
-            1 + B\left(\frac{1}{1}\right)X_1
-            \left(1+ B\left(\frac{1}{2}\right)X_2
-            \left(1+B\left(\frac{1}{3}\right)X_3
+        \right]                             \\
+                 & \cong \label{eq:exp int}
+        1 + B\left(\frac{1}{1}\right)X_1
+        \left(1+ B\left(\frac{1}{2}\right)X_2
+        \left(1+B\left(\frac{1}{3}\right)X_3
             \left(1+ ...\right)
             \right)
-            \right)
-            \right]
+        \right).
     \end{align}
-    What is inside the expectation is something that we can simulate with simulations of $X_{j}$.
+    Sampling (\ref{eq:exp int}) requires a finite amount of samples from $X_{j}$'s
+    with probability $1$.
 \end{example}
 
 \begin{related}[example \ref{ex:exp int}]
@@ -1113,19 +1114,19 @@ this behavior.
     Turn these in the following class of RRVEs:
 
     \begin{equation}
-        Y_{n}(t) = y(t_{n}) + (t-t_{n})Y_{n}((t-t_{n})U+t_{n}), \quad t>t_{n}.
+        y(t) \cong Y_{j}(t) = y(t_{j}) + (t-t_{j})Y_{j}((t-t_{j})U+t_{j}), \quad t>t_{j}.
     \end{equation}
 
-    A problem with these RRVEs is that we do not know $y(t_{n})$.
-    Instead, we can replace it with an unbiased estimate $y_{n}$
+    A problem with these RRVEs is that we do not know $y(t_{j})$.
+    Instead, we can replace it with an unbiased estimate $y_{j}$
     which we keep frozen in the inner recursion:
     \begin{align}
         \label{eq:RRMC IVP inner}
-        Y_{n}(t) & = y_{n} + (t-t_{n})Y_{n}((t-t_{n})U+t_{n}), \quad t>t_{n} \\
-        y_{n}    & = \begin{cases}
-                         Y_{n-1}(t_{n}) & \text{ if } n \neq 0 \\
-                         y(t_{0})       & \text{ if } n = 0
-                     \end{cases}.
+        y(t) \cong Y_{j}(t)  & = y_{j} + (t-t_{j})Y_{j}((t-t_{j})U+t_{j}), \quad t>t_{j} \\
+        y(t_{j}) \cong y_{j} & = \begin{cases}
+                                     Y_{j-1}(t_{j}) & \text{ if } j \neq 0 \\
+                                     y(t_{0})       & \text{ if } j = 0
+                                 \end{cases}.
         \label{eq:RRMC IVP outer}
     \end{align}
     We refer to (\ref{eq:RRMC IVP inner}) as the inner recursion and
@@ -1146,8 +1147,11 @@ this behavior.
 \end{pythonn}
 
 We measured the convergence speed of example \ref{ex:RRMC IVP} to
-be $O\left(h^{1.5} \right)$ in RMSE with $h$ the step size. Our
-intuition for this behavior is based on how classical solvers
+be $O\left(h^{1.5} \right)$ in RMSE with $h$ the step size.
+We used a scaled version of the time process of example \ref{ex: russian roulette}
+for the inner recursion such that the average amount of total inner recursion calls
+is $e n$ with $n$ the total amount of outer recursion calls.
+Our intuition for this behavior is based on how classical solvers
 work and the MC trapezoidal rule.
 
 \begin{conjecture}[local RMSE RMC]
@@ -1370,14 +1374,13 @@ Before being aware of \cite{ermakov_monte_2019} we
 also derived a similar expression (probably with mistakes)
 by using the law of total variance similar to (16) in \cite{rath_ears_2022}.\\
 We think that proving optimal IBC for control variates + RRMC is doable
-but tedious. \cite{daun_randomized_2011} has a proof for optimal IBC in
-the biased non-linear case. The proof we have in mind is using a lower-bound on IBC
+but tedious. \cite{daun_randomized_2011} has a proof for optimal IBC for their algorithm
+in the biased non-linear case. The proof we have in mind is using a lower-bound on IBC
 from integration and proving it gets achieved.\\
 
 
 Optimal IBC isn't everything. Optimal IBC doesn't mean optimized. An algorithm that
-uses $1000$ times more function calls has the same IBC. We focused on IBC and made
-choices along the way based on convenience.\\
+uses $1000$ times more function calls has the same IBC.  \\
 
 One minor optimization that we were working on was the time process.
 \begin{figure}[h!]
@@ -1389,11 +1392,25 @@ One minor optimization that we were working on was the time process.
     \label{fig:time proces}
 \end{figure}
 
+A thing you could do is start the time process already half way such that
+the average recursion calls drops but increasing the recursion calls is
+not possible. An other issue with is the lack of control of the stationary
+distribution. We think it would be better to spread the function calls
+uniformly. \\
+
+What we have in mind to solve these issues is using a Poisson point process
+that samples forwardly with the corresponding exponential distribution and
+Russian roulettes when out of range. This way the stationary distribution
+is controlled by the intensity of the Poisson process and the amount
+of recursion calls are Poisson distributed.
+
 To deal with stiff problems in an unbiased way we would bet on exponential integrator
 methods. The biggest obstacle to implementing them like diagonal RRMC is getting
 unbiased estimates of exponential matrix-vector multiplication. Initially, we came
 up with example \ref{ex:exp int} but some time later we found
-the paper from NVIDIA \cite{kettunen_unbiased_2021} that
+the paper from NVIDIA \cite{kettunen_unbiased_2021} that optimizes the exponential
+scalar case. There $2$ cases we are interested in, constant matrix and
+variable matrix. This may allow direct sampling from the Magnus expansion.
 
 RRMS is biased for non-linear problems \\
 
