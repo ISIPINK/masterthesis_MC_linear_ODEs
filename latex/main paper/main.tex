@@ -1157,7 +1157,7 @@ work and the MC trapezoidal rule.
 \begin{conjecture}[local RMSE RMC]
     Consider a general linear IVP
     \begin{equation}
-        y_{t}(t)= A(t)y(t)+g(t), y_{t_{0}},
+        y_{t}(t)= A(t)y(t)+g(t), y(t_{0}),
     \end{equation}
     with $A$ a matrix and $g$ a vector function each
     once differentiable with the corresponding RRVE
@@ -1208,7 +1208,7 @@ We can improve RRMC with control variates.
         \centering
         \includegraphics[width=0.8\textwidth]{plots/CV RRMC IVP.png}
         \caption{Log-log plot of the error for example
-            (\ref{ex:CV RRMC IVP}) at $Y(10)$.}
+            \ref{ex:CV RRMC IVP} at $Y(10)$.}
         \label{fig:CV RRMC IVP}
     \end{figure}
 \end{example}
@@ -1333,7 +1333,7 @@ we would need unbiased solutions to do MC integration. The following example is
 a toy problem where unbiased estimates are convenient.
 
 \begin{example} \label{ex:random ode}
-    Consider the following parametric IVP
+    Consider the following parametric IVP:
     \begin{equation}\label{eq:random ode}
         y_t = ay, \quad y(0)=1,
     \end{equation}
@@ -1343,8 +1343,8 @@ a toy problem where unbiased estimates are convenient.
     to estimate $E[y(t, U)]$ or in a more general case
     $E[f(y(t, U))]$ with $f$ analytic directly
     we need samples of $y(t,U)$. If we don't have a solution for the parametric IVP
-    so we can't sample $y(t,U)$ instead, we use unbiased estimates $Y(t,u)$ of samples
-    of $y(t, u)$ in the following
+    we can't sample $y(t,U)$ instead, we use unbiased estimates ($Y(t,u)$) of samples ($y(t,u)$)
+    of $y(t, U)$ in the following
     way using the total law of expectation:
 
     \begin{align}
@@ -1365,6 +1365,44 @@ a toy problem where unbiased estimates are convenient.
     \pythoncode{python code/random_ODE.py}
 \end{pythonn}
 
+\vspace{0.5cm}
+
+While writing this thesis, we came up with a better way to sample the time process.
+The time process we used is based on example \ref{ex: russian roulette}.
+There are a few ways to generalize that example for example using a linear function
+instead of an exponential. An issue is the lack of control over the stationary
+distribution of the time process see Figure \ref{fig:russian roulette}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plots/time proces.png}
+    \caption{This histogram depicts how the points
+        on Figure \ref{fig:russian roulette} are distributed over time
+        excluding $t=1$.}
+    \label{fig:time proces}
+\end{figure}
+
+What we have in mind is using a Poisson point process
+that samples forwardly with the corresponding exponential distribution and
+Russian roulettes when out of range. This way the stationary distribution
+is controlled by the intensity of the Poisson process and the amount
+of recursion calls (for constant intensity) are Poisson distributed.\\
+
+There are other things that could be further developed. The way control
+variates are constructed, the type of control variates, adaptive schemes,
+freezing less important terms in the recursion in recursion ...
+the point is there is a lot of room for improvement. \\
+
+To deal with stiff problems in an unbiased way we would bet on exponential integrators
+methods. The biggest obstacle to implementing them like diagonal RRMC is getting
+unbiased estimates of $e^{A(t-s)} y(s)$ type of expressions. Initially, we came
+up with example \ref{ex:exp int} but some time later we found
+the paper from NVIDIA \cite{kettunen_unbiased_2021} that optimizes that example.
+Closely related to this is directly estimating the Magnus expansion
+where expressions like $e^{\int_{0}^{\Delta t} A(s)ds}  y(0)$ are needed. In this
+case \cite{kettunen_unbiased_2021} doesn't address using the smoothness
+of $A(s)$ which is needed for optimal IBC. \\
+
 One of the elements that is lacking in our findings is rigor.  We think
 that RMC for IVPs is an informal way to think of an unbiased estimate of
 the Von Neumann series to the corresponding Volterra integral equation.
@@ -1378,53 +1416,19 @@ but tedious. \cite{daun_randomized_2011} has a proof for optimal IBC for their a
 in the biased non-linear case. The proof we have in mind is using a lower-bound on IBC
 from integration and proving it gets achieved.\\
 
-
 Optimal IBC isn't everything. Optimal IBC doesn't mean optimized. An algorithm that
-uses $1000$ times more function calls has the same IBC.  \\
+uses $1000$ times more function calls has the same IBC. Besides that, the computational goal
+may not fit well in the framework of IBC. We really like
+\cite{becker_learning_2022} which uses deep learning to go outside
+the IBC framework, the focus is more on multiple fast inferences where
+a big precomputation is allowed.
+IBC also doesn't take into account how
+parallel computations are. Given infinite parallel resources it would make sense
+to stop decreasing variance by reducing the step size and splitting the final estimator.
+All the communication that is needed is averaging the final estimator. We conjecture
+that in such an estimator the wall time at risk would increase logarithmically with splitting
+size.  \\
 
-One minor optimization that we were working on was the time process.
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.8\textwidth]{plots/time proces.png}
-    \caption{This histogram depicts how the points
-        on Figure \ref{fig:russian roulette} are distributed over time
-        excluding $t=1$.}
-    \label{fig:time proces}
-\end{figure}
-
-A thing you could do is start the time process already half way such that
-the average recursion calls drops but increasing the recursion calls is
-not possible. An other issue with is the lack of control of the stationary
-distribution. We think it would be better to spread the function calls
-uniformly. \\
-
-What we have in mind to solve these issues is using a Poisson point process
-that samples forwardly with the corresponding exponential distribution and
-Russian roulettes when out of range. This way the stationary distribution
-is controlled by the intensity of the Poisson process and the amount
-of recursion calls are Poisson distributed.
-
-To deal with stiff problems in an unbiased way we would bet on exponential integrator
-methods. The biggest obstacle to implementing them like diagonal RRMC is getting
-unbiased estimates of exponential matrix-vector multiplication. Initially, we came
-up with example \ref{ex:exp int} but some time later we found
-the paper from NVIDIA \cite{kettunen_unbiased_2021} that optimizes the exponential
-scalar case. There $2$ cases we are interested in, constant matrix and
-variable matrix. This may allow direct sampling from the Magnus expansion.
-
-RRMS is biased for non-linear problems \\
-
-Similarly to classic methods, RRMC struggles with big negative coefficients in front
-of the recursive parts which may appear in
-stiff problems.
-In addition to the challenges with stiff problems, we have not conducted
-a comparison between RRMC and traditional methods, and we do not anticipate
-that RRMC in this form outperforms other classic methods.
-The reason for this is that RRMC involves
-many function calls in the inner recursion without updating the current control
-variate. Proper testing requires precise tuning of the MC techniques utilized.
-We do believe that RRMC could potentially offer advantages in atypical scenarios.
-In the following example, we examine an ODE with a random parameter.
 
 
 
