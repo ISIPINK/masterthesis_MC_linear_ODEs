@@ -1309,23 +1309,23 @@ little success.
 
 \begin{related}[DRRMC]
     DRRMC is inspired by  $\bar{\sigma}$ parameter in \cite{sawhney_grid-free_2022} but
-    instead of importance sampling we use control variates to deal with
+    instead of importance sampling, we use control variates to deal with
     nonlinearity introduced by the exponential because it needs to work over
     an entire vector at the same time.
 \end{related}
 
 \section{Limitations and Future Work}
 
-Our goal for this thesis was to learn about and explore some initial ideas we had.
-We ended up limiting the scope to unbiased linear ODE solvers. We think that
-we covered some ground in this domain but there is still much
-obvious work to be done. \\
+Our goal for this thesis was to learn about and explore different Monte Carlo techniques.
+We ended up limiting the scope to unbiased linear ODE solvers. In this direction,
+there is still much obvious work to be done. \\
 
-Maybe before we talk about that we should talk about the why.
 We think that understanding and optimizing unbiased and deterministic linear ODE solvers
-is the key to developing better randomized ODE solvers.
-Randomized ODE solvers are useful for cases with little structure
-where the advantage of IBC is significant.\\
+is the key to developing better randomized ODE/PDE solvers.
+Randomized ODE/PDE solvers are useful for cases with little structure
+where the advantage of IBC is significant or in the case of a linear trade-off
+between cost and variance is close to optimal. \\
+
 
 Besides that, it is sometimes convenient to have low-bias access to solutions of
 ODEs. For example, when integrating over a high dimensional parametric ODE problem
@@ -1388,14 +1388,18 @@ Russian roulettes when out of range. This way the stationary distribution
 is controlled by the intensity of the Poisson process and the amount
 of recursion calls (for constant intensity) are Poisson distributed.\\
 
-There are other things that could be further developed. The way control
+Besides the time process, the following could be developed: the way control
 variates are constructed, the type of control variates, adaptive schemes,
-freezing less important terms in the recursion in recursion ...
-the point is there is a lot of room for improvement. \\
+freezing less important terms in the recursion in recursion or Russian rouletting
+them into reasonable approximations, error estimates based on variance in the
+inner recursion, etc. \\
 
 To deal with stiff problems in an unbiased way we would bet on exponential integrators
-methods. The biggest obstacle to implementing them like diagonal RRMC is getting
-unbiased estimates of $e^{A(t-s)} y(s)$ type of expressions. Initially, we came
+type of methods. The biggest obstacle to implementing them like diagonal RRMC is getting
+unbiased estimates of $e^{A(t-s)} y(s)$ type of expressions. In the case
+of a big matrix $A$ we think it would be important use unbiased sparsifaction
+see \cite{sabelfeld_sparsified_2009}.
+Initially, we came
 up with example \ref{ex:exp int} but some time later we found
 the paper from NVIDIA \cite{kettunen_unbiased_2021} that optimizes that example.
 Closely related to this is directly estimating the Magnus expansion
@@ -1425,94 +1429,58 @@ a big precomputation is allowed.
 IBC also doesn't take into account how
 parallel computations are. Given infinite parallel resources it would make sense
 to stop decreasing variance by reducing the step size and splitting the final estimator.
-All the communication that is needed is averaging the final estimator. We conjecture
+All the communication that is needed then is averaging the final estimator. We conjecture
 that in such an estimator the wall time at risk would increase logarithmically with splitting
 size.  \\
 
+Another topic that could be investigated is only estimating $1$ component of the solution.
+It is not obvious if this is always possible but due to the Feynman-Kac formula,
+it seems possible for a space discretization of the heat equation.
+We made the following informal partial derivation for the Feynman-Kac formula
+in the case heat equation
+to understand why and what makes point estimators possible.
 
+Discretize the heat equation ($u_{t} = u_{xx}$)
+with a regular rectangular mesh that includes $(x,t)$ with equally
+spaced intervals over space and time ($\Delta x, \Delta t$) with
+the corresponding difference equation:
 
+\begin{equation}
+    \frac{u(x,t)-u(x,t-\Delta t)}{\Delta t} = \frac{u(x + \Delta x,t)-2 u(x,t) +u(x - \Delta x,t)}{\Delta x^{2}} .
+\end{equation}
 
-\subsection{Heat Equation}
-In this subsection, we introduce the relation between the heat equation and
-Brownian motion.
+Isolate $u(x,t)$:
 
-\begin{definition}[$1$D heat equation Dirichlet] \label{def:heat equation}
-    We define the $1$D heat equation for $u$ on connected domain $\Omega$
-    with  Dirichlet boundary conditions the following way:
-    \begin{equation}
-        \frac{\partial u}{\partial t} = \frac{\partial^{2} u}{\partial x ^{2}}.
-    \end{equation}
-    Given $u(x,t)=\psi(x,t) ,\forall (x,t) \in \partial \Omega: t<\sup \{
-        t| (x,t) \in \Omega\}$ .
-\end{definition}
+\begin{equation} \label{eq:discrete iso heat equation}
+    u(x,t) =
+    \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}
+    \left(
+    u(x+\Delta x,t)+u(x-\Delta x,t)
+    \right) +
+    \frac{\Delta x^{2}}{ 2 \Delta t + \Delta x^{2}}
+    \left(
+    u(x,t-\Delta t)
+    \right).
+\end{equation}
 
-\begin{lemma}[Brownian motion and the heat equation] \label{lem:BM HE}
-    For problem (\ref{def:heat equation}) if $ |\psi|$ is bounded
-    then there holds:
+Now comes the essential step in the derivation.
+Because $u(x+\Delta x,t) \approx u(x-\Delta x,t) \approx u(x,t-\Delta t) \approx$
+right-hand side of (\ref{eq:discrete iso heat equation}) we may Russian roulette
+to remove branching recursion and generate a recursion path instead of a tree.
+\begin{equation} \label{eq:RRVE discrete heat equation }
+    Z(x,t) =
+    \begin{cases}
+        Z(x+\Delta x , t)  & \text{ with chance  } \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}     \\
+        Z(x-\Delta x , t)  & \text{ with chance  } \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}     \\
+        Z(x, t - \Delta t) & \text{ with chance  } \frac{\Delta x^{2}}{ 2 \Delta t + \Delta x^{2}}
+    \end{cases}
+\end{equation}
 
-    \begin{equation}
-        u(x,t)=E[\psi(Y_{\tau},\tau) | Y_{t} =x].
-    \end{equation}
-    With $dY_{s} = dW_{-s},\tau = \sup\{s | (Y_{s},s) \notin \Omega\}$.
-\end{lemma}
-
-
-\begin{proof} \label{proof: BM HE }
-    Discretize the heat equation
-    with a regular rectangular mesh that includes $(x,t)$ with equally
-    spaced intervals over space and time ($\Delta x, \Delta t$) with
-    the corresponding difference equation:
-
-    \begin{equation}
-        \frac{u(x,t)-u(x,t-\Delta t)}{\Delta t} = \frac{u(x + \Delta x,t)-2 u(x,t) +u(x - \Delta x,t)}{\Delta x^{2}} .
-    \end{equation}
-
-    Isolate $u(x,t)$:
-
-    \begin{equation} \label{eq:discrete iso heat equation}
-        u(x,t) =
-        \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}
-        \left(
-        u(x+\Delta x,t)+u(x-\Delta x,t)
-        \right) +
-        \frac{\Delta x^{2}}{ 2 \Delta t + \Delta x^{2}}
-        \left(
-        u(x,t-\Delta t)
-        \right).
-    \end{equation}
-
-    Because $u(x+\Delta x,t) \approx u(x-\Delta x,t) \approx u(x,t-\Delta t) \approx$
-    right-hand side of (\ref{eq:discrete iso heat equation}) we may Russian roulette
-    to remove branching recursion and generate a recursion path instead of a tree.
-    \begin{equation} \label{eq:RRVE discrete heat equation }
-        Z(x,t) =
-        \begin{cases}
-            \psi(\text{argmin}_{b \in \partial \Omega} ||(x,t) - b||)
-             & \text{ when } (x,t) \notin \Omega \\
-            \begin{cases}
-                Z(x+\Delta x , t)  & \text{ with chance  } \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}     \\
-                Z(x-\Delta x , t)  & \text{ with chance  } \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}     \\
-                Z(x, t - \Delta t) & \text{ with chance  } \frac{\Delta x^{2}}{ 2 \Delta t + \Delta x^{2}}
-            \end{cases}
-             & \text{ else }.
-        \end{cases}
-    \end{equation}
-    This is a RRVE, $Z$ has finite variance because $ |\psi|$ is bounded
-    and $E[Z(x,t)]$ is the solution to the discretized heat equation. Taking the limit
-    makes the discrete solution converge to the real solution.
-    For (\ref{eq:RRVE discrete heat equation }) the limit
-    makes the recursion path go to Brownian motion $Y_{t}$.
-    \begin{equation}
-        Z(x,t) \rightarrow \psi(Y_{\tau},\tau)  .
-    \end{equation}
-    Finishing the proof.
-\end{proof}
-
-\begin{related}
-    (\ref{lem:BM HE}) is a subcase of the Feynman-Kac formula.
-    For a proof and an in-depth discussion of the Feynman-Kac formula
-    see \cite{oksendal_stochastic_2003}. \\
-\end{related}
+Taking the limit
+makes the discrete solution converge to the real solution.
+For (\ref{eq:RRVE discrete heat equation }) the limit
+makes the recursion path go to Brownian motion. We won't treat
+how to stop the recursion with boundary conditions.
 
 
 \newpage
