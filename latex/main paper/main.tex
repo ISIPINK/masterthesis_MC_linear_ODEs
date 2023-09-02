@@ -176,9 +176,9 @@ in terms of memory or wall time.
 
 If we limit ourselves to (\ref{eq:BLUE}) with a big sample size and
 finite variance assumption on error and simulation time.
-Simulations can be computed in parallel, making them well-suited for GPU implementation.
+Simulations can be computed in parallel, making them well-suited for a GPU implementation.
 When these assumptions are close to optimal, they are very practical.
-Under these assumptions, there is a linear trade-off
+In this case, there is a linear trade-off
 between average simulation time and variance which motivate
 the definition of MC efficiency for comparing estimators.
 
@@ -277,8 +277,8 @@ Equation (RRVE).
 \end{definition}
 
 If one were to try to simulate $Y$ with (\ref{recursive RV}),
-it would recurse indefinitely.
-To stop the recursion approximate
+it would recurse indefinitely (for every $Y$ needs to sample another $Y$).
+To stop the recursion, approximate
 $Y(t) \approx 1$ near $t = 0$ introducing minimal bias.
 Later, we will discuss Russian roulette; see definition \ref{Russian roulette},
 which can be used as an unbiased stopping mechanism.
@@ -485,7 +485,8 @@ additive branching recursion in RRVEs (see example \ref{ex:coupled splitting}).
 \end{pythonn}
 
 \begin{related}[MC modification]
-    For further reference on these techniques see \cite{veach_robust_1997}.
+    For further reference on Russian roulette, splitting and control variates
+    see \cite{veach_robust_1997}.
 \end{related}
 
 \subsection{Monte Carlo Trapezoidal Rule}
@@ -928,7 +929,7 @@ To clarify Green's functions let's look at the following example.
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/ydy int.png}
-        \caption{Recursive calls of (\ref{RRVE ydy int}) when
+        \caption{Recursive calls $(t,Y(t))$ of (\ref{RRVE ydy int}) when
             calling $Y(0.5)$ $300$ times. Points accumulate on
             the Green's line due to the Russian roulette,
             and at  $t=0.5$ because it is the starting
@@ -1148,8 +1149,8 @@ this behavior.
     \end{figure}
 \end{pythonn}
 
-We measured the convergence speed of example \ref{ex:RRMC IVP} to
-be $O\left(h^{1.5} \right)$ in RMSE with $h$ the step size.
+We measured the convergence speed in RMSE of $Y(t)$ estimating $y(t)$  of example
+\ref{ex:RRMC IVP} to be $O\left(h^{1.5} \right)$ with $h$ the step size.
 We used a scaled version of the time process of example \ref{ex: russian roulette}
 for the inner recursion such that the average amount of total inner recursion calls
 is $e n$ with $n$ the total amount of outer recursion calls.
