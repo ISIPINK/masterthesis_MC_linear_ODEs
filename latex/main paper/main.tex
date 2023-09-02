@@ -238,7 +238,7 @@ By integrating both sides of (\ref{ydy}), we obtain:
 \end{equation}
 
 (\ref{Integral ydy}) represents a recursive integral equation,
-specifically a linear Volterra integral equation of the second type.
+specifically, a linear Volterra integral equation of the second type.
 By estimating the recursive integral in (\ref{Integral ydy})
 using MC, we derive the following estimator:
 
@@ -254,9 +254,9 @@ using MC, we derive the following estimator:
     \end{equation}
 \end{notation}
 
-If $y$ is well-behaved, then $E[Y(t)] = y(t)$,
-but we cannot directly simulate $Y(t)$ without access
-to $y(s)$ for $s < t$. However, we can replace $y$ with
+If $y$ is well-behaved, then $E[Y(t)] = y(t)$.
+However, we cannot directly simulate $Y(t)$ without access
+to $y(s)$ for $s < t$. Nevertheless, we can replace $y$ with
 an unbiased estimator without affecting $E[Y(t)] = y(t)$,
 by the law of total expectation ($E[X] = E[E[X|Z]]$).
 By replacing $y$ with $Y$ itself, we obtain a recursive
@@ -278,9 +278,9 @@ Equation (RRVE).
 
 If one were to try to simulate $Y$ with (\ref{recursive RV}),
 it would recurse indefinitely.
-To overcome this, approximate
+To stop the recursion approximate
 $Y(t) \approx 1$ near $t = 0$ introducing minimal bias.
-Later, we will discuss Russian roulette see definition \ref{Russian roulette},
+Later, we will discuss Russian roulette; see definition \ref{Russian roulette},
 which can be used as an unbiased stopping mechanism.
 
 \vspace*{0.2cm}
@@ -304,11 +304,11 @@ which can be used as an unbiased stopping mechanism.
 In this subsection, we discuss techniques for modifying RRVEs
 in a way that preserves the expected value of the solution while
 acquiring more desirable properties. These techniques are only
-effective when applied in a smart way by using prior information
+effective when applied smartly by using prior information
 about the problem or computational costs. \\
 
-We will be frequently interchanging RVs with the same expected values.
-That is why we introduce the following notation.
+We will frequently interchange RVs with the same expected values.
+This is why we introduce the following notation.
 \begin{notation}[$\cong$]
     \[
         X \cong Y \iff E[X]=E[Y]
@@ -362,19 +362,20 @@ less computationally expensive approximation sometimes.
         Z \cong U + B\left(\frac{1}{100}\right)\frac{f(U)}{10}.
     \end{equation}
 
-    This RV requires calling $f$ on
+    This requires calling $f$ on
     average once every $100$ samples. This significantly reduces the
     computational burden while increasing the variance slightly thereby increasing
     the MC efficiency.\\
 \end{example}
 
 \begin{related}[example \ref{ex:simple russian roulette}]
-    In example \ref{ex:simple russian roulette} it is also possible to estimate
-    the expectance of the $2$ terms of $Z$ separately. Given the variances and
-    computational cost of both terms, you can calculate the asymptotic optimal
-    division of samples for each term. This isn't the case anymore with RMC.
-    \cite{rath_ears_2022} presents a method to estimate optimal Russian roulette/splitting
-    factors for renders.
+    In example \ref{ex:simple Russian roulette}, it is also
+    possible to estimate the expectations of the $2$ terms
+    of $Z$ separately. Given the variances and computational costs
+    of both terms, you can calculate the asymptotically optimal division
+    of samples for each term. However, this is no longer the case with RMC.
+    In \cite{rath_ears_2022}, a method is presented to estimate the optimal
+    Russian roulette/splitting factors for rendering.
 \end{related}
 
 
@@ -399,9 +400,9 @@ less computationally expensive approximation sometimes.
 
 \begin{pythonn}[implementation of (\ref{eq:rr example})] \label{RRpython}
     \pythoncode{python code/RR_ydy.py}
-    Interestingly, $\forall t \le 1:Y(t)$ is exactly the amount of recursion
-    calls to sample $Y(t)$ such that the average amount of function/recursion calls
-    equal $e^{t}$. This is visually clear in Figure \ref{fig:russian roulette}.
+    Interestingly, $\forall t \le 1:Y(t)$ is the number of recursion calls
+    to sample $Y(t)$ such that the average number of recursion
+    calls equals $e^{t}$.
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/russian roulette example.png}
@@ -413,7 +414,7 @@ less computationally expensive approximation sometimes.
 
 Splitting is a technique that has almost the reverse effect of Russian roulette.
 Instead of reducing the number of simulations of a RV as Russian roulette does,
-we increase it by using more samples (i.e., splitting the sample) which
+we increase it by using more samples (i.e. splitting the sample) which
 reduces the variance.
 
 \begin{definition}[splitting] \label{def:splitting}
@@ -455,12 +456,11 @@ additive branching recursion in RRVEs (see example \ref{ex:coupled splitting}).
 \begin{definition}[control variates] \label{CV}
     Define control variating $f(X)$ with $\tilde{f}$ an approximation of $f$ as:
     \begin{equation}
-        f(X) \cong (f-\tilde{f})(X) + E[\tilde{f}(X)].
+        f(X) \cong f(X)-\tilde{f}(X) + E[\tilde{f}(X)].
     \end{equation}
 
     Note that control variating requires the evaluation of
-    $E[\tilde{f}(X)]$. When this is estimated instead of evaluated
-    exactly, we refer to it as $2$-level MC.
+    $E[\tilde{f}(X)]$. When this is estimated we refer to it as $2$-level MC.
 \end{definition}
 
 
@@ -474,9 +474,9 @@ additive branching recursion in RRVEs (see example \ref{ex:coupled splitting}).
              & = 1 + t + \frac{t^2}{2} + t(Y(Ut) - 1 - Ut).
     \end{align}
 
-    It is important to note that while we could cancel out the constant term
-    of the control variate, doing so would have a negative impact on
-    the Russian roulette implemented later.
+    Note that while we could cancel out the constant term
+    of the control variate, doing so would have a negative impact
+    on the Russian roulette implemented later.
 \end{example}
 
 \vspace*{0.2cm}
