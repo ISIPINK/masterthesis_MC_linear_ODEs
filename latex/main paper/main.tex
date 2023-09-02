@@ -735,7 +735,7 @@ In this subsection, we discuss recursion-related techniques.
         \partial_{a}y_t & = y + a \partial_{a}y \label{couple recu ex2}
     \end{align}
     Turn (\ref{couple recu ex1}) and (\ref{couple recu ex2}) into RRVEs.
-    To emphasize that they are coupled, that they should
+    To emphasize that they are coupled and should
     recurse together we write them in a matrix equation:
     \begin{equation} \label{coupled mat}
         \begin{bmatrix}
@@ -788,7 +788,7 @@ In this subsection, we discuss recursion-related techniques.
 
 Most programming languages do support recursion, but it often comes with certain
 limitations such as maximum recursion depth and potential performance issues.
-There are multiple ways to implement recursion we will discuss tail recursion and
+There are multiple ways to implement recursion, we will discuss tail recursion and
 do an example using a stack.
 
 \begin{technique}[non-branching tail recursion]
@@ -800,32 +800,32 @@ do an example using a stack.
     speeds to a forward implementation.
 \end{technique}
 
-The non-branching recursion presented in the RRVEs
-can be implemented with tail recursion due to the associativity of
-all operations ($(xy)z = x(yz)$) involved.
+The non-branching recursion presented in the RRVEs can
+be implemented using tail recursion thanks to the associativity
+of all operations ($(xy)z = x(yz)$) involved.
 
 \begin{pythonn}[tail recursion on (\ref{coupled mat})] \label{py:tail recursion couple}
-    We implement (\ref{coupled mat}) but this time with tail recursion.
-    We collect addition operations in a vector $sol$ and multiplication
-    in a matrix $W$. $W$ may be referred to as accumulated weight or throughput.
+    We implemented (\ref{coupled mat}) using tail recursion this time. We
+    collect addition operations in a vector called $sol$, and multiplications
+    in a matrix named $W$. $W$ may also be referred to as accumulated weight
+    or throughput.
     \vspace{0.3cm}
     \pythoncode{python code/tailrecu.py}
 \end{pythonn}
 
-Tail recursion is not always desirable as it discards intermediate values of
-the recursion calls and can increase
-computational cost.
-To retain some of these intermediate values, it is possible to use tail recursion partially.
-In example \ref{py:tail recursion couple} it would
-be more efficient to avoid matrix multiplication on line $7$. An alternative
-to tail recursion is implementing the recursion with a stack.
+Tail recursion is not always desirable as it discards intermediate values
+of the recursive calls and can increase computational costs. To retain
+some of these intermediate values, it is possible to use tail recursion partially.
+In the example shown in \ref{py:tail recursion couple}, it would be more efficient
+to avoid matrix multiplication on line 7. An alternative to tail recursion is implementing
+the recursion with a stack.
 
 \begin{pythonn}[stack recursion on (\ref{coupled mat})] \label{py:stack recursion couple}
     We implement (\ref{coupled mat}) but this time with a stack.
     We want to avoid matrix multiplication and only use matrix-vector multiplications.
     To do this on (\ref{coupled mat}) we need to know $X(Ut)$ when
     it doesn't get Russian rouletted away. If we sample $Ut$ we can recurse
-    on our reasoning until Russian roulette termination so we need the path
+    on our reasoning until Russian roulette termination, so we need the path
     of all the samples.
     \vspace{0.3cm}
     \pythoncode{python code/stackrecu.py}
