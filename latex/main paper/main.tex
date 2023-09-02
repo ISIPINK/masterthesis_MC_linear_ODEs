@@ -96,7 +96,7 @@ The most important fields we draw from are:
           that is connected through continuous gradient descent
           see \cite{huang_hybrid_2017} for an introduction,
 
-    \item  Information-Based Complexity (IBC) literature which was
+    \item  Information-Based Complexity (IBC) literature, which was
           unexpected to us, there are some interesting
           biased algorithms applied on ODEs that achieve optimal
           IBC rates for RMSE for some smoothness classes, similar to us
@@ -135,7 +135,7 @@ In this subsection, we review basic MC theory. \\
 
 MC integration is any way to use random sampling to estimate an integral.
 \begin{definition}[Uniform Monte Carlo Integration]
-    We define uniform Monte Carlo integration of
+    We define uniform MC integration of
     $f:\mathbb{R}^{n} \rightarrow \mathbb{R}^{m}$
     over $\Omega \subset \mathbb{R}^{n}$ as
     an estimation of the average of $f(S)$, with
@@ -148,16 +148,14 @@ MC integration is any way to use random sampling to estimate an integral.
     where $n$ is the amount of samples used and $S_{j}$ i.i.d. $\text{Uniform}(\Omega)$.
 \end{definition}
 
-Because estimators are RVs
-the cost and error also are RVs. In most cases,
-these RVs are hard to impossible to get.
-Directly making comparisons between estimators based on these
-RVs are hard, there is no Pareto front we can draw.
-Instead, statistics of these variables are used
-to do comparisons.\\
+Because estimators are random variables (RVs), the cost and error are also random
+variables. In most cases, obtaining these RVs is difficult to impossible.
+Directly comparing estimators based on these RVs can be challenging;
+there is no Pareto front. Instead, comparisons can be made
+using statistics. \\
 
 Accuracy comparisons between estimators
-are usually done with (root-)mean-square error (RMSE).
+are typically conducted with (root-)mean-square error (RMSE).
 \begin{definition}[Root-Mean-Square Error]
     We define the Root-Mean-Square Error (RMSE) of an estimator $\tilde{\theta}$ for $\theta$  as follows:
     \begin{equation}
@@ -165,34 +163,30 @@ are usually done with (root-)mean-square error (RMSE).
     \end{equation}
 \end{definition}
 
-Even comparisons based on RMSE can be counterintuitive, look at
-Stein's paradox for example. We will almost always
-limit ourselves to $1$ dimensional unbiased estimators
-so that MSE becomes the variance.
-Estimating variance is simple and can be used to
-get confidence intervals via Chebyshev's inequality or
-an approximate normal distribution argument.  \\
+Even comparisons based on RMSE can be counterintuitive; consider Stein's paradox,
+for example. We will almost always limit ourselves to $1$-dimensional
+unbiased estimators, making MSE equivalent to variance.
+Estimating variance is simple and can be used to calculate
+confidence intervals using Chebyshev's inequality or an
+approximate normal distribution argument.\\
 
-Average (floating point operations or time)/simulation are very common cost statistics.
-We can imagine (memory or wall time) at risk (similar to value at risk) to be useful
-to keep track of. The statistics are problem-dependent.
+Average floating point operations or time per simulation are common cost statistics.
+It may be useful to consider 'at risk' (analogous to 'value at risk')
+in terms of memory or wall time.
 
-If we limit ourselves to (\ref{eq:BLUE}) with big sample size and
+If we limit ourselves to (\ref{eq:BLUE}) with a big sample size and
 finite variance assumption on error and simulation time.
-Memory needs to be just enough to evaluate $f$ and to keep an accumulation
-of the sum which is negligible.
-Computation across simulations is embarrassingly parallel which
-makes them well suited to a GPU implementation. These assumptions get you
-pretty close to optimal solutions and are very practical for high dimensions
-or complex domains. These assumptions and a linear trade off between average simulation
-time and variance allows us to define a relative efficiency statistic
-for comparing estimators.
+Simulations can be computed in parallel, making them well-suited for GPU implementation.
+When these assumptions are close to optimal, they are very practical.
+Under these assumptions, there is a linear trade-off
+between average simulation time and variance which motivate
+the definition of MC efficiency for comparing estimators.
 
 \begin{definition}[Monte Carlo Efficiency]
-    Define Monte Carlo efficiency of an
+    Define MC efficiency of an
     estimator $F$ as follows:
     \begin{equation}
-        \epsilon[F]=\frac{1}{\text{Var}[F] T[F]},
+        \epsilon[F]=\frac{1}{\text{Var}(F) T(F)},
     \end{equation}
     with $T$ the average simulation time.
 \end{definition}
@@ -741,6 +735,10 @@ In this subsection, we discuss recursion-related techniques.
     recurse together we write them in a matrix equation:
     \begin{equation} \label{coupled mat}
         \begin{bmatrix}
+            y(t) \\
+            \partial_{a}y(t)
+        \end{bmatrix} \cong
+        \begin{bmatrix}
             Y(t) \\
             \partial_{a}Y(t)
         \end{bmatrix}=
@@ -832,8 +830,8 @@ to tail recursion is implementing the recursion with a stack.
 
 \section{Ordinary Differential Equations}
 
-\subsection{Boundary Value Problems}
-In this subsection, we discuss how to turn BVPs into integral equations and
+\subsection{Green's Functions}
+In this subsection, we discuss how to turn ODEs into integral equations and
 then solving them. Our main tool for this is Green's functions. \\
 
 Roughly speaking Green's functions are a type
