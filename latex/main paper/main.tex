@@ -195,12 +195,16 @@ the definition of MC efficiency for comparing estimators.
     For a reference see \cite{veach_robust_1997} page 45.
 \end{related}
 
-For smooth $1$ dimensional integration the linear trade-off between
+For smooth $1$ dimensional integration, the linear trade-off between
 variance and average simulation time is not even close to optimal see
 theorem \ref{thrm:order trap}. \\
-Comparing better trade-offs is usually done with Information-Based Complexity (IBC).
-IBC is more of a qualitative measure and doesn't directly imply
-that an algorithm is practical. We won't define IBC rigorously.
+When it comes to comparing better trade-offs,
+Information-Based Complexity (IBC) is often employed.
+It's worth mentioning that IBC primarily serves as a
+qualitative measure and does not necessarily imply the
+practicality of an algorithm. While we won't delve into a
+rigorous definition of IBC here, it plays a vital role in
+assessing the efficiency of algorithms.
 
 \begin{definition}[Information-Based Complexity]
     IBC is a way to describe asymptotically (for increasing accuracy/function calls)
@@ -210,8 +214,8 @@ that an algorithm is practical. We won't define IBC rigorously.
 
 \begin{example}[IBC of (\ref{eq:BLUE})]
     In (\ref{eq:BLUE}) the function calls trades of
-    linearly with variance. For $n$ function calls
-    the RMSE $= O\left(\frac{1}{\sqrt{n}}\right)$ or equivalently if we want a
+    linearly with variance. For $n$ function calls,
+    the RMSE $= O\left(\frac{1}{\sqrt{n}}\right)$ or equivalently, if we want a
     RMSE of $\varepsilon$ we would need $O\left(\frac{1}{\varepsilon^{2}}\right)$
     function calls.
 \end{example}
