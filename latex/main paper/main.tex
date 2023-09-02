@@ -499,7 +499,7 @@ enhanced with control variates based on the trapezoidal rule.
 \begin{definition}[MC trapezoidal rule]
     We define the MC trapezoidal rule for approximating the integral
     of function $f$ over the interval $[x, x+\Delta x]$ with a Russian roulette rate
-    $l$ and $\tilde{f}$ the linear approximation of $f$ corresponding
+    $l$ and $\tilde{f}$ represents the linear approximation of $f$ corresponding
     to the trapezoidal rule as follows:
 
     \begin{align}
@@ -558,9 +558,9 @@ enhanced with control variates based on the trapezoidal rule.
 \end{proof}
 
 \begin{related}[proof \ref{lem:rmse mctrap}]
-    An easier to generalize proof to other types of control variates
-    can be made by using ''separation of the main part''
-    see lemma 4 of \cite{mathe_monte_nodate}.
+    A more generalizable proof for other types of control variates can
+    be constructed by applying the 'separation of the main part' technique,
+    as shown in lemma 4 of \cite{mathe_monte_nodate}.
 \end{related}
 
 
@@ -605,17 +605,16 @@ there are $\text{Binomial}(n,\frac{1}{l})$ additional function calls
 of function calls on average. This means an advantage in IBC measured in RMSE. \\
 
 \begin{theorem}[RMSE Composite Trapezoidal MC Rule] \label{thrm:order trap}
-    The composite trapezoidal MC rule  wth $n$ intervals
+    The composite trapezoidal MC rule  with $n$ intervals
     for a twice differentiable function has
     \begin{equation}
         \text{RMSE} =O\left(\frac{1}{n^{2.5}} \right) .
     \end{equation}
-
 \end{theorem}
 
-The proof uses lemma \ref{lem:rmse mctrap}
+The proof uses lemma \ref{lem:rmse mctrap},
 and is similar to the proof of the normal
-trapezoidal rule with the main difference being  the
+trapezoidal rule. The main difference being the
 accumulation of ''local truncation'' errors into ''global truncation'' error.
 Normally there is a loss of one order but the MC trapezoidal loses only a half order
 because the accumulation happens in variance instead of bias.
@@ -627,16 +626,16 @@ because the accumulation happens in variance instead of bias.
      & = O( \Delta x^{2.5}).
 \end{align}
 
-Note that the meaning of a bound on the error that behaves as $O(\Delta x^{2})$ and
-a bound on the RMSE that behaves as $O(\Delta x^{2})$ is different.
-A bound on the error implies a bound on the RMSE, but
-the reverse is not true.
+Note that the meaning of a bound on the error, which behaves as $O(\Delta x^{2})$,
+and a bound on the RMSE, also behaving as $O(\Delta x^{2})$, is different.
+A bound on the error implies a bound on the RMSE, but not vice versa.
 
 \begin{related}[Monte Carlo Trapezoidal Rule]
-    With Stein's paradox, it is always possible to bias the composite MC trapezoidal
+    Due to an argument like Stein's paradox,
+    it is always possible to bias the composite MC trapezoidal
     rule to achieve lower RMSE.
-    The optimal IBC for the deterministic, random and quantum case
-    are known see \cite{heinrich_optimal_2001} for some smoothness classes.
+    The optimal IBC for the deterministic, random, and quantum cases are known
+    for some smoothness classes; see \cite{heinrich_optimal_2001} for details.
 \end{related}
 
 
