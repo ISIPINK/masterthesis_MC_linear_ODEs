@@ -287,7 +287,7 @@ which can be used as an unbiased stopping mechanism.
 
 \begin{pythonn}[implementation of (\ref{recursive RV})] \label{python eps ydy}
     \pythoncode{python code/eps_ydy.py}
-    To gain insight into the realizations of a RRVE, it can be helpful to plot
+    To gain insight into the realizations of an RRVE, it can be helpful to plot
     all recursive calls $(t,Y(t))$, as shown in Figure \ref{fig:intro example}
     for this implementation.
 
@@ -315,8 +315,8 @@ This is why we introduce the following notation.
         .\]
 \end{notation}
 
-Russian roulette is a MC technique commonly employed in rendering algorithms.
-The concept behind Russian roulette is to replace a RV with a
+Russian roulette is an MC technique commonly employed in rendering algorithms.
+The concept behind Russian roulette is to replace an RV with a
 less computationally expensive approximation sometimes.
 
 \begin{definition}[Russian roulette] \label{Russian roulette}
@@ -413,7 +413,7 @@ less computationally expensive approximation sometimes.
 \end{pythonn}
 
 Splitting is a technique that has almost the reverse effect of Russian roulette.
-Instead of reducing the number of simulations of a RV as Russian roulette does,
+Instead of reducing the number of simulations of an RV as Russian roulette does,
 we increase it by using more samples (i.e. splitting the sample) which
 reduces the variance.
 
@@ -425,7 +425,7 @@ reduces the variance.
     \end{equation}
 \end{definition}
 
-Splitting the recursive term in a RRVE can result in additive branching recursion,
+Splitting the recursive term in an RRVE can result in additive branching recursion,
 necessitating cautious management of terminating the branches promptly to prevent
 exponential growth in computational complexity. To accomplish this, termination
 strategies that have been previously discussed can be employed. Subsequently,
@@ -491,7 +491,7 @@ additive branching recursion in RRVEs (see example \ref{ex:coupled splitting}).
 
 \subsection{Monte Carlo Trapezoidal Rule}
 
-In this subsection, we introduce a MC trapezoidal rule that
+In this subsection, we introduce an MC trapezoidal rule that
 exhibits similar convergence behavior to the methods discussed later.
 The MC trapezoidal rule is essentially a regular Monte Carlo method
 enhanced with control variates based on the trapezoidal rule.
@@ -914,7 +914,7 @@ To clarify Green's functions, let's look at the following example.
         y(t) = P(t) + \int_{0}^{1} G(t,s) y(s) ds.
     \end{equation}
 
-    Converting (\ref{int ydy int}) into a RRVE
+    Converting (\ref{int ydy int}) into an RRVE
     using RMC, we obtain:
 
     \begin{equation}\label{RRVE ydy int}
@@ -1096,7 +1096,7 @@ the bottleneck it is possible to rely on MC convergence.
 \subsection{Initial Value Problems}
 Classic IVP solvers rely on shrinking the time steps for
 convergence. In this subsection, we introduce
-Recursion in Recursion MC (RRMC) for IVPs that tries to emulate
+Recursion in Recursion MC (RRMC) for IVPs which tries to emulate
 this behavior.
 
 
@@ -1122,7 +1122,7 @@ this behavior.
 
     A problem with these RRVEs is that we do not know $y(t_{j})$.
     Instead, we can replace it with an unbiased estimate $y_{j}$
-    which we keep frozen in the inner recursion:
+    which we keep fixed in the inner recursion:
     \begin{align}
         \label{eq:RRMC IVP inner}
         y(t) \cong Y_{j}(t)  & = y_{j} + (t-t_{j})Y_{j}((t-t_{j})U+t_{j}), \quad t>t_{j} \\
@@ -1149,26 +1149,25 @@ this behavior.
     \end{figure}
 \end{pythonn}
 
-We measured the convergence speed in RMSE of $Y(t)$ estimating $y(t)$  of example
-\ref{ex:RRMC IVP} to be $O\left(h^{1.5} \right)$ with $h$ the step size.
-We used a scaled version of the time process of example \ref{ex: russian roulette}
-for the inner recursion such that the average amount of total inner recursion calls
-is $e n$ with $n$ the total amount of outer recursion calls.
-Our intuition for this behavior is based on how classical solvers
-work and the MC trapezoidal rule.
+The measured RMSE of $Y(t)$ estimating $y(t)$ in example
+\ref{ex:RRMC IVP} is of the order $O\left(h^{1.5} \right)$, where $h$ represents
+the step size.
+We used a scaled version of the time process from example \ref{ex: russian roulette}
+for the inner recursion, such that the average number of total inner recursion calls
+is $e n$, where $n$ represents the total number of outer recursion calls.
 
 \begin{conjecture}[local RMSE RMC]
-    Consider a general linear IVP
+    Consider a general linear IVP:
     \begin{equation}
         y_{t}(t)= A(t)y(t)+g(t), y(t_{0}),
     \end{equation}
-    with $A$ a matrix and $g$ a vector function each
-    once differentiable with the corresponding RRVE
+    with $A$ a matrix and $g$ a vector function, each
+    once differentiable with the corresponding RRVE:
     \begin{equation}
         y(t) \cong Y(t) = y(t_{0}) + h B \left( \frac{t-t_{0}}{h}\right)
         A(S) Y(S) + g(S),
     \end{equation}
-    with $S \sim \text{Uniform}(t_{0},t)$ there holds
+    where $S \sim \text{Uniform}(t_{0},t)$. Then, the following relation holds:
     \begin{equation}
         E[||y(t_{1})-Y(t_{1})||^{2}] = O(h^{2}),
     \end{equation}
@@ -1192,20 +1191,21 @@ We can improve RRMC with control variates.
              & \approx y(t_{n}) + (s-t_{n})f(y(t_{n}),t_{n})            \\
              & \approx y(t_{n}) +
         (s-t_{n})\left(\frac{y(t_{n})-y(t_{n-1})}{t_{n}-t_{n-1}}\right) \\
-             & \approx y(t_{n})(1+s-t_{n}).
+             & \approx y(t_{n})(1+s-t_{n}). \label{eq:CVCV RRMC }
     \end{align}
 
-    Using the last one as a control variate for the integral:
+    Using (\ref{eq:CVCV RRMC}) as a control variate for the integral:
 
     \begin{align}
         y(t) & = y(t_{n}) + \int_{t_{n}}^{t}y(s)ds                                          \\
              & = y(t_{n}) + \int_{t_{n}}^{t}y(s)-y(t_{n})(1+s-t_{n}) +y(t_{n})(1+s-t_{n})ds \\
              & = y(t_{n})\left(1 + (1-t_{n})(t-t_{n})+\frac{t^{2}-t_{n}^{2}}{2}\right)
-        + \int_{t_{n}}^{t}y(s)-y(t_{n})(1+s-t_{n})ds.
+        + \int_{t_{n}}^{t}y(s)-y(t_{n})(1+s-t_{n})ds. \label{eq: int CV RRMC}
     \end{align}
 
-    We translate this to an RRVE and
-    plot the error for different step sizes on Figure \ref{fig:CV RRMC IVP}.
+    Figure \ref{fig:CV RRMC IVP} displays the error
+    of realizations of an RRVE constructed from (\ref{eq: int CV RRMC})
+    for various step sizes.
 
     \begin{figure}[h!]
         \centering
@@ -1223,7 +1223,7 @@ We can improve RRMC with control variates.
 
 Similar to explicit solvers, RRMC performs poorly on stiff problems.
 We attempted to make RRMC more like implicit solvers but this proved difficult.
-Instead, we think that an approach more like exponential integrators
+Instead, we believe that an approach more like exponential integrators
 is more viable. We experimented with Diagonal RRMC in this direction with
 little success.
 
@@ -1232,9 +1232,9 @@ little success.
     \begin{equation}
         x' = Ax+g, \quad x(0)= x_{0}.
     \end{equation}
-    Sometimes repeatedly multiplying by $A$ is unstable.
-    Diagonal RRMC adds a positive diagonal matrix $D$
-    to $A$ and hopes that it stabilizes.
+    In some cases, repeatedly multiplying by matrix $A$ can lead to instability.
+    Diagonal RRMC attempts to address this issue by adding a positive diagonal matrix $D$
+    to matrix $A$ .
 
     \begin{equation}
         x' + Dx = (A+D)x+g.
@@ -1246,7 +1246,6 @@ little success.
         x(t)= e^{D(t_{n}-t)}x(t_{n}) + \int_{t_{n}}^{t} e^{D(s-t)}(A(s)+D)x(s)ds+\int_{t_{n}}^{t} e^{D(s-t)}g(s)ds.
     \end{equation}
 
-    Remember that the exponential of a diagonal matrix is the exponential of its elements.
     The recursive integral has the following trivial control variate:
 
     \begin{equation}\label{eq: CV DRRMC}
@@ -1285,7 +1284,7 @@ little success.
         \end{bmatrix}.
     \end{equation}
 
-    We choose $D$ fixed over all outer recursions:
+    We choose $D$ fixed across outer recursions:
 
     \begin{equation}
         D = \begin{bmatrix}
@@ -1294,7 +1293,7 @@ little success.
         \end{bmatrix}.
     \end{equation}
 
-    We make the convergence plot for this example with
+    We make a convergence plot for this example with
     (\ref{eq:int eq DRRMC}) with control variate
     (\ref{eq: CV DRRMC}) implemented with recursion in recursion
     on Figure \ref{fig:DRRMC}.
@@ -1413,9 +1412,9 @@ of $A(s)$ which is needed for optimal IBC. \\
 One of the elements that is lacking in our findings is rigor.  We think
 that RMC for IVPs is an informal way to think of an unbiased estimate of
 the Von Neumann series to the corresponding Volterra integral equation.
-\cite{ermakov_monte_2019} has theorems (Theorem $1$ and $2$) that these
+\cite{ermakov_monte_2021} has theorems (Theorem $1$ and $2$) that these
 estimates have finite variance and even an expression for it.
-Before being aware of \cite{ermakov_monte_2019} we
+Before being aware of \cite{ermakov_monte_2021} we
 also derived a similar expression (probably with mistakes)
 by using the law of total variance similar to (16) in \cite{rath_ears_2022}.\\
 We think that proving optimal IBC for control variates + RRMC is doable
