@@ -835,19 +835,18 @@ the recursion with a stack.
 \section{Ordinary Differential Equations}
 
 \subsection{Green's Functions}
-In this subsection, we discuss how to turn ODEs into integral equations and
-then solving them. Our main tool for this is Green's functions. \\
+In this subsection, we discuss how to transform ODEs into integral equations and
+subsequently solve them. Our main tool for this is Green's functions. \\
 
-Roughly speaking Green's functions are a type
-of kernel function used to solve linear problems with linear
-conditions (it is also possible to absorb less important non-linear terms in
-the source term). In this context the Green's functions are
-like homogenous and particular solutions to a specific problem
-that are combined with integration to solve more general problems.
+Roughly speaking, a Green's function is a type of kernel function used
+for solving linear problems with linear conditions. In this context,
+Green's functions are analogous to homogeneous and particular solutions
+to a specific problem, which are combined through integration to solve
+more general problems.
 
 \begin{related}[Green's function]
-    Our notion of Green's function is similar
-    to that in \cite{hwang_simulationtabulation_2001}.
+    Our notion of the Green's function is similar to that presented
+    in \cite{hwang_simulationtabulation_2001}.
 \end{related}
 
 
@@ -862,11 +861,11 @@ that are combined with integration to solve more general problems.
 \end{notation}
 
 \begin{notation}[$\delta$]
-    We denote the Dirac delta function with $\delta(x)$.
+    We denote the Dirac delta function as $\delta(x)$.
 \end{notation}
 
 
-To clarify Green's functions let's look at the following example.
+To clarify Green's functions, let's look at the following example.
 
 \begin{example}[$y_t=y$ average condition]
     We will solve the equation:
@@ -947,7 +946,7 @@ equations of the second kind.
     \begin{equation}
         \varphi(t)=f(t)+\lambda \int_a^b K(t, s) \varphi(s) ds.
     \end{equation}
-    Given the kernel  $K(t, s)$  and  $ f(t)$.
+    Here, $K(t, s)$ represents a kernel, and $f(t)$ is a given function.
 \end{definition}
 
 If both $K$ and $f$ satisfy certain regularity conditions, then for sufficiently
@@ -955,7 +954,7 @@ small $\lambda$, it is relatively straightforward to establish the existence
 and uniqueness of solutions using a fixed-point argument.
 
 \begin{example}[Dirichlet $y_{tt}=y$] \label{main dirichlet}
-    We turn the following ODE into Fredholm integral equation of
+    We transform the following ODE into Fredholm integral equation of
     the second kind for testing:
     \begin{equation} \label{eq:main dirichlet}
         y_{tt}=y, \quad y(b_{0}),y(b_{1}).
@@ -972,16 +971,16 @@ and uniqueness of solutions using a fixed-point argument.
                        -\frac{(b_{1}-s)(t-b_{0})}{b_{1}-b_{0}} & \text{if } t<s
                    \end{cases}.
     \end{align}
-    Straight from these Green's functions, you get the following integral equation and RRVE:
+    Directly from these Green's functions, we obtain the following integral equation and RRVE:
     \begin{align} \label{inteq:main dirichlet}
         y(t) & = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1}) +
         \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds,                  \\
         Y(t) & = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1})
         + l B\left(\frac{1}{l} \right)(b_{1}-b_{0}) G(t,S)y(S) , \label{RRVE:main dirichlet}
     \end{align}
-    where $l \in \mathbb{R}$ the Russian roulette rate is and
+    with the Russian roulette rate $l \in \mathbb{R}$  and
     $S \sim \text{Uniform}(b_{1},b_{0})$. In Figure \ref{fig:mainD explosion}
-    we tested convergence of (\ref{RRVE:main dirichlet}).
+    we test convergence of (\ref{RRVE:main dirichlet}).
 
 \end{example}
 
@@ -997,8 +996,8 @@ and uniqueness of solutions using a fixed-point argument.
     \label{fig:mainD explosion}
 \end{figure}
 
-Coupled splitting is one of the ideas that we tested on example \ref{main dirichlet}.
-Coupled splitting deals with additive branching of splitting by coupling (reusing)
+Coupled splitting is one of the ideas we tested on example \ref{main dirichlet}.
+Coupled splitting removes the additive branching of splitting by coupling (reusing)
 samples.
 
 \begin{example}[coupled splitting on example \ref{main dirichlet}] \label{ex:coupled splitting}
@@ -1038,7 +1037,7 @@ samples.
         \end{bmatrix}
         X(S_{1},S_{2}),
     \end{equation}
-    where $W$ the right weighting matrix is
+    with $W$ some weighting matrix
     (see code \ref{py:coupled splitting}),
     $S_{1}$ and $S_{2}$ can be chosen
     in various ways. (\ref{RRVE:coupled splitting}) is unbiased in the following way:
@@ -1047,8 +1046,8 @@ samples.
 \end{example}
 
 \begin{pythonn}[implementation of (\ref{RRVE:coupled splitting})] \label{py:coupled splitting}
-    We implemented (\ref{RRVE:coupled splitting}) with recursion but in this case, it
-    is better to implement it forwardly. \\
+    We implemented (\ref{RRVE:coupled splitting}) with recursion. In this case,
+    a forward implementation is more efficient. \\
     \pythoncode{python code/coupled_splitting.py}
 
     \begin{figure}[h!]
@@ -1065,10 +1064,12 @@ samples.
 \end{pythonn}
 
 \begin{related}[coupled splitting]
-    Coupled splitting is partly inspired by how \cite{sabelfeld_sparsified_2009}
-    reduces variance by using bigger submatrices.
-    Reusing samples for WoS is discussed
-    in \cite{miller_boundary_2023} and \cite{bakbouk_mean_2023}.
+    Coupled splitting is partly inspired by the approach
+    of \cite{sabelfeld_sparsified_2009}, which reduces
+    variance by using larger submatrices in unbiased sparsification
+    of matrices. The idea
+    of reusing samples for WoS is discussed in both
+    \cite{miller_boundary_2023} and \cite{bakbouk_mean_2023}.
 \end{related}
 
 Figure \ref{fig:coupled splitting}
@@ -1089,7 +1090,7 @@ the bottleneck it is possible to rely on MC convergence.
 
 \begin{related}[IBC integral equations]
     Optimal IBC is known for integral equations see \cite{heinrich_monte_nodate}
-    for the solution in $1$ point and the global solution.
+    for the solution at $1$ point and the global solution.
 \end{related}
 
 \subsection{Initial Value Problems}
