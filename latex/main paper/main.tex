@@ -25,6 +25,7 @@
 \usepackage[english]{babel}
 \usepackage{caption}
 \captionsetup{font=it}
+\usepackage[autostyle, english=american]{csquotes}
 
 \usepackage[
 backend=biber,
@@ -79,7 +80,7 @@ It may take 10 seconds to load. \\
 
 The latest paper that we found on an unbiased Initial Value Problem (IVP) solver is by
 \citeauthor{ermakov_monte_2021}'s \citeyear{ermakov_monte_2021}
-\cite{ermakov_monte_2021}  that study an unbiased method for
+\cite{ermakov_monte_2021}.  They study an unbiased method for
 a Cauchy problem for large systems of linear ODEs
 for describing queuing systems. Similarly to us, they
 base their solver on Volterra integral equations.\\
@@ -171,12 +172,12 @@ confidence intervals using Chebyshev's inequality or an
 approximate normal distribution argument.\\
 
 Average floating point operations or time per simulation are common cost statistics.
-It may be useful to consider 'at risk' (analogous to 'value at risk')
+It may be useful to consider \enquote*{at risk}  (analogous to \enquote*{value at risk})
 in terms of memory or wall time.
 
 If we limit ourselves to (\ref{eq:BLUE}) with a big sample size and
-finite variance assumption on error and simulation time.
-Simulations can be computed in parallel, making them well-suited for a GPU implementation.
+finite variance assumption on error and simulation time then
+simulations can be computed in parallel, making them well-suited for a GPU implementation.
 When these assumptions are close to optimal, they are very practical.
 In this case, there is a linear trade-off
 between average simulation time and variance which motivate
@@ -247,8 +248,7 @@ using MC, we derive the following estimator:
 \end{equation}
 
 \begin{notation}[$U$]
-    We will be using the uniform distribution very often. So
-    we abbreviate it.
+    We will frequently use the uniform distribution, so we will abbreviate it
     \begin{equation}
         U \sim \text{Uniform}(0,1).
     \end{equation}
@@ -369,7 +369,7 @@ less computationally expensive approximation sometimes.
 \end{example}
 
 \begin{related}[example \ref{ex:simple russian roulette}]
-    In example \ref{ex:simple Russian roulette}, it is also
+    In example \ref{ex:simple russian roulette}, it is also
     possible to estimate the expectations of the $2$ terms
     of $Z$ separately. Given the variances and computational costs
     of both terms, you can calculate the asymptotically optimal division
@@ -559,7 +559,7 @@ enhanced with control variates based on the trapezoidal rule.
 
 \begin{related}[proof \ref{lem:rmse mctrap}]
     A more generalizable proof for other types of control variates can
-    be constructed by applying the 'separation of the main part' technique,
+    be constructed by applying the \enquote*{separation of the main part} technique,
     as shown in lemma 4 of \cite{mathe_monte_nodate}.
 \end{related}
 
@@ -601,8 +601,7 @@ composite MC trapezoidal rule is better by $0.5$ than the normal composite trape
 The MC trapezoidal rule has on average $\frac{1}{l}$ more function calls than
 the normal trapezoidal rule. For the composite rule with $n$ intervals,
 there are $\text{Binomial}(n,\frac{1}{l})$ additional function calls
-(repeated Bernoulli experiments). So they use up to a constant the same amount
-of function calls on average. This means an advantage in IBC measured in RMSE. \\
+(repeated Bernoulli experiments).\\
 
 \begin{theorem}[RMSE Composite Trapezoidal MC Rule] \label{thrm:order trap}
     The composite trapezoidal MC rule  with $n$ intervals
@@ -614,8 +613,8 @@ of function calls on average. This means an advantage in IBC measured in RMSE. \
 
 The proof uses lemma \ref{lem:rmse mctrap},
 and is similar to the proof of the normal
-trapezoidal rule. The main difference being the
-accumulation of ''local truncation'' errors into ''global truncation'' error.
+trapezoidal rule. The main difference is the
+accumulation of \enquote{local truncation} errors into \enquote{global truncation} error.
 Normally there is a loss of one order but the MC trapezoidal loses only a half order
 because the accumulation happens in variance instead of bias.
 
@@ -642,7 +641,7 @@ A bound on the error implies a bound on the RMSE, but not vice versa.
 \subsection{Unbiased Non-Linearity}
 
 In this subsection, we present techniques for handling polynomial non-linearity.
-The backbone for this is using independent samples
+The main idea behind this is using independent samples
 $y^{2} \cong Y_{1} Y_{2}$ with $Y_{1}$ independent of $ Y_{2}$ and
 $Y_{1} \cong Y_{2} \cong y$.
 
@@ -767,7 +766,7 @@ In this subsection, we discuss recursion-related techniques.
 
 \begin{related}[coupled recursion]
     Example \ref{ex:coupled recursion} is inspired by \cite{vicini_path_2021}.
-    \cite{vicini_path_2021} propose an efficient unbiased backpropagation
+    \cite{vicini_path_2021} proposes an efficient unbiased backpropagation
     algorithm for rendering.
 \end{related}
 
@@ -937,7 +936,7 @@ To clarify Green's functions, let's look at the following example.
 \end{example}
 
 (\ref{int ydy int}) is a Fredholm integral
-equations of the second kind.
+equation of the second kind.
 
 \begin{definition}[Fredholm equation of the second kind]
     A Fredholm equation of the second kind for $\varphi$  is of the following form:
