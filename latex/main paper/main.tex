@@ -614,7 +614,7 @@ there are $\text{Binomial}(n,\frac{1}{l})$ additional function calls
 The proof uses lemma \ref{lem:rmse mctrap},
 and is similar to the proof of the normal
 trapezoidal rule. The main difference is the
-accumulation of \enquote{local truncation} errors into \enquote{global truncation} error.
+accumulation of \enquote*{local truncation} errors into \enquote*{global truncation} error.
 Normally there is a loss of one order but the MC trapezoidal loses only a half order
 because the accumulation happens in variance instead of bias.
 
@@ -1427,7 +1427,7 @@ Given infinite parallel resources, it would be reasonable to cease reducing
 variance by decreasing the step size and instead opt for splitting the final estimator.
 The only necessary communication in splitting is averaging the final
 estimator. We hypothesize that for RMC, the wall time at risk
-increases logarithmically with the size of the splitting.
+increases logarithmically with the size of the splitting. \\
 
 One of our primary interests is further investigating the estimation
 of just one component of the solution. It is unclear if this is possible.
