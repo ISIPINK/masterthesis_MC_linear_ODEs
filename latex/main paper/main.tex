@@ -670,8 +670,6 @@ $Y_{1} \cong Y_{2} \cong y$.
     \end{equation}
 
     where $S \sim \text{Uniform}(1,t)$.
-    Branching RRVEs are typical when dealing
-    with non-linearity.
 \end{example}
 
 \vspace*{0.2cm}
@@ -1310,29 +1308,24 @@ little success.
 \end{example}
 
 \begin{related}[DRRMC]
-    DRRMC is inspired by  $\bar{\sigma}$ parameter in \cite{sawhney_grid-free_2022} but
-    instead of importance sampling, we use control variates to deal with
-    nonlinearity introduced by the exponential because it needs to work over
-    an entire vector at the same time.
+    DRRMC is inspired by the $\bar{\sigma}$ parameter in \cite{sawhney_grid-free_2022}.
+    However, instead of relying on importance sampling, we employ control
+    variates to address the nonlinearity introduced by the exponential
+    function.
 \end{related}
 
 \section{Limitations and Future Work}
 
-Our goal for this thesis was to learn about and explore different Monte Carlo techniques.
-We ended up limiting the scope to unbiased linear ODE solvers. In this direction,
-there is still much obvious work to be done. \\
-
-We think that understanding and optimizing unbiased and deterministic linear ODE solvers
+We believe that understanding and optimizing unbiased and deterministic linear ODE solvers
 is the key to developing better randomized ODE/PDE solvers.
 Randomized ODE/PDE solvers are useful for cases with little structure
 where the advantage of IBC is significant or in the case of a linear trade-off
 between cost and variance is close to optimal. \\
 
 
-Besides that, it is sometimes convenient to have low-bias access to solutions of
-ODEs. For example, when integrating over a high dimensional parametric ODE problem
-we would need unbiased solutions to do MC integration. The following example is
-a toy problem where unbiased estimates are convenient.
+Besides that, some problems require access to low-bias solutions of
+ODEs. For example, when integrating a high-dimensional parametric ODE problem.
+The following example is a toy problem to showcase this.
 
 \begin{example} \label{ex:random ode}
     Consider the following parametric IVP:
@@ -1355,8 +1348,7 @@ a toy problem where unbiased estimates are convenient.
     \end{align}
 
     To estimate $E[f(E[Y(t,u)]) \mid U =u]$, we use the approach outlined in
-    example \ref{ex:exp int}. For this example,
-    we can compute the first two moments of $y(t, U)$:
+    example \ref{ex:exp int}. The first two moments of $y(t, U)$ are:
     \begin{align}
         E[y(t,U)]      & = \frac{e^t}{t} - \frac{1}{t},      \\
         E[y^{2}(t, U)] & = \frac{e^{2t}}{2t} - \frac{1}{2t}.
@@ -1369,11 +1361,9 @@ a toy problem where unbiased estimates are convenient.
 
 \vspace{0.5cm}
 
-While writing this thesis, we came up with a better way to sample the time process.
-The time process we used is based on example \ref{ex: russian roulette}.
-There are a few ways to generalize that example for example using a linear function
-instead of an exponential. An issue is the lack of control over the stationary
-distribution of the time process see Figure \ref{fig:russian roulette}.
+The time process we used based on example \ref{ex: russian roulette}
+has little control over the distribution of recursion calls $(t,Y(t))$
+in time see Figure \ref{fig:russian roulette}.
 
 \begin{figure}[h!]
     \centering
@@ -1384,65 +1374,71 @@ distribution of the time process see Figure \ref{fig:russian roulette}.
     \label{fig:time proces}
 \end{figure}
 
-What we have in mind is using a Poisson point process
-that samples forwardly with the corresponding exponential distribution and
-Russian roulettes when out of range. This way the stationary distribution
-is controlled by the intensity of the Poisson process and the amount
-of recursion calls (for constant intensity) are Poisson distributed.\\
+Instead of that, a Poisson point process can be used.
+It samples backward with the corresponding
+exponential distribution and employs Russian roulette
+when out of range. The distribution can be controlled by the intensity.
+In the case of constant intensity, the number of recursive calls
+follows a Poisson distribution.
 
-Besides the time process, the following could be developed: the way control
-variates are constructed, the type of control variates, adaptive schemes,
-freezing less important terms in the recursion in recursion or Russian rouletting
+Besides the time process, other areas of development could
+include the cheaper construction of control variates,
+different types of control variates, adaptive schemes,
+freezing less important terms in the inner recursion or Russian rouletting
 them into reasonable approximations, error estimates based on variance in the
 inner recursion, etc. \\
 
-To deal with stiff problems in an unbiased way we would bet on exponential integrators
-type of methods. The biggest obstacle to implementing them like diagonal RRMC is getting
-unbiased estimates of $e^{A(t-s)} y(s)$ type of expressions. In the case
-of a big matrix $A$ we think it would be important use unbiased sparsifaction
+To handle stiff problems we weigh towards exponential integrators
+type of methods. The biggest obstacle to implementing them similar to diagonal RRMC
+is getting unbiased estimates of $e^{A(t-s)} y(s)$ type of expressions. In the case
+of a big matrix $A$  unbiased sparsifaction will probably be useful
 see \cite{sabelfeld_sparsified_2009}.
-Initially, we came
-up with example \ref{ex:exp int} but some time later we found
-the paper from NVIDIA \cite{kettunen_unbiased_2021} that optimizes that example.
-Closely related to this is directly estimating the Magnus expansion
-where expressions like $e^{\int_{0}^{\Delta t} A(s)ds}  y(0)$ are needed. In this
-case \cite{kettunen_unbiased_2021} doesn't address using the smoothness
-of $A(s)$ which is needed for optimal IBC. \\
+Initially, we came up with example \ref{ex:exp int}, but some time later,
+we found the paper from NVIDIA \cite{kettunen_unbiased_2021} that optimizes
+that example. Closely related to this is directly estimating the Magnus expansion,
+where expressions like $e^{\int_{0}^{\Delta t} A(s)ds} y(0)$ are needed.
+In this case, \cite{kettunen_unbiased_2021} doesn't utilize the smoothness of
+$A(s)$, which is necessary
+for optimal IBC.
 
-One of the elements that is lacking in our findings is rigor.  We think
-that RMC for IVPs is an informal way to think of an unbiased estimate of
-the Von Neumann series to the corresponding Volterra integral equation.
-\cite{ermakov_monte_2021} has theorems (Theorem $1$ and $2$) that these
-estimates have finite variance and even an expression for it.
-Before being aware of \cite{ermakov_monte_2021} we
-also derived a similar expression (probably with mistakes)
-by using the law of total variance similar to (16) in \cite{rath_ears_2022}.\\
-We think that proving optimal IBC for control variates + RRMC is doable
-but tedious. \cite{daun_randomized_2011} has a proof for optimal IBC for their algorithm
-in the biased non-linear case. The proof we have in mind is using a lower-bound on IBC
-from integration and proving it gets achieved.\\
+One of the elements lacking in our findings is rigor.  We believe
+that RMC is an informal approach to an unbiased estimate of
+the Von Neumann series to the corresponding integral equation.
+\cite{ermakov_monte_2021} presents theorems ($1$ and $2$) to
+show that their estimates have finite variance and provide an expression for it.
+Before becoming aware of \cite{ermakov_monte_2021}, we
+previously derived a similar expression (with errors)
+by employing the law of total variance, similar to (16) in \cite{rath_ears_2022}. \\
+We believe that proving the optimality of IBC in example \ref{ex:CV RRMC IVP} is feasible
+but tedious.
+\cite{daun_randomized_2011} presented a proof for optimal IBC for their algorithm.
+The proof we have in mind is using a lower bound on IBC
+from integration and proving it is attained.\\
 
-Optimal IBC isn't everything. Optimal IBC doesn't mean optimized. An algorithm that
-uses $1000$ times more function calls has the same IBC. Besides that, the computational goal
-may not fit well in the framework of IBC. We really like
-\cite{becker_learning_2022} which uses deep learning to go outside
-the IBC framework, the focus is more on multiple fast inferences where
-a big precomputation is allowed.
-IBC also doesn't take into account how
-parallel computations are. Given infinite parallel resources it would make sense
-to stop decreasing variance by reducing the step size and splitting the final estimator.
-All the communication that is needed then is averaging the final estimator. We conjecture
-that in such an estimator the wall time at risk would increase logarithmically with splitting
-size.  \\
+Optimal IBC isn't everything. Being optimal in IBC doesn't necessarily mean it's optimized.
+An algorithm that uses $1000$ times more function calls may still have the same
+IBC. Additionally, the computational goal
+might not align well with the IBC framework.
+We admire \cite{becker_learning_2022},
+which employs deep learning to extend beyond the IBC framework.
+The emphasis here is on performing multiple rapid solves (inferences)
+while allowing for an expensive precomputation (training).
+IBC also doesn't take into account the parallel nature of computations.
+Given infinite parallel resources, it would be reasonable to cease reducing
+variance by decreasing the step size and instead opt for splitting the final estimator.
+The only necessary communication in splitting is averaging the final
+estimator. We hypothesize that for RMC, the wall time at risk
+increases logarithmically with the size of the splitting.
 
-Another topic that could be investigated is only estimating $1$ component of the solution.
-It is not obvious if this is always possible but due to the Feynman-Kac formula,
-it seems possible for a space discretization of the heat equation.
-We made the following informal partial derivation for the Feynman-Kac formula
-in the case heat equation
-to understand why and what makes point estimators possible.
+One of our primary interests is further investigating the estimation
+of just one component of the solution. It is unclear if this is possible.
+However, due to the Feynman-Kac formula, it is possible for a spatial
+discretization of the heat equation. To gain insight into the conditions under
+which point estimators are viable, we conducted an informal partial
+derivation of a point estimator for the heat equation.\\
 
-Discretize the heat equation ($u_{t} = u_{xx}$)
+
+Begin by discretizing the heat equation ($u_{t} = u_{xx}$)
 with a regular rectangular mesh that includes $(x,t)$ with equally
 spaced intervals over space and time ($\Delta x, \Delta t$) with
 the corresponding difference equation:
@@ -1466,9 +1462,10 @@ Isolate $u(x,t)$:
 \end{equation}
 
 Now comes the essential step in the derivation.
-Because $u(x+\Delta x,t) \approx u(x-\Delta x,t) \approx u(x,t-\Delta t) \approx$
-right-hand side of (\ref{eq:discrete iso heat equation}) we may Russian roulette
-to remove branching recursion and generate a recursion path instead of a tree.
+Since $u(x+\Delta x,t) \approx u(x-\Delta x,t) \approx u(x,t-\Delta t) \approx$
+the right-hand side of (\ref{eq:discrete iso heat equation}) we may Russian roulette
+to remove branching recursion without adding a significant amount of variance.
+
 \begin{equation} \label{eq:RRVE discrete heat equation }
     Z(x,t) =
     \begin{cases}
@@ -1482,7 +1479,7 @@ Taking the limit
 makes the discrete solution converge to the real solution.
 For (\ref{eq:RRVE discrete heat equation }) the limit
 makes the recursion path go to Brownian motion. We won't treat
-how to stop the recursion with boundary conditions.
+the termination of the recursion with the boundary conditions.
 
 
 \newpage
