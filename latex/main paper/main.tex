@@ -81,9 +81,8 @@ It may take 10 seconds to load. \\
 The latest paper that we found on an unbiased Initial Value Problem (IVP) solver is by
 \citeauthor{ermakov_monte_2021}'s \citeyear{ermakov_monte_2021}
 \cite{ermakov_monte_2021}.  They study an unbiased method for
-a Cauchy problem for large systems of linear ODEs
-for describing queuing systems. Similarly to us, they
-base their solver on Volterra integral equations.\\
+a Cauchy problem for large systems of linear ODEs.
+Similarly to us, they base their solver on Volterra integral equations.\\
 
 Other literature is a bit further away.
 The most important fields we draw from are:
@@ -117,10 +116,9 @@ informally introducing Recursive Monte Carlo (RMC)
 and applying variance reduction techniques for ODEs. \\
 
 The key contribution is an unbiased MC method
-see example \ref{ex:CV RRMC IVP} for
-linear IVPs for systems of ODEs by using recursion in recursion
+for linear IVPs see example \ref{ex:CV RRMC IVP}
+by using recursion in recursion
 and variance reduction techniques.
-We conjecture that this method achieves optimal IBC.
 
 \section{Background}
 
@@ -133,15 +131,15 @@ In this subsection, we review basic MC theory. \\
 \end{notation}
 
 
-
-MC integration is any way to use random sampling to estimate an integral.
+MC integration is any method that involves random sampling to
+estimate an integral.
 \begin{definition}[Uniform Monte Carlo Integration]
     We define uniform MC integration of
     $f:\mathbb{R}^{n} \rightarrow \mathbb{R}^{m}$
     over $\Omega \subset \mathbb{R}^{n}$ as
-    an estimation of the average of $f(S)$, with
+    an estimation of the expected value of $f(S)$, with
     $S \sim \text{Uniform}(\Omega)$. Combined
-    with the Best Linear Unbiased Estimators (BLUEs) for the average, MC Integration
+    with the Best Linear Unbiased Estimators (BLUEs), MC Integration
     in that case, can be summarized in the following formula:
     \begin{equation}\label{eq:BLUE}
         \int_{\Omega} f(s)ds \approx \frac{1}{n} \sum_{i=1}^{n}f(S_{j}),
@@ -172,13 +170,14 @@ confidence intervals using Chebyshev's inequality or an
 approximate normal distribution argument.\\
 
 Average floating point operations or time per simulation are common cost statistics.
-It may be useful to consider \enquote*{at risk}  (analogous to \enquote*{value at risk})
+It may also be useful to consider \enquote*{at risk}  (analogous to \enquote*{value at risk})
 in terms of memory or wall time.
 
 If we limit ourselves to (\ref{eq:BLUE}) with a big sample size and
-finite variance assumption on error and simulation time then
+finite variance assumption on error and simulation time,
 simulations can be computed in parallel, making them well-suited for a GPU implementation.
-When these assumptions are close to optimal, they are very practical.
+These assumptions are useful for establishing a baseline and
+when they are close to being optimal, they become highly practical.
 In this case, there is a linear trade-off
 between average simulation time and variance which motivate
 the definition of MC efficiency for comparing estimators.
@@ -240,12 +239,6 @@ By integrating both sides of (\ref{ydy}), we obtain:
 
 (\ref{Integral ydy}) represents a recursive integral equation,
 specifically, a linear Volterra integral equation of the second type.
-By estimating the recursive integral in (\ref{Integral ydy})
-using MC, we derive the following estimator:
-
-\begin{equation}
-    Y(t) = 1 + t  y(Ut).
-\end{equation}
 
 \begin{notation}[$U$]
     We will frequently use the uniform distribution, so we will abbreviate it
@@ -253,6 +246,14 @@ using MC, we derive the following estimator:
         U \sim \text{Uniform}(0,1).
     \end{equation}
 \end{notation}
+
+By estimating the recursive integral in (\ref{Integral ydy})
+using MC, we derive the following estimator:
+
+\begin{equation}
+    Y(t) = 1 + t  y(Ut).
+\end{equation}
+
 
 If $y$ is well-behaved, then $E[Y(t)] = y(t)$.
 However, we cannot directly simulate $Y(t)$ without access
@@ -277,7 +278,7 @@ Equation (RRVE).
 \end{definition}
 
 If one were to try to simulate $Y$ with (\ref{recursive RV}),
-it would recurse indefinitely (for every $Y$ needs to sample another $Y$).
+it would recurse indefinitely (every $Y$ needs to sample another $Y$).
 To stop the recursion, approximate
 $Y(t) \approx 1$ near $t = 0$ introducing minimal bias.
 Later, we will discuss Russian roulette; see definition \ref{Russian roulette},
@@ -402,7 +403,7 @@ less computationally expensive approximation sometimes.
     \pythoncode{python code/RR_ydy.py}
     Interestingly, $\forall t \le 1:Y(t)$ is the number of recursion calls
     to sample $Y(t)$ such that the average number of recursion
-    calls equals $e^{t}$.
+    calls to sample $Y(t)$ equals $e^{t}$.
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/russian roulette example.png}
@@ -460,7 +461,7 @@ additive branching recursion in RRVEs (see example \ref{ex:coupled splitting}).
     \end{equation}
 
     Note that control variating requires the evaluation of
-    $E[\tilde{f}(X)]$. When this is estimated we refer to it as $2$-level MC.
+    $E[\tilde{f}(X)]$. When this is estimated instead, we refer to it as $2$-level MC.
 \end{definition}
 
 
@@ -814,7 +815,8 @@ Tail recursion is not always desirable as it discards intermediate values
 of the recursive calls and can increase computational costs. To retain
 some of these intermediate values, it is possible to use tail recursion partially.
 In the example shown in \ref{py:tail recursion couple}, it would be more efficient
-to avoid matrix multiplication on line 7. An alternative to tail recursion is implementing
+to avoid matrix multiplication on line 7. This efficiency concern becomes
+worse with larger matrix multiplications. An alternative to tail recursion is implementing
 the recursion with a stack.
 
 \begin{pythonn}[stack recursion on (\ref{coupled mat})] \label{py:stack recursion couple}
@@ -835,7 +837,7 @@ the recursion with a stack.
 In this subsection, we discuss how to transform ODEs into integral equations and
 subsequently solve them. Our main tool for this is Green's functions. \\
 
-Roughly speaking, a Green's function is a type of kernel function used
+A Green's function is a type of kernel function used
 for solving linear problems with linear conditions. In this context,
 Green's functions are analogous to homogeneous and particular solutions
 to a specific problem, which are combined through integration to solve
@@ -1077,7 +1079,7 @@ of the stochastic approximation of the operator is reached
 (the approximate operator bottleneck). The approximation of the operator
 can be improved by increasing the coupled splitting amount when
 approaching the bottleneck. Alternatively when reaching
-the bottleneck it is possible to rely on MC convergence.
+the bottleneck it is possible to rely on splitting to convergence.
 
 \begin{related}[convergence coupled splitting]
     See \cite{gupta_convergence_2021} for a discussion on the convergence
@@ -1188,7 +1190,7 @@ We can improve RRMC with control variates.
              & \approx y(t_{n}) + (s-t_{n})f(y(t_{n}),t_{n})            \\
              & \approx y(t_{n}) +
         (s-t_{n})\left(\frac{y(t_{n})-y(t_{n-1})}{t_{n}-t_{n-1}}\right) \\
-             & \approx y(t_{n})(1+s-t_{n}). \label{eq:CVCV RRMC }
+             & \approx y(t_{n})(1+s-t_{n}). \label{eq:CVCV RRMC}
     \end{align}
 
     Using (\ref{eq:CVCV RRMC}) as a control variate for the integral:
@@ -1318,7 +1320,7 @@ little success.
 We believe that understanding and optimizing unbiased and deterministic linear ODE solvers
 is the key to developing better randomized ODE/PDE solvers.
 Randomized ODE/PDE solvers are useful for cases with little structure
-where the advantage of IBC is significant or in the case of a linear trade-off
+where the advantage of IBC is significant or where the linear trade-off
 between cost and variance is close to optimal. \\
 
 
@@ -1376,9 +1378,10 @@ in time see Figure \ref{fig:russian roulette}.
 Instead of that, a Poisson point process can be used.
 It samples backward with the corresponding
 exponential distribution and employs Russian roulette
-when out of range. The distribution can be controlled by the intensity.
+when out of range. The distribution of the recursion calls over time
+can be controlled by its intensity.
 In the case of constant intensity, the number of recursive calls
-follows a Poisson distribution.
+follows a Poisson distribution. \\
 
 Besides the time process, other areas of development could
 include the cheaper construction of control variates,
