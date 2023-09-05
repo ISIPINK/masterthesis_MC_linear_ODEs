@@ -116,7 +116,7 @@ informally introducing Recursive Monte Carlo (RMC)
 and applying variance reduction techniques for ODEs. \\
 
 The key contribution is an unbiased MC method
-for linear IVPs see example \ref{ex:CV RRMC IVP}
+for linear IVPs see Example \ref{ex:CV RRMC IVP}
 by using recursion in recursion
 and variance reduction techniques.
 
@@ -369,8 +369,8 @@ less computationally expensive approximation sometimes.
     the MC efficiency.\\
 \end{example}
 
-\begin{related}[example \ref{ex:simple russian roulette}]
-    In example \ref{ex:simple russian roulette}, it is also
+\begin{related}[Example \ref{ex:simple russian roulette}]
+    In Example \ref{ex:simple russian roulette}, it is also
     possible to estimate the expectations of the $2$ terms
     of $Z$ separately. Given the variances and computational costs
     of both terms, you can calculate the asymptotically optimal division
@@ -431,7 +431,7 @@ necessitating cautious management of terminating the branches promptly to preven
 exponential growth in computational complexity. To accomplish this, termination
 strategies that have been previously discussed can be employed. Subsequently,
 we will explore the utilization of coupled recursion as a technique to mitigate
-additive branching recursion in RRVEs (see example \ref{ex:coupled splitting}).
+additive branching recursion in RRVEs (see Example \ref{ex:coupled splitting}).
 
 \begin{example}[splitting on (\ref{eq:rr example})] \label{ex:splitting}
     We can "split" the recursive term of (\ref{eq:rr example})
@@ -481,7 +481,7 @@ additive branching recursion in RRVEs (see example \ref{ex:coupled splitting}).
 \end{example}
 
 \vspace*{0.2cm}
-\begin{pythonn}[implementation of example \ref{ex:CV}]
+\begin{pythonn}[implementation of Example \ref{ex:CV}]
     \pythoncode{python code/CVRR_ydy.py}
 \end{pythonn}
 
@@ -673,7 +673,7 @@ $Y_{1} \cong Y_{2} \cong y$.
 \end{example}
 
 \vspace*{0.2cm}
-\begin{pythonn}[implementation of example \ref{ex:nonlinear example}]\label{py:nonlinear example}
+\begin{pythonn}[implementation of Example \ref{ex:nonlinear example}]\label{py:nonlinear example}
     \pythoncode{python code/dyy2.py}
     In this implementation $Y(t)$ only takes values $\{-1,0\}$.
 \end{pythonn}
@@ -710,8 +710,8 @@ $Y_{1} \cong Y_{2} \cong y$.
     with probability $1$.
 \end{example}
 
-\begin{related}[example \ref{ex:exp int}]
-    NVIDIA has a great paper on optimizing example \ref{ex:exp int}
+\begin{related}[Example \ref{ex:exp int}]
+    NVIDIA has a great paper on optimizing Example \ref{ex:exp int}
     \cite{kettunen_unbiased_2021}.
 \end{related}
 
@@ -814,7 +814,7 @@ of all operations ($(xy)z = x(yz)$) involved.
 Tail recursion is not always desirable as it discards intermediate values
 of the recursive calls and can increase computational costs. To retain
 some of these intermediate values, it is possible to use tail recursion partially.
-In the example shown in \ref{py:tail recursion couple}, it would be more efficient
+In the example shown in Code \ref{py:tail recursion couple}, it would be more efficient
 to avoid matrix multiplication on line 7. This efficiency concern becomes
 worse with larger matrix multiplications. An alternative to tail recursion is implementing
 the recursion with a stack.
@@ -995,11 +995,11 @@ and uniqueness of solutions using a fixed-point argument.
     \label{fig:mainD explosion}
 \end{figure}
 
-Coupled splitting is one of the ideas we tested on example \ref{main dirichlet}.
+Coupled splitting is one of the ideas we tested on Example \ref{main dirichlet}.
 Coupled splitting removes the additive branching of splitting by coupling (reusing)
 samples.
 
-\begin{example}[coupled splitting on example \ref{main dirichlet}] \label{ex:coupled splitting}
+\begin{example}[coupled splitting on Example \ref{main dirichlet}] \label{ex:coupled splitting}
     In addition to normal splitting (see definition \ref{def:splitting}),
     we can also split the domain in (\ref{inteq:main dirichlet})
     as follows:
@@ -1136,7 +1136,7 @@ this behavior.
     recursion.
 \end{example}
 
-\begin{pythonn}[implementation of example \ref{ex:RRMC IVP}] \label{py:RRMC IVP}
+\begin{pythonn}[implementation of Example \ref{ex:RRMC IVP}] \label{py:RRMC IVP}
     \pythoncode{python code/RRMC_IVP.py}
 
     \begin{figure}[h!]
@@ -1148,10 +1148,10 @@ this behavior.
     \end{figure}
 \end{pythonn}
 
-The measured RMSE of $Y(t)$ estimating $y(t)$ in example
+The measured RMSE of $Y(t)$ estimating $y(t)$ in Example
 \ref{ex:RRMC IVP} is of the order $O\left(h^{1.5} \right)$, where $h$ represents
 the step size.
-We used a scaled version of the time process from example \ref{ex: russian roulette}
+We used a scaled version of the time process from Example \ref{ex: russian roulette}
 for the inner recursion, such that the average number of total inner recursion calls
 is $e n$, where $n$ represents the total number of outer recursion calls.
 
@@ -1176,7 +1176,7 @@ is $e n$, where $n$ represents the total number of outer recursion calls.
 
 We can improve RRMC with control variates.
 \begin{example}[CV RRMC $y_t=y$]\label{ex:CV RRMC IVP}
-    Let us control variate example \ref{ex:RRMC IVP}.
+    Let us control variate Example \ref{ex:RRMC IVP}.
 
     \begin{equation}
         y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , \quad t>t_{n}.
@@ -1209,7 +1209,7 @@ We can improve RRMC with control variates.
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/CV RRMC IVP.png}
-        \caption{Log-log plot of the error for example
+        \caption{Log-log plot of the error for Example
             \ref{ex:CV RRMC IVP} at $Y(10)$.}
         \label{fig:CV RRMC IVP}
     \end{figure}
@@ -1300,7 +1300,7 @@ little success.
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/DRRMC.png}
-        \caption{Log-log plot of the error of example \ref{ex:DRRMC}.
+        \caption{Log-log plot of the error of Example \ref{ex:DRRMC}.
             We plotted the second component of the error transparent.
         }
         \label{fig:DRRMC}
@@ -1349,20 +1349,20 @@ The following example is a toy problem to showcase this.
     \end{align}
 
     To estimate $E[f(E[Y(t,u)]) \mid U =u]$, we use the approach outlined in
-    example \ref{ex:exp int}. The first two moments of $y(t, U)$ are:
+    Example \ref{ex:exp int}. The first two moments of $y(t, U)$ are:
     \begin{align}
         E[y(t,U)]      & = \frac{e^t}{t} - \frac{1}{t},      \\
         E[y^{2}(t, U)] & = \frac{e^{2t}}{2t} - \frac{1}{2t}.
     \end{align}
 \end{example}
 
-\begin{pythonn}[implementation of example \ref{ex:random ode}]
+\begin{pythonn}[implementation of Example \ref{ex:random ode}]
     \pythoncode{python code/random_ODE.py}
 \end{pythonn}
 
 \vspace{0.5cm}
 
-The time process we used based on example \ref{ex: russian roulette}
+The time process we used based on Example \ref{ex: russian roulette}
 has little control over the distribution of recursion calls $(t,Y(t))$
 in time see Figure \ref{fig:russian roulette}.
 
@@ -1395,7 +1395,7 @@ type of methods. The biggest obstacle to implementing them similar to diagonal R
 is getting unbiased estimates of $e^{A(t-s)} y(s)$ type of expressions. In the case
 of a big matrix $A$  unbiased sparsifaction will probably be useful
 see \cite{sabelfeld_sparsified_2009}.
-Initially, we came up with example \ref{ex:exp int}, but some time later,
+Initially, we came up with Example \ref{ex:exp int}, but some time later,
 we found the paper from NVIDIA \cite{kettunen_unbiased_2021} that optimizes
 that example. Closely related to this is directly estimating the Magnus expansion,
 where expressions like $e^{\int_{0}^{\Delta t} A(s)ds} y(0)$ are needed.
@@ -1411,7 +1411,7 @@ show that their estimates have finite variance and provide an expression for it.
 Before becoming aware of \cite{ermakov_monte_2021}, we
 previously derived a similar expression (with errors)
 by employing the law of total variance, similar to (16) in \cite{rath_ears_2022}. \\
-We believe that proving the optimality of IBC in example \ref{ex:CV RRMC IVP} is feasible
+We believe that proving the optimality of IBC in Example \ref{ex:CV RRMC IVP} is feasible
 but tedious.
 \cite{daun_randomized_2011} presented a proof for optimal IBC for their algorithm.
 The proof we have in mind is using a lower bound on IBC
