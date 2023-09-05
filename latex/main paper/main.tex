@@ -197,7 +197,7 @@ the definition of MC efficiency for comparing estimators.
 
 For smooth $1$ dimensional integration, the linear trade-off between
 variance and average simulation time is not even close to optimal see
-theorem \ref{thrm:order trap}. \\
+Theorem \ref{thrm:order trap}. \\
 When it comes to comparing better trade-offs,
 Information-Based Complexity (IBC) is often employed.
 It's worth mentioning that IBC primarily serves as a
@@ -281,7 +281,7 @@ If one were to try to simulate $Y$ with (\ref{recursive RV}),
 it would recurse indefinitely (every $Y$ needs to sample another $Y$).
 To stop the recursion, approximate
 $Y(t) \approx 1$ near $t = 0$ introducing minimal bias.
-Later, we will discuss Russian roulette; see definition \ref{Russian roulette},
+Later, we will discuss Russian roulette; see Definition \ref{Russian roulette},
 which can be used as an unbiased stopping mechanism.
 
 \vspace*{0.2cm}
@@ -558,10 +558,10 @@ enhanced with control variates based on the trapezoidal rule.
     Note that the proof doesn't rely on Russian roulette ($l=1$).
 \end{proof}
 
-\begin{related}[proof \ref{lem:rmse mctrap}]
+\begin{related}[proof of Lemma \ref{lem:rmse mctrap}]
     A more generalizable proof for other types of control variates can
     be constructed by applying the \enquote*{separation of the main part} technique,
-    as shown in lemma 4 of \cite{mathe_monte_nodate}.
+    as shown in Lemma 4 of \cite{mathe_monte_nodate}.
 \end{related}
 
 
@@ -612,7 +612,7 @@ there are $\text{Binomial}(n,\frac{1}{l})$ additional function calls
     \end{equation}
 \end{theorem}
 
-The proof uses lemma \ref{lem:rmse mctrap},
+The proof uses Lemma \ref{lem:rmse mctrap},
 and is similar to the proof of the normal
 trapezoidal rule. The main difference is the
 accumulation of \enquote*{local truncation} errors into \enquote*{global truncation} error.
@@ -1406,7 +1406,7 @@ for optimal IBC.
 One of the elements lacking in our findings is rigor.  We believe
 that RMC is an informal approach to an unbiased estimate of
 the Von Neumann series to the corresponding integral equation.
-\cite{ermakov_monte_2021} presents theorems ($1$ and $2$) to
+\cite{ermakov_monte_2021} presents Theorems $1$ and $2$ to
 show that their estimates have finite variance and provide an expression for it.
 Before becoming aware of \cite{ermakov_monte_2021}, we
 previously derived a similar expression (with errors)
