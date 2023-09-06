@@ -1481,7 +1481,69 @@ Taking the limit
 makes the discrete solution converge to the real solution.
 For (\ref{eq:RRVE discrete heat equation }) the limit
 makes the recursion path go to Brownian motion. We won't treat
-the termination of the recursion with the boundary conditions.
+the termination of the recursion with the boundary conditions. \\
+
+We also attempted to generalize this argument to the wave equation ($u_{tt} = u_{xx}$)
+given initial conditions ($u(x,0), u_{t}(x,0)$).
+Here is a sketch of our best attempt:\\
+
+Again start by discretizing but only space resulting in the following
+system of ODEs:
+
+\begin{align}
+    u_{tt}(x,t)                                 & = \frac{u(x + \Delta x,t)-2 u(x,t) +u(x - \Delta x,t)}{\Delta x^{2}} + O(\Delta x) \Leftrightarrow \\
+    u_{tt}(x,t) + \frac{2}{\Delta x^{2}} u(x,t) & = \frac{u(x + \Delta x,t)+u(x - \Delta x,t)}{\Delta x^{2}} + O(\Delta x)  \label{eq: dis wave1}
+\end{align}
+
+We believe that Green's functions of LHS of (\ref{eq: dis wave1}) have bad behavior. We adjust the
+Green's functions by adding the following equation to (\ref{eq: dis wave1}):
+
+\begin{equation}
+    \frac{2\sqrt{2}}{\Delta x} u_t(x,t) = \sqrt{2} \frac{u_t(x + \Delta x,t) + u_t(x - \Delta x,t)}{\Delta x} + O(\Delta x) .
+\end{equation}
+
+To simplify notation introduce $q = \frac{\sqrt{2}}{\Delta x}$.
+Using Green's functions we derive the following integral equation:
+
+\begin{align} \label{eq: int dis wave}
+    u(x,t) & = (qt +1)e^{-q t} u(x,0) + t e^{-qt} u_t(x,0)
+    + \int_{0}^{t} (t-s) e^{q(s-t)}                                       \\
+           & \left[ \frac{q^{2}}{2} (u(x+\Delta x,s) + u(x -\Delta x,s) )
+    + q (u_t(x+\Delta x,s) + u_t(x -\Delta x,s) ) \right]ds \nonumber
+\end{align}
+
+An integral equation for $u_t(x,t)$ can be derived from (\ref{eq: int dis wave})
+by differentiating with respect to time.
+
+\begin{align} \label{eq: tint dis wave}
+    u_t(x,t) & = -q^{2}t e^{-qt} u(x,0) + (1-t q) e^{-qt} u_t(x,0) + \int_{0}^{t}(1-qt+qs)e^{q(s-t)} \\
+             & \left[ \frac{q^{2}}{2} (u(x+\Delta x,s) + u(x -\Delta x,s) )
+    + q (u_t(x+\Delta x,s) + u_t(x -\Delta x,s) ) \right]ds \nonumber
+\end{align}
+
+Combine (\ref{eq: int dis wave}) and (\ref{eq: tint dis wave}) into one integral equation:
+\begin{equation}
+    \begin{bmatrix}
+        u(x,t) \\
+        u_t(x,t)
+    \end{bmatrix}
+    = z(x,t)= P(t) z(x,0) + \int_{0}^{t} G(t,s) (z(x+\Delta x,s)+z(x-\Delta x,s))ds,
+\end{equation}
+where
+$P(t) =
+    \begin{bmatrix}
+        qt+1   & t      \\
+        -q^2 t & (1-qt)
+    \end{bmatrix} e^{-qt}$
+and
+$G(t,s) =
+    \begin{bmatrix}
+        \frac{(t-s)q^{2}}{2}     & (t-s)q     \\
+        \frac{(1-qt+qs)q^{2}}{2} & (1-qt+qs)q
+    \end{bmatrix} e^{q(s-t)}$.
+
+
+
 
 
 \newpage
