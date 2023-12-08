@@ -3,5 +3,17 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.autopep8"
   },
-  "python.formatting.provider": "none"
+  "python.formatting.provider": "none",
+  "grammarly.selectors": [
+    {
+      "language": "latex",
+      "scheme": "file",
+      "pattern": "latex/main paper/main.tex"
+    },
+    {
+      "language": "latex",
+      "scheme": "file",
+      "pattern": "latex/main paper/english_abstract.tex"
+    }
+  ]
 }
