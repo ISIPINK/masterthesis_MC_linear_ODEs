@@ -1,0 +1,69 @@
+Here is a revised version of the subsections on Green's functions and Fredholm integral equations:
+
+\subsection{Green's Functions}
+
+Green's functions provide a powerful tool for converting linear differential equations into integral equations. Informally, the Green's function $G(x,s)$ represents the impulse response of a linear differential operator $L$ - it satisfies $LG(x,s) = \delta(s-x)$, where $\delta$ is the Dirac delta function.
+
+By the superposition principle, solutions to inhomogeneous equations of the form $Lu(x) = f(x)$ can be constructed by convolving the source term $f$ with the Green's function:
+
+\begin{equation}
+    u(x) = \int G(x,s) f(s) ds
+\end{equation}
+
+Thus, finding the Green's function allows us to transform linear differential equations into tractable integral equations.
+
+Below we provide some examples of constructing Green's functions for simple ODEs:
+
+\begin{example}[$y' = y$ with average condition]
+    The Green's function satisfying $G' = \delta(x-t)$ and $\int_0^1 G(s,x)ds = 0$ is:
+
+    \begin{equation}
+        G(t,x) = H(t-x) + x - 1
+    \end{equation}
+
+    Where $H$ is the Heaviside step function. This Green's function allows us to construct the integral equation:
+
+    \begin{equation}
+        y(t) = e - 1 + \int_0^1 G(t,s) y(s) ds
+    \end{equation}
+
+\end{example}
+
+\begin{example}[$y''=y$ with Dirichlet conditions]
+    The Green's function satisfying $G'' = \delta(x-t)$ and $G(0) = G(1) = 0$ is:
+
+    \begin{equation}
+        G(t,s) = \begin{cases}
+            -\frac{(1-t)(s)}{1-0} & s < t \
+            -\frac{(1-s)(t)}{1-0} & t < s
+        \end{cases}
+    \end{equation}
+
+    This allows us to write the integral equation:
+
+    \begin{equation}
+        y(t) = \int_0^1 G(t,s) y(s) ds
+    \end{equation}
+
+\end{example}
+
+Green's functions transform linear ODEs into integral equations, enabling powerful techniques like Monte Carlo integration. However, computing the Green's function can be challenging for complex operators.
+
+\subsection{Fredholm Integral Equations}
+
+Many of the integral equations derived via Green's functions are Fredholm integral equations of the second kind:
+
+\begin{equation}
+    \varphi(t) = f(t) + \lambda \int_a^b K(t,s) \varphi(s) ds
+\end{equation}
+
+These equations can be solved numerically using techniques like Monte Carlo integration. An advanced method we introduce is \emph{coupled splitting}, which reduces variance by reusing samples.
+
+For example, we can split the domain of the integral into two halves:
+
+\begin{align}
+    \varphi(t) & = f(t) + \frac{\lambda}{2}\int_a^b K(t,s)\varphi(s)ds + \frac{\lambda}{2}\int_a^b K(t,s)\varphi(s)ds \
+               & = f(t) + \frac{\lambda}{2}\int_a^{(a+b)/2} K(t,s)\varphi(s)ds +  \frac{\lambda}{2}\int_{(a+b)/2}^b K(t,s)\varphi(s)ds
+\end{align}
+
+This allows us to construct a coupled Monte Carlo algorithm that reuses the same samples $S_1,S_2$ in each half-domain integral. Coupled splitting can accelerate convergence for some Fredholm equations. Further research is needed to fully characterize when it is most effective.
