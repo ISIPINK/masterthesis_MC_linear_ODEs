@@ -27,6 +27,10 @@
 \captionsetup{font=it}
 \usepackage[autostyle, english=american]{csquotes}
 
+\usepackage{xcolor}
+\definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0}
+
+
 \usepackage[
 backend=biber,
 style=alphabetic,
@@ -1314,6 +1318,409 @@ little success.
     variates to address the nonlinearity introduced by the exponential
     function.
 \end{related}
+
+\section{Brownian Motion}
+
+\textcolor{darkgreen}{
+    We conjecture that we could use RRMC from the previous section
+    to solve the heat equation and derive (discrete) next-flight walk on spheres.
+} \\
+
+% TODO: Rewrite this section later
+Current RMC algorithms for PDEs are related to Brownian motion. In this section,
+we explore the relationship between the heat equation and Brownian motion,
+and discuss how recursive first-passage sampling fits into the picture.
+
+% \begin{definition}[Brownian motion]
+%     Define Brownian motion $W_{t}$ as the limit/logical generalization
+%     when $n \rightarrow \infty$ of the following discrete process is defined as:
+%     \begin{equation}
+%         \begin{cases}
+%             X_{t}^{n} = X_{t-\frac{1}{n}}^{n} + Z_{n} \\
+%             X^{n}_{0}=0
+%         \end{cases}.
+%     \end{equation}
+%     With $Z_{n}\sim N(0,\frac{1}{n})$ i.i.d . From this definition it is easily seen that
+%     $W_{t} \sim N(0,t)$.
+% \end{definition}
+
+
+\begin{lemma}[self-affinity Brownian motion] \label{lem:self affine}
+    Brownian motion is a self-affine random process, which implies
+    that any subpath can be translated and scaled in such a way
+    that its distribution matches that of the entire path.
+
+    \begin{equation}
+        \forall c \in \mathbb{R}^{+}_{0}: \frac{W_{ct}}{\sqrt{c}} \sim W_{t}.
+    \end{equation}
+\end{lemma}
+
+
+\subsection{Heat Equation}
+In this subsection, we introduce the relation between the heat equation and
+Brownian motion.
+
+% \begin{definition}[$1$D heat equation Dirichlet general domain] \label{def:heat equation}
+%     We define the $1$D heat equation for $u$ on connected domain $\Omega$
+%     with  Dirichlet boundary conditions the following way:
+%     \begin{equation}
+%         \frac{\partial u}{\partial t} = \frac{\partial^{2} u}{\partial x ^{2}}.
+%     \end{equation}
+%     Given $u(x,t)=\psi(x,t) ,\forall (x,t) \in \partial \Omega: t<\sup \{
+%         t| (x,t) \in \Omega\}$ .
+% \end{definition}
+
+% % maybe should improve this 
+% Figure \ref{fig:Euler first passage para} shows how the Dirichlet condition
+% is defined for parabola but reverse in time.
+
+\begin{definition}[1D heat equation Dirichlet] \label{def:heat equation square}
+    We define the 1D heat equation for $u(x,t)$ with $ (x,t) \in \Omega = [0,1]^2$
+    with Dirichlet boundary conditions the following way:
+    \begin{align}
+        \frac{\partial u}{\partial t} & = \frac{\partial^{2} u}{\partial x^{2}}                    \\
+        u_t(x,t)                      & = u_{xx}(x,t), \quad \forall (x,t) \in \Omega = [0,1]^2  .
+    \end{align}
+    Given $\left\{u(x,0),u(1,t),u(0,t) | \forall x,t \in [0,1]  \right\} $.
+\end{definition}
+
+\begin{definition}[semi-discretization 1D heat equation Dirichlet] \label{def:discrete heat equation square}
+    We define the semi-discretization 1D heat equation for $\tilde{u}$ as space discretized heat equation
+    using the central difference scheme:
+
+    \begin{equation}
+        \tilde{u}_t(j \Delta x,t)  = \frac{\tilde{u}((j+1) \Delta x, t)-2\tilde{u}(j \Delta x, t)+\tilde{u}((j-1) \Delta x, t)}{\Delta x^{2}}
+    \end{equation}
+    $\forall (j,t) \in \{0, 1, \ldots, N\} \times [0,1]$. \\
+    Given $\left\{\tilde{u}(j \Delta x,0),\tilde{u}(1,t),\tilde{u}(0,t) | \forall j \in \{0, 1, \ldots, N\}, \forall t \in  [0,1]  \right\} $.
+\end{definition}
+
+% maybe we need to find a reference for this
+It well-known that the solution to the semi-discretization 1D heat equation converges to the solution of the 1D heat equation with
+corresponding boundary conditions as $\Delta x \rightarrow 0$. \\
+We want a point estimator for the solution to the semi-discretization 1D heat equation. We obtain this by
+using techniques we previously discussed.
+
+\begin{align}
+    \tilde{u}_t(j \Delta x,t)                                                 & = \frac{\tilde{u}((j+1) \Delta x, t)-2\tilde{u}(j \Delta x, t)+\tilde{u}((j-1) \Delta x, t)}{\Delta x^{2}} \\
+    \tilde{u}_t(j \Delta x,t) + \frac{2}{\Delta x^{2}}\tilde{u}(j \Delta x,t) & = \frac{\tilde{u}((j+1) \Delta x, t)+\tilde{u}((j-1) \Delta x, t)}{\Delta x^{2}}
+\end{align}
+
+Explantation of this standard ODE step.
+
+\begin{align}
+    \tilde{u}(j \Delta x,t) = e^{-\frac{2}{\Delta x^{2}} t} \left[\tilde{u}(j \Delta x,0)
+    + \frac{1}{\Delta x^{2}} \int_{0}^{t} e^{\frac{2}{\Delta x^{2}} s}
+    (\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s))ds  \right].
+\end{align}
+
+Instead of directly uniformly sampling this integral we first do following substitution
+$\tau = e^{\frac{2}{\Delta x^{2}}(s-t)}, d\tau =\frac{2}{\Delta x^{2}}  e^{\frac{2}{\Delta x^{2}}(s-t)}ds $
+which reduces variance. Note that it is equivalent to importance sampling
+the exponential term.
+
+\begin{align}
+    \tilde{u}(j \Delta x,t) & = e^{-\frac{2}{\Delta x^{2}} t} \tilde{u}(j \Delta x,0)
+    + \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau \\
+                            & = \int_{0}^{e^{-\frac{2t}{\Delta x^{2}}}}  \tilde{u}(j \Delta x,0) d\tau+
+    \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau.
+\end{align}
+
+This recursive integral equation can be turned into a RRVE by sampling $\tau \sim U$ treating the $2$ integrals as
+$1$ and sampling $1$ of the $\tilde{u}$ of the second integral to avoid branching recursion. TODO: write down
+estimator (have it in julia code).
+
+
+
+\begin{lemma}[Brownian motion and the heat equation] \label{lem:BM HE}
+    For problem (\ref{def:heat equation}) if $ |\psi|$ is bounded
+    then there holds:
+
+    \begin{equation}
+        u(x,t)=E[\psi(Y_{\tau},\tau) | Y_{t} =x].
+    \end{equation}
+    With $dY_{s} = dW_{-s},\tau = \sup\{s | (Y_{s},s) \notin \Omega\}$.
+\end{lemma}
+
+
+\begin{proof} \label{proof: BM HE }
+    Discretize the heat equation
+    with a regular rectangular mesh that includes $(x,t)$ with equally
+    spaced intervals over space and time ($\Delta x, \Delta t$) with
+    the corresponding difference equation:
+
+    \begin{equation}
+        \frac{u(x,t)-u(x,t-\Delta t)}{\Delta t} = \frac{u(x + \Delta x,t)-2 u(x,t) +u(x - \Delta x,t)}{\Delta x^{2}} .
+    \end{equation}
+
+    Isolate $u(x,t)$:
+
+    \begin{equation} \label{eq:discrete iso heat equation}
+        u(x,t) =
+        \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}
+        \left(
+        u(x+\Delta x,t)+u(x-\Delta x,t)
+        \right) +
+        \frac{\Delta x^{2}}{ 2 \Delta t + \Delta x^{2}}
+        \left(
+        u(x,t-\Delta t)
+        \right).
+    \end{equation}
+
+    Because $u(x+\Delta x,t) \approx u(x-\Delta x,t) \approx u(x,t-\Delta t) \approx$
+    right-hand side of equation (\ref{eq:discrete iso heat equation}) we may Russian roulette
+    to remove branching recursion and generate a recursion path instead of a tree.
+    \begin{equation} \label{eq:RRVE discrete heat equation }
+        Z(x,t) =
+        \begin{cases}
+            \psi(\text{argmin}_{b \in \partial \Omega} ||(x,t) - b||)
+             & \text{ when } (x,t) \notin \Omega \\
+            \begin{cases}
+                Z(x+\Delta x , t)  & \text{ with chance  } \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}     \\
+                Z(x-\Delta x , t)  & \text{ with chance  } \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}     \\
+                Z(x, t - \Delta t) & \text{ with chance  } \frac{\Delta x^{2}}{ 2 \Delta t + \Delta x^{2}}
+            \end{cases}
+             & \text{ else }.
+        \end{cases}
+    \end{equation}
+    This is a RRVE, $Z$ has finite variance because $ |\psi|$ is bounded
+    and $E[Z(x,t)]$ is the solution to the discretized heat equation. Taking the limit
+    makes the discrete solution converge to the real solution.
+    For (\ref{eq:RRVE discrete heat equation }) the limit
+    makes the recursion path go to Brownian motion $Y_{t}$.
+    \begin{equation}
+        Z(x,t) \rightarrow \psi(Y_{\tau},\tau)  .
+    \end{equation}
+    Finishing the proof.
+\end{proof}
+
+% maybe with the source
+
+\begin{related}
+    (\ref{lem:BM HE}) is a subcase of the Feynman-Kac formula.
+    For a proof and an in-depth discussion of the Feynman-Kac formula
+    see \cite{oksendal_stochastic_2003}. \\
+\end{related}
+
+
+% \begin{theorem}[Feynman-Kac formula (wikipedia)] \label{thrm:feymankac}
+%     Consider the partial differential equation
+%     \begin{equation}
+%         \frac{\partial u}{\partial t}(x, t)+\mu(x, t) \frac{\partial u}{\partial x}(x, t)+\frac{1}{2} \sigma^2(x, t) \frac{\partial^2 u}{\partial x^2}(x, t)-V(x, t) u(x, t)+f(x, t)=0,
+%     \end{equation}
+%     defined for all $x \in \mathbb{R}$ and $t \in[0, T]$, subject to the terminal condition
+%     \begin{equation}
+%         u(x, T)=\psi(x),
+%     \end{equation}
+%     where $\mu, \sigma, \psi, V, f$ are known functions, $T$ is a parameter, and $u: \mathbb{R} \times[0, T] \rightarrow \mathbb{R}$ is the unknown. Then the Feynman-Kac formula tells us that the solution can be written as a conditional expectation
+%     \begin{equation}
+%         u(x, t)=E^Q\left[\int_t^T e^{-\int_t^r V\left(X_\tau, \tau\right) d \tau} f\left(X_r, r\right) d r+e^{-\int_t^T V\left(X_\tau, \tau\right) d \tau} \psi\left(X_T\right) \mid X_t=x\right]
+%     \end{equation}
+%     under the probability measure $Q$ such that $X$ is an Itô process driven by the equation
+%     \begin{equation}
+%         d X_t=\mu(X, t) d t+\sigma(X, t) d W_t^Q
+%     \end{equation}
+%     with $W^Q(t)$ is a Wiener process (also called Brownian motion) under $Q$, and the initial condition for $X(t)$ is $X(t)=x$.
+% \end{theorem}
+
+\subsection{First Passage Sampling}
+
+\textcolor{darkgreen}{
+    We should probably drop first passage average sampling and path stitching. It is intrestring
+    but not relevant to the direction we working in.
+} \\
+
+In this subsection we build up to sampling $(Y_{\tau},\tau)$
+from (\ref{lem:BM HE}) efficiently and extend this to paths.
+
+\begin{definition}[first passage time] \label{def:first passage time}
+    Define the first passage time for a process $X_{t}$ for a set of valid states
+    $V$ as
+    \begin{equation}
+        \text{FPt}(X_{t},V)=\inf \{t>0| (X_{t},t) \notin V \}
+        .
+    \end{equation}
+    Note that the first passage time is a RV itself.
+\end{definition}
+
+\begin{definition}[first passage] \label{def:first passage}
+    Define the first passage for a process $X_{t}$ for a set of valid states
+    $V$ as
+    \begin{equation}
+        \text{FP}(X_{t},V)=(X_{\tau},\tau), \tau = \text{FPt}(X_{t},V)
+        .
+    \end{equation}
+\end{definition}
+
+\begin{theorem}
+    The the density of first passages of Brownian motion for  exiting a  boundary is  the
+    Dirichlet boundary green function for the heat equation.
+\end{theorem}
+
+\begin{proof}
+    Follows from (\ref{lem:BM HE}).
+\end{proof}
+
+\begin{example}[Euler first passage sampling]
+    In this example, we approximately sample the first passage of Brownian motion
+    for a parabolic barrier by simulating Brownian motion with the Euler scheme. We plotted
+    this in Figure \ref{fig:Euler first passage para}.
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.8\textwidth]{plots/Euler first passage para.png}
+        \caption{ $50$ realizations of Euler first passage sampling with step size $0.001$.}
+        \label{fig:Euler first passage para}
+    \end{figure}
+\end{example}
+
+\begin{lemma} \label{lem: FP order}
+    When a process has more valid states the first passage time gets larger i.e.
+    \begin{equation}
+        V_{1} \subset V_{2} \Rightarrow
+        \text{FPt}(X_{t}(\omega),V_{1}) \le  \text{FPt}(X_{t}(\omega),V_{2}) .
+    \end{equation}
+    The $\omega$ is to indicate we mean the same realization of $X_{t}$.
+\end{lemma}
+
+
+\begin{technique}[recursive first passage sampling]
+    Recursive first passage sampling involves sampling an initial,
+    simpler first passage, the base that includes fewer valid states. Using
+    this sampled first passage as a starting point, we
+    then perform the same sampling process until the sampled
+    first passage is almost invalid.
+\end{technique}
+
+
+\begin{example}[recursive first passage sampling] \label{ex:recursive first passage sampling}
+    In this example, we sample the first passage of Brownian motion from a parabolic barrier
+    with recursive first passage sampling.
+    For the simpler first passage sampler, we scale and translate
+    samples from a triangular barrier so its
+    valid states are contained in the parabola generated
+    by the Euler scheme. The precomputed samples are created
+    by (\ref{py:euler FP sampling}) and used to produce first passages
+    in (\ref{py:recu FP sampling}).
+
+\end{example}
+
+\begin{pythonn}[Euler first passage sampling] \label{py:euler FP sampling}
+    \pythoncode{python code/sample_euler_triangle.py}
+\end{pythonn}
+
+\begin{pythonn}[recursive first passage sampling] \label{py:recu FP sampling}
+    The maximum scaling of the triangular barrier that fits
+    in the parabola is derived through (\ref{lem:self affine})
+    and using the fact that a parabola domain is convex. To dampen barrier
+    overstepping of (\ref{py:euler FP sampling}) we use a smaller scaling
+    than the maximum. \\
+    \pythoncode{python code/sample_recu_para.py}
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=1\textwidth]{plots/recursive first passage para.png}
+        \caption{ $50000$ of realizations of recursive first passage sampling produced
+            by (\ref{py:recu FP sampling}). The precomputed sample of $5000$ first
+            passages of a triangular barrier uses the Euler scheme with
+            step size $0.001$.}
+        \label{fig:recursive first passage para}
+    \end{figure}
+\end{pythonn}
+
+\begin{related}[recursive first passage sampling]
+    The original walk on spheres is a recursive first passage algorithm.
+    Recursive first passage sampling for
+    Brownian motion is discussed in \cite{herrmann_first-passage_2016}
+    and by transformation also first passage problems for the
+    Ornstein-Uhlenbeck process.
+    % To add jumps you can use \cite{herrmann_exact_2021}.
+    An alternative to resampling from an Euler scheme is to use tabulated
+    inverse cumulative probability functions,
+    as demonstrated in \cite{hwang_simulationtabulation_2001}.
+\end{related}
+
+% For recursive first passage sampling for high dimensional Brownian motion
+% there symmetry trick to be pulled off
+
+
+\begin{example}[recursive first passage average sampling] \label{ex:recu FP average}
+    In example (\ref{ex:recursive first passage sampling}) it is possible to keep
+    track of the average because it scales and translates with our base first passage sampler.
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=1\textwidth]{plots/recursive first passage average para.png}
+        \caption{ $10000$ of realizations of recursive first passage sampling (for the average).
+            The precomputed sample of $1000$ first passages and averages of a triangular barrier
+            uses the Euler scheme with step size $0.001$.}
+        \label{fig:recursive first passage average para}
+    \end{figure}
+\end{example}
+
+
+\begin{technique}[Brownian motion path stitching]
+    Instead of thinking of sampling the first passages you can also sample
+    whole paths to the first passage. Similar to before we need to be
+    able to generate paths for a simple first passage problem and "stitch"
+    these paths together. An advantage over normally generating paths
+    is that a path can be represented by its subpaths and their scalings
+    requiring less memory than a fully stored path. This can be useful
+    in case you need to look back to a part of the path.
+    The only downsides are that the time steps are inhomogeneous
+    and it requires storing paths for the simpler first passage problem.
+\end{technique}
+
+\begin{example}[path stitching parabola]
+    This is the same as example (\ref{ex:recursive first passage sampling}) but now we have
+    to keep track of the whole resampled Euler scheme generated paths.
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.8\textwidth]{plots/path stitching para.png}
+        \caption{ $10$ paths build with path stitching build out of
+            precomputed Euler scheme generated paths with step size $0.01$.}
+        \label{fig:path stitching para}
+    \end{figure}
+\end{example}
+
+% For plotting the path we needed to accesses to all of its points.  
+
+% A way around scaling base samples is limiting scaling to a
+% discrete set and pick the biggest scaling that fits, instead
+% of generating base samples for $1$ scale and scaling it dynamically
+% precompute all the discrete scalings. \\
+
+
+\begin{related}[path stitching]
+    Path stitching appears frequently in rendering and also in \cite{das_sarma_fast_2015}
+    and \cite{ji_reusing_2012}.
+\end{related}
+
+\subsection{Limitations and Future Work}
+
+It would be interesting to extend proof technique of (\ref{lem:BM HE}) to the full
+Feynman-Kac formula. Just adding a source term $f$ in the Feynman-Kac formula adds
+an integral of the source term over the recursion path.
+In equation (\ref{eq:discrete iso heat equation})
+it would add $\frac{\Delta t \Delta x^{2}}{2 \Delta t + \Delta x ^{2}} f(x,t)$
+term. This term can either be kept or Russian rouletted
+to prevent infinite source evaluations in the limit.
+This roughly corresponds to estimating the integral by
+MC integration also requires knowing a finite amount of
+intermediate points of the recursion path
+sampled randomly. These can possibly be obtained from
+the intermediate first passages of recursive first passage sampling or with a smart
+application of path stitching. \\
+
+
+Recursive first passage sampling for Brownian motion can be extended to geometric
+Brownian motion by transforming the space. However, this transformation breaks
+the symmetries required for the average used in the example (\ref{ex:recu FP average}).
+An unsatisfying way to fix this is to approximate the base sampler at different points in
+space and at different scales. Just accelerating a classic Euler scheme at critical places
+with a base sampler can reduce precomputation requirements.
+
 
 \section{Limitations and Future Work}
 
