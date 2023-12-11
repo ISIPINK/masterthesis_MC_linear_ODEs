@@ -1377,7 +1377,7 @@ Brownian motion.
     We define the 1D heat equation for $u(x,t)$ with $ (x,t) \in \Omega = [0,1]^2$
     with Dirichlet boundary conditions the following way:
     \begin{align}
-        \frac{\partial u}{\partial t} & = \frac{\partial^{2} u}{\partial x^{2}}                    \\
+        \frac{\partial u}{\partial t} & = \frac{\partial^{2} u}{\partial x^{2}}  \Leftrightarrow   \\
         u_t(x,t)                      & = u_{xx}(x,t), \quad \forall (x,t) \in \Omega = [0,1]^2  .
     \end{align}
     Given $\left\{u(x,0),u(1,t),u(0,t) | \forall x,t \in [0,1]  \right\} $.
@@ -1592,28 +1592,15 @@ In this subsection we discuss techniques to accelerate first passage sampling.
     \end{align}
 \end{proof}
 
-% \begin{example}[Euler first passage sampling]
-%     In this example, we approximately sample the first passage of Brownian motion
-%     for a parabolic barrier by simulating Brownian motion with the Euler scheme. We plotted
-%     this in Figure \ref{fig:Euler first passage para}.
-
-%     \begin{figure}[h!]
-%         \centering
-%         \includegraphics[width=0.8\textwidth]{plots/Euler first passage para.png}
-%         \caption{ $50$ realizations of Euler first passage sampling with step size $0.001$.}
-%         \label{fig:Euler first passage para}
-%     \end{figure}
-% \end{example}
 
 Another way to obtain an unbiased estimator for the semi-discretized heat equation is using unbiased estimates
-of the boundary Green's boundary function.
-\begin{lemma}
-    \begin{align}
-        \tilde{u}(x_{0},t_{0}) & = \int_{\partial \Omega} \tilde{u}(x,t) P(x,t|x_{0},t_{0}) d(x,t)                    \\
-                               & = \int_{\partial \Omega} \tilde{u}(x,t)  dP((X_{\tau},\tau) = (x,t)| X_{t_0} = x_0 )
-        .
-    \end{align}
-\end{lemma}
+of the boundary Green's boundary function. Because of:
+
+\begin{align}
+    \tilde{u}(x_{0},t_{0}) & = \int_{\partial \Omega} \tilde{u}(x,t) P(x,t|x_{0},t_{0}) d(x,t)                    \\
+                           & = \int_{\partial \Omega} \tilde{u}(x,t)  dP((X_{\tau},\tau) = (x,t)| X_{t_0} = x_0 )
+    .
+\end{align}
 
 
 Obtaining unbiased estimator for the boundary Green's function is not trivial.
@@ -1627,6 +1614,14 @@ Obtaining unbiased estimator for the boundary Green's function is not trivial.
     \end{equation}
 \end{lemma}
 
+Given a family of ''elementary'' boundary Green's functions for the semi-discretized heat problem we can construct
+an unbiased estimator for the boundary Green's function by recursively sampling the law of total probability. \\
+
+\begin{related}
+    For a reference on Green's functions in this context see \cite{qi_bidirectional_2022}.
+\end{related}
+
+Similar to RMC for boundary Green's function we can recursively sample first passages.
 
 \begin{technique}[recursive first passage sampling]
     Recursive first passage sampling involves sampling an initial,
@@ -1635,6 +1630,21 @@ Obtaining unbiased estimator for the boundary Green's function is not trivial.
     then perform the same sampling process until the sampled
     first passage is almost invalid.
 \end{technique}
+
+\begin{example}[Euler first passage sampling]
+    In this example, we approximately sample the first passage of Brownian motion
+    for a parabolic barrier by simulating Brownian motion with the Euler scheme. We plotted
+    this in Figure \ref{fig:Euler first passage para}. The accuracy of the sampled first passage
+    are $O(\Delta t)$ and the cost to sample is $O(\Delta t ^{-1})$.
+
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.8\textwidth]{plots/Euler first passage para.png}
+        \caption{ $50$ realizations of Euler first passage sampling with step size $0.001$.}
+        \label{fig:Euler first passage para}
+    \end{figure}
+\end{example}
 
 
 \begin{example}[recursive first passage sampling] \label{ex:recursive first passage sampling}
@@ -1646,6 +1656,9 @@ Obtaining unbiased estimator for the boundary Green's function is not trivial.
     by the Euler scheme. The precomputed samples are created
     by (\ref{py:euler FP sampling}) and used to produce first passages
     in (\ref{py:recu FP sampling}).
+    Assuming that the error of the base sampler is insignificant.
+    The accuracy of the sampled first passage
+    are $O(\varepsilon)$ and the cost to sample is $O(\ln \left(\varepsilon^{-1}\right))$.
 
 \end{example}
 
@@ -1688,23 +1701,23 @@ Obtaining unbiased estimator for the boundary Green's function is not trivial.
 % there symmetry trick to be pulled off
 
 
-\begin{example}[recursive first passage average sampling] \label{ex:recu FP average}
-    In example (\ref{ex:recursive first passage sampling}) it is possible to keep
-    track of the average because it scales and translates with our base first passage sampler.
+% \begin{example}[recursive first passage average sampling] \label{ex:recu FP average}
+%     In example (\ref{ex:recursive first passage sampling}) it is possible to keep
+%     track of the average because it scales and translates with our base first passage sampler.
 
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=1\textwidth]{plots/recursive first passage average para.png}
-        \caption{ $10000$ of realizations of recursive first passage sampling (for the average).
-            The precomputed sample of $1000$ first passages and averages of a triangular barrier
-            uses the Euler scheme with step size $0.001$.}
-        \label{fig:recursive first passage average para}
-    \end{figure}
-\end{example}
+%     \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=1\textwidth]{plots/recursive first passage average para.png}
+%         \caption{ $10000$ of realizations of recursive first passage sampling (for the average).
+%             The precomputed sample of $1000$ first passages and averages of a triangular barrier
+%             uses the Euler scheme with step size $0.001$.}
+%         \label{fig:recursive first passage average para}
+%     \end{figure}
+% \end{example}
 
 
 \begin{technique}[Brownian motion path stitching]
-    Instead of thinking of sampling the first passages you can also sample
+    Instead of sampling the first passages you can also sample
     whole paths to the first passage. Similar to before we need to be
     able to generate paths for a simple first passage problem and "stitch"
     these paths together. An advantage over normally generating paths
