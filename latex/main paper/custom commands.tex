@@ -34,3 +34,55 @@
     \vspace{-0.3cm}
     \lstinputlisting[style=custompython]{#1}}
 
+% Define custom colors for Julia syntax highlighting
+\definecolor{juliabackground}{RGB}{240, 230, 255} % Light purple background
+\definecolor{juliacomment}{RGB}{128, 0, 128}     % Purple comments
+\definecolor{juliakeyword}{RGB}{75, 0, 130}      % Indigo keywords
+\definecolor{juliastring}{RGB}{147, 112, 219}    % Medium purple strings
+
+% Define custom Julia style for syntax highlighting
+\lstdefinelanguage{Julia}%
+{
+    morekeywords={
+            abstract, break, case, catch, const, continue, do, else, elseif, end,
+            export, false, for, function, global, if, immutable, import, importall,
+            in, macro, module, otherwise, quote, return, switch, true, try, type,
+            typealias, using, while
+        },
+    sensitive=true,
+    alsoother={$},
+    morecomment=[l]\#,
+    morecomment=[n]{\#=}{=\#},
+    morestring=[s]{"}{"},
+    morestring=[s]{'}{'},
+}[keywords,comments,strings]
+
+\lstdefinestyle{customjulia}{
+    language=Julia,
+    backgroundcolor=\color{juliabackground},
+    basicstyle=\ttfamily\footnotesize,
+    commentstyle=\color{juliacomment}\itshape,
+    keywordstyle=\color{juliakeyword}\bfseries,
+    stringstyle=\color{juliastring},
+    showstringspaces=false,
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=4,
+    frame=tb,
+    framesep=4pt,
+    framerule=0.5pt,
+    numbers=left,
+    numbersep=10pt,
+    numberstyle=\footnotesize\color{gray},
+    xleftmargin=15pt,
+    xrightmargin=5pt,
+    aboveskip=5pt,
+    belowskip=5pt,
+    captionpos=b
+}
+
+\newcommand{\juliacode}[1]{
+    \hspace*{0cm}
+    \vspace{-0.3cm}
+    \lstinputlisting[style=customjulia]{#1}
+}
