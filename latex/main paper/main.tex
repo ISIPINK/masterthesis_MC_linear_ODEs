@@ -965,7 +965,7 @@ and uniqueness of solutions using a fixed-point argument.
     The Green's functions corresponding to $y_{tt}$ and Dirichlet conditions are:
 
     \begin{align}
-        P(t,x) & = \begin{cases}
+        P(t|x) & = \begin{cases}
                        \frac{b_{1}-t}{b_{1}-b_{0}} & \text{if } x = b_{0} \\
                        \frac{t-b_{0}}{b_{1}-b_{0}} & \text{if } x = b_{1}
                    \end{cases},       \\
@@ -976,15 +976,14 @@ and uniqueness of solutions using a fixed-point argument.
     \end{align}
     Directly from these Green's functions, we obtain the following integral equation and RRVE:
     \begin{align} \label{inteq:main dirichlet}
-        y(t) & = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1}) +
+        y(t) & = P(t|b_{0}) y(b_{0}) + P(t|b_{1}) y(b_{1}) +
         \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds,                  \\
-        Y(t) & = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1})
+        Y(t) & = P(t|b_{0}) y(b_{0}) + P(t|b_{1}) y(b_{1})
         + l B\left(\frac{1}{l} \right)(b_{1}-b_{0}) G(t,S)y(S) , \label{RRVE:main dirichlet}
     \end{align}
     with the Russian roulette rate $l \in \mathbb{R}$  and
     $S \sim \text{Uniform}(b_{1},b_{0})$. In Figure \ref{fig:mainD explosion}
     we test convergence of (\ref{RRVE:main dirichlet}).
-
 \end{example}
 
 \begin{figure}[h!]
@@ -1009,10 +1008,10 @@ samples.
     as follows:
 
     \begin{align}\label{inteq:coupled splitting}
-        y(t) & = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1}) +
+        y(t) & = P(t|b_{0}) y(b_{0}) + P(t|b_{1}) y(b_{1}) +
         \frac{1}{2} \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds +
         \frac{1}{2} \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds,                                             \\
-        y(t) & = P(t,b_{0}) y(b_{0}) + P(t,b_{1}) y(b_{1}) + \label{inteq:coupled domain splitting}
+        y(t) & = P(t|b_{0}) y(b_{0}) + P(t|b_{1}) y(b_{1}) + \label{inteq:coupled domain splitting}
         \int_{b_{0}}^{\frac{b_{1}+b_{0}}{2}} G(t,s)y(s) ds +
         \int_{\frac{b_{1}+b_{0}}{2}}^{b_{1}} G(t,s)y(s) ds.
     \end{align}
@@ -1025,8 +1024,8 @@ samples.
     \begin{equation} \label{RRVE:coupled splitting}
         X(t_{1},t_{2})=
         \begin{bmatrix}
-            P(t_{1},b_{0}) & P(t_{1},b_{1}) \\
-            P(t_{2},b_{0}) & P(t_{2},b_{1})
+            P(t_{1}|b_{0}) & P(t_{1}|b_{1}) \\
+            P(t_{2}|b_{0}) & P(t_{2}|b_{1})
         \end{bmatrix}
         \begin{bmatrix}
             y(b_{0}) \\
@@ -1421,88 +1420,98 @@ the exponential term.
 
 \begin{align}
     \tilde{u}(j \Delta x,t) & = e^{-\frac{2}{\Delta x^{2}} t} \tilde{u}(j \Delta x,0)
-    + \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau \\
+    + \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau \nonumber \\
                             & = \int_{0}^{e^{-\frac{2t}{\Delta x^{2}}}}  \tilde{u}(j \Delta x,0) d\tau+
-    \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau.
+    \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau. \label{eq:int semi heat}
 \end{align}
 
-This recursive integral equation can be turned into a RRVE by sampling $\tau \sim U$ treating the $2$ integrals as
-$1$ and sampling $1$ of the $\tilde{u}$ of the second integral to avoid branching recursion. TODO: write down
-estimator (have it in julia code).
+(\ref{eq:int semi heat}) can be turned into a estimator $Y(j \Delta x,t,\Delta x ) \cong  \tilde{u}(j \Delta x,t)$
+by sampling $\tau \sim U$ (and transforming everything back), treating the $2$ integrals as $1$,
+sampling $1$ of the $\tilde{u}$ of the second integral to avoid branching recursion and
+recursing when $\tilde{u}$ isn't known.
 
-\begin{julia}
+
+\begin{julia}[implementation of estimator of (\ref{eq:int semi heat})]\label{jl:point estimator heat}
     \juliacode{julia code/point_estimator_heat.jl}
 \end{julia}
 
+From Code \ref{jl:point estimator heat} we can see that the point estimator is just the boundary condition
+for the first passage point from the time space domain for a Poisson time proces and a random walk in space
+(maybe we should define those processes).
+In this implementation as  $\Delta x \rightarrow 0$  the cost of calculating the first passage time grows
+$\approx O(\Delta x ^{-2})$ and the process converges to Brownian motion by Donsker's theorem. \\
+Note that the estimator needs only $1$ function call from the boundary conditions.
 
-\begin{lemma}[Brownian motion and the heat equation] \label{lem:BM HE}
-    For problem (\ref{def:heat equation}) if $ |\psi|$ is bounded
-    then there holds:
+% \begin{lemma}[Brownian motion and the heat equation] \label{lem:BM HE}
+%     For problem (\ref{def:heat equation}) if $ |\psi|$ is bounded
+%     then there holds:
 
-    \begin{equation}
-        u(x,t)=E[\psi(Y_{\tau},\tau) | Y_{t} =x].
-    \end{equation}
-    With $dY_{s} = dW_{-s},\tau = \sup\{s | (Y_{s},s) \notin \Omega\}$.
-\end{lemma}
+%     \begin{equation}
+%         u(x,t)=E[\psi(Y_{\tau},\tau) | Y_{t} =x].
+%     \end{equation}
+%     With $dY_{s} = dW_{-s},\tau = \sup\{s | (Y_{s},s) \notin \Omega\}$.
+% \end{lemma}
 
 
-\begin{proof} \label{proof: BM HE }
-    Discretize the heat equation
-    with a regular rectangular mesh that includes $(x,t)$ with equally
-    spaced intervals over space and time ($\Delta x, \Delta t$) with
-    the corresponding difference equation:
+% \begin{proof} \label{proof: BM HE }
+%     Discretize the heat equation
+%     with a regular rectangular mesh that includes $(x,t)$ with equally
+%     spaced intervals over space and time ($\Delta x, \Delta t$) with
+%     the corresponding difference equation:
 
-    \begin{equation}
-        \frac{u(x,t)-u(x,t-\Delta t)}{\Delta t} = \frac{u(x + \Delta x,t)-2 u(x,t) +u(x - \Delta x,t)}{\Delta x^{2}} .
-    \end{equation}
+%     \begin{equation}
+%         \frac{u(x,t)-u(x,t-\Delta t)}{\Delta t} = \frac{u(x + \Delta x,t)-2 u(x,t) +u(x - \Delta x,t)}{\Delta x^{2}} .
+%     \end{equation}
 
-    Isolate $u(x,t)$:
+%     Isolate $u(x,t)$:
 
-    \begin{equation} \label{eq:discrete iso heat equation}
-        u(x,t) =
-        \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}
-        \left(
-        u(x+\Delta x,t)+u(x-\Delta x,t)
-        \right) +
-        \frac{\Delta x^{2}}{ 2 \Delta t + \Delta x^{2}}
-        \left(
-        u(x,t-\Delta t)
-        \right).
-    \end{equation}
+%     \begin{equation} \label{eq:discrete iso heat equation}
+%         u(x,t) =
+%         \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}
+%         \left(
+%         u(x+\Delta x,t)+u(x-\Delta x,t)
+%         \right) +
+%         \frac{\Delta x^{2}}{ 2 \Delta t + \Delta x^{2}}
+%         \left(
+%         u(x,t-\Delta t)
+%         \right).
+%     \end{equation}
 
-    Because $u(x+\Delta x,t) \approx u(x-\Delta x,t) \approx u(x,t-\Delta t) \approx$
-    right-hand side of equation (\ref{eq:discrete iso heat equation}) we may Russian roulette
-    to remove branching recursion and generate a recursion path instead of a tree.
-    \begin{equation} \label{eq:RRVE discrete heat equation }
-        Z(x,t) =
-        \begin{cases}
-            \psi(\text{argmin}_{b \in \partial \Omega} ||(x,t) - b||)
-             & \text{ when } (x,t) \notin \Omega \\
-            \begin{cases}
-                Z(x+\Delta x , t)  & \text{ with chance  } \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}     \\
-                Z(x-\Delta x , t)  & \text{ with chance  } \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}     \\
-                Z(x, t - \Delta t) & \text{ with chance  } \frac{\Delta x^{2}}{ 2 \Delta t + \Delta x^{2}}
-            \end{cases}
-             & \text{ else }.
-        \end{cases}
-    \end{equation}
-    This is a RRVE, $Z$ has finite variance because $ |\psi|$ is bounded
-    and $E[Z(x,t)]$ is the solution to the discretized heat equation. Taking the limit
-    makes the discrete solution converge to the real solution.
-    For (\ref{eq:RRVE discrete heat equation }) the limit
-    makes the recursion path go to Brownian motion $Y_{t}$.
-    \begin{equation}
-        Z(x,t) \rightarrow \psi(Y_{\tau},\tau)  .
-    \end{equation}
-    Finishing the proof.
-\end{proof}
+%     Because $u(x+\Delta x,t) \approx u(x-\Delta x,t) \approx u(x,t-\Delta t) \approx$
+%     right-hand side of equation (\ref{eq:discrete iso heat equation}) we may Russian roulette
+%     to remove branching recursion and generate a recursion path instead of a tree.
+%     \begin{equation} \label{eq:RRVE discrete heat equation }
+%         Z(x,t) =
+%         \begin{cases}
+%             \psi(\text{argmin}_{b \in \partial \Omega} ||(x,t) - b||)
+%              & \text{ when } (x,t) \notin \Omega \\
+%             \begin{cases}
+%                 Z(x+\Delta x , t)  & \text{ with chance  } \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}     \\
+%                 Z(x-\Delta x , t)  & \text{ with chance  } \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}     \\
+%                 Z(x, t - \Delta t) & \text{ with chance  } \frac{\Delta x^{2}}{ 2 \Delta t + \Delta x^{2}}
+%             \end{cases}
+%              & \text{ else }.
+%         \end{cases}
+%     \end{equation}
+%     This is a RRVE, $Z$ has finite variance because $ |\psi|$ is bounded
+%     and $E[Z(x,t)]$ is the solution to the discretized heat equation. Taking the limit
+%     makes the discrete solution converge to the real solution.
+%     For (\ref{eq:RRVE discrete heat equation }) the limit
+%     makes the recursion path go to Brownian motion $Y_{t}$.
+%     \begin{equation}
+%         Z(x,t) \rightarrow \psi(Y_{\tau},\tau)  .
+%     \end{equation}
+%     Finishing the proof.
+% \end{proof}
 
-% maybe with the source
+% % maybe with the source
 
 \begin{related}
-    (\ref{lem:BM HE}) is a subcase of the Feynman-Kac formula.
-    For a proof and an in-depth discussion of the Feynman-Kac formula
-    see \cite{oksendal_stochastic_2003}. \\
+    % (\ref{lem:BM HE}) is a subcase of the Feynman-Kac formula.
+    % For a proof and an in-depth discussion of the Feynman-Kac formula
+    % see . \\
+    The Feynman-Kac formula is related to this. See \cite{oksendal_stochastic_2003}
+    for a reference.
 \end{related}
 
 
@@ -1533,8 +1542,7 @@ estimator (have it in julia code).
     but not relevant to the direction we working in.
 } \\
 
-In this subsection we build up to sampling $(Y_{\tau},\tau)$
-from (\ref{lem:BM HE}) efficiently and extend this to paths.
+In this subsection we discuss techniques to accelerate first passage sampling.
 
 \begin{definition}[first passage time] \label{def:first passage time}
     Define the first passage time for a process $X_{t}$ for a set of valid states
@@ -1555,28 +1563,6 @@ from (\ref{lem:BM HE}) efficiently and extend this to paths.
     \end{equation}
 \end{definition}
 
-\begin{theorem}
-    The the density of first passages of Brownian motion for  exiting a  boundary is  the
-    Dirichlet boundary green function for the heat equation.
-\end{theorem}
-
-\begin{proof}
-    Follows from (\ref{lem:BM HE}).
-\end{proof}
-
-\begin{example}[Euler first passage sampling]
-    In this example, we approximately sample the first passage of Brownian motion
-    for a parabolic barrier by simulating Brownian motion with the Euler scheme. We plotted
-    this in Figure \ref{fig:Euler first passage para}.
-
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{plots/Euler first passage para.png}
-        \caption{ $50$ realizations of Euler first passage sampling with step size $0.001$.}
-        \label{fig:Euler first passage para}
-    \end{figure}
-\end{example}
-
 \begin{lemma} \label{lem: FP order}
     When a process has more valid states the first passage time gets larger i.e.
     \begin{equation}
@@ -1584,6 +1570,61 @@ from (\ref{lem:BM HE}) efficiently and extend this to paths.
         \text{FPt}(X_{t}(\omega),V_{1}) \le  \text{FPt}(X_{t}(\omega),V_{2}) .
     \end{equation}
     The $\omega$ is to indicate we mean the same realization of $X_{t}$.
+\end{lemma}
+
+\begin{theorem}[Green's functions and fist passage distribution]
+    The the density of first passages of Code \ref{jl:point estimator heat} is  the
+    corresponding Dirichlet boundary Green's function for the semi-discretized heat equation.
+\end{theorem}
+
+% notation for the Green's function is bad
+\begin{proof}
+    Follows directly from the definition.
+    Let $P(x,t|x_{0},t_{0})$ denote the boundary Green's
+    function for the semi-discretized heat equation and $X_{t}$
+    the corresponding space time proces.
+    \begin{align}
+        P(x,t|x_{0},t_{0}) & = E[Y(x_0,t_0)]                                         \\
+                           & = E[\tilde{u}(X_{\tau},\tau) | X_{t_0} = x_0 ]          \\
+                           & = E[\delta_{((X_{\tau},\tau) = (x,t))}| X_{t_0} = x_0 ] \\
+                           & = P((X_{\tau},\tau) = (x,t)| X_{t_0} = x_0 )
+        .
+    \end{align}
+\end{proof}
+
+% \begin{example}[Euler first passage sampling]
+%     In this example, we approximately sample the first passage of Brownian motion
+%     for a parabolic barrier by simulating Brownian motion with the Euler scheme. We plotted
+%     this in Figure \ref{fig:Euler first passage para}.
+
+%     \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{plots/Euler first passage para.png}
+%         \caption{ $50$ realizations of Euler first passage sampling with step size $0.001$.}
+%         \label{fig:Euler first passage para}
+%     \end{figure}
+% \end{example}
+
+Another way to obtain an unbiased estimator for the semi-discretized heat equation is using unbiased estimates
+of the boundary Green's boundary function.
+\begin{lemma}
+    \begin{align}
+        \tilde{u}(x_{0},t_{0}) & = \int_{\partial \Omega} \tilde{u}(x,t) P(x,t|x_{0},t_{0}) d(x,t)                    \\
+                               & = \int_{\partial \Omega} \tilde{u}(x,t)  dP((X_{\tau},\tau) = (x,t)| X_{t_0} = x_0 )
+        .
+    \end{align}
+\end{lemma}
+
+
+Obtaining unbiased estimator for the boundary Green's function is not trivial.
+
+\begin{lemma}[law of total probability]
+    Let $P_{1}$ be the boundary Green's function for a contained domain $\Omega_{1}$ within the semi-discretized heat problem
+    then:
+    \begin{equation}
+        P(x,t|x_{0},t_{0})= \int_{\partial \Omega_{1}} P_{1}(x,t|x_{1},t_{1}) P(x_{1},t_{1}|x_{0},t_{0}) d(x_{1},t_{1})
+        .
+    \end{equation}
 \end{lemma}
 
 
