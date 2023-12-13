@@ -13,7 +13,7 @@ function Ysource(x, t, Δx)
         xold = x
         if rand() < Δx^2 / 2
             tt = t - rand(ee)  #for the source term but can also be t
-            sol += f(xold, tt)
+            sol += tt > 0 ? f(xold, tt) : 0
         end
         t -= rand(ee)
         x += rand(Bool) ? Δx : -Δx
@@ -35,7 +35,7 @@ function Ysourcejump(x, t, Δx, sourcejump)
         g = Geometric(Δx^2 / 2)
         sourcejump = rand(g) + 1
         tt = t + Δx^2 * log(rand()) / 2
-        tmp = f(xold, tt)
+        tmp = tt > 0 ? f(xold, tt) : 0
     end
     t += Δx^2 * log(rand()) / 2
     x += rand(Bool) ? Δx : -Δx
@@ -57,7 +57,7 @@ function Ysourcejumptail(x, t, Δx)
         if sourcejump == 0
             sourcejump = rand(g) + 1
             tt = t - rand(ee)
-            sol += f(xold, tt)
+            sol += tt > 0 ? f(xold, tt) : 0
         end
         t -= rand(ee)
         x += rand(Bool) ? Δx : -Δx
@@ -81,7 +81,7 @@ function f(x, t)
     return -2 * t^2 + 2 * x^2 * t
 end
 x = 0.7
-t = 0.7
+t = 2
 nsim = 10^4
 Δx = 0.05
 println("error = $(ysource(x, t, Δx, nsim) - u(x, t))")
