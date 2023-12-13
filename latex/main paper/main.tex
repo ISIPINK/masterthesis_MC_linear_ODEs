@@ -27,9 +27,6 @@
 \captionsetup{font=it}
 \usepackage[autostyle, english=american]{csquotes}
 
-\usepackage{xcolor}
-\definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0}
-
 
 \usepackage[
 backend=biber,
@@ -1320,12 +1317,6 @@ little success.
 
 \section{Brownian Motion}
 
-\textcolor{darkgreen}{
-    We conjecture that we could use RRMC from the previous section
-    to solve the heat equation and derive (discrete) next-flight walk on spheres.
-} \\
-
-% TODO: Rewrite this section later
 Current RMC algorithms for PDEs are related to Brownian motion. In this section,
 we explore the relationship between the heat equation and Brownian motion,
 and discuss how recursive first-passage sampling fits into the picture.
@@ -1537,11 +1528,6 @@ Note that the estimator needs only $1$ function call from the boundary condition
 
 \subsection{First Passage Sampling}
 
-\textcolor{darkgreen}{
-    We should probably drop first passage average sampling and path stitching. It is intrestring
-    but not relevant to the direction we working in.
-} \\
-
 In this subsection we discuss techniques to accelerate first passage sampling.
 
 \begin{definition}[first passage time] \label{def:first passage time}
@@ -1572,7 +1558,7 @@ In this subsection we discuss techniques to accelerate first passage sampling.
     The $\omega$ is to indicate we mean the same realization of $X_{t}$.
 \end{lemma}
 
-\begin{theorem}[Green's functions and fist passage distribution]
+\begin{theorem}[Green's functions and first passage distribution]
     The the density of first passages of Code \ref{jl:point estimator heat} is  the
     corresponding Dirichlet boundary Green's function for the semi-discretized heat equation.
 \end{theorem}
@@ -1605,7 +1591,7 @@ of the boundary Green's boundary function. Because of:
 
 Obtaining unbiased estimator for the boundary Green's function is not trivial.
 
-\begin{lemma}[law of total probability]
+\begin{lemma}[law of total probability (not sure)]
     Let $P_{1}$ be the boundary Green's function for a contained domain $\Omega_{1}$ within the semi-discretized heat problem
     then:
     \begin{equation}

@@ -71,10 +71,10 @@ nsim = 10^4
 
 println("error = $(yvar(x, t, Δx, nsim,a0) - u(x, t))")
 
+@benchmark yvar(x, t, Δx, nsim, a0)
 
 Profile.clear()
 @profile yvar(x, t, Δx, nsim, a0)
 
-@benchmark yvar(x, t, Δx, nsim, a0)
 
 pprof()
