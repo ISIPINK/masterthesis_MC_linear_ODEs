@@ -17,9 +17,9 @@ function Ysource(x, t, Δx)
         end
         t -= rand(ee)
         x += rand(Bool) ? Δx : -Δx
-        return t < 0 ? u(xold, 0) + sol :
-               x < 0 ? u(0, t) + sol :
-               x > 1 ? u(1, t) + sol : continue
+        return t <= 0 ? u(xold, 0) + sol :
+               x <= 0 ? u(0, t) + sol :
+               x >= 1 ? u(1, t) + sol : continue
     end
 end
 
@@ -35,13 +35,13 @@ function Ysourcejump(x, t, Δx, sourcejump)
         g = Geometric(Δx^2 / 2)
         sourcejump = rand(g) + 1
         tt = t + Δx^2 * log(rand()) / 2
-        tmp = tt > 0 ? f(xold, tt) : 0
+        tmp = tt >= 0 ? f(xold, tt) : 0
     end
     t += Δx^2 * log(rand()) / 2
     x += rand(Bool) ? Δx : -Δx
-    return t < 0 ? u(xold, 0) :
-           (x < 0 ? u(0, t) :
-            x > 1 ? u(1, t) :
+    return t <= 0 ? u(xold, 0) :
+           (x <= 0 ? u(0, t) :
+            x >= 1 ? u(1, t) :
             Ysourcejump(x, t, Δx, sourcejump - 1)) + tmp
 end
 
@@ -61,9 +61,9 @@ function Ysourcejumptail(x, t, Δx)
         end
         t -= rand(ee)
         x += rand(Bool) ? Δx : -Δx
-        return t < 0 ? u(xold, 0) + sol :
-               x < 0 ? u(0, t) + sol :
-               x > 1 ? u(1, t) + sol : continue
+        return t <= 0 ? u(xold, 0) + sol :
+               x <= 0 ? u(0, t) + sol :
+               x >= 1 ? u(1, t) + sol : continue
     end
 
 end

@@ -2,9 +2,9 @@ function Y(x, t, Δx)
     xold = x
     t += Δx^2 * log(rand()) / 2
     x += rand(Bool) ? Δx : -Δx
-    return t < 0 ? u(xold, 0) :
-           x < 0 ? u(0, t) :
-           x > 1 ? u(1, t) : Y(x, t, Δx)
+    return t <= 0 ? u(xold, 0) :
+           x <= 0 ? u(0, t) :
+           x >= 1 ? u(1, t) : Y(x, t, Δx)
 end
 
 function Ytail(x, t, Δx)
@@ -12,9 +12,9 @@ function Ytail(x, t, Δx)
         xold = x
         t += Δx^2 * log(rand()) / 2
         x += rand(Bool) ? Δx : -Δx
-        return t < 0 ? u(xold, 0) :
-               x < 0 ? u(0, t) :
-               x > 1 ? u(1, t) : continue
+        return t <= 0 ? u(xold, 0) :
+               x <= 0 ? u(0, t) :
+               x >= 1 ? u(1, t) : continue
     end
 end
 

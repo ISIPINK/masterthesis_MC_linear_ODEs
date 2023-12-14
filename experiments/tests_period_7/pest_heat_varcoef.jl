@@ -15,7 +15,7 @@ function Yvar(x, t, Δx, a0)
     sourcejump = rand(g)
     while true
         t -= rand(ee)
-        if t < 0
+        if t <= 0
             return sol + put * u(x, 0)
         end
 
@@ -23,8 +23,8 @@ function Yvar(x, t, Δx, a0)
             x += rand(Bool) ? Δx : -Δx
             put *= 2 * (binv / (1 - a0 * Δx^2 / 2)) / Δx^2
             sourcejump -= 1
-            return x < 0 ? put * u(0, t) + sol :
-                   x > 1 ? put * u(1, t) + sol : continue
+            return x <= 0 ? put * u(0, t) + sol :
+                   x >= 1 ? put * u(1, t) + sol : continue
 
         else # this is only done O(tstart) times in an estimator
             sourcejump = rand(g)
