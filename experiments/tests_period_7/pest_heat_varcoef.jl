@@ -8,39 +8,30 @@ using PProf
 
 function Yvar(x, t, Δx, a0)
     binv = 1 / (2 / Δx^2 - a0)
-    g = Geometric(binv)
+    g = Geometric(a0 * Δx^2 / 2)
     ee = Exponential(binv)
     sol = 0
     put = 1
-    xold = x
     sourcejump = rand(g)
-    common_multiplier = 2 * (binv / (1 - a0 * Δx^2 / 2)) / Δx^2
     while true
-        xold = x
-        sourcejump -= 1
-        if sourcejump == 0
-            sourcejump = rand(g) + 1
-            tt = t - rand(ee)
-            sol += tt > 0 ? put * f(xold, tt) : 0
-        end
-
         t -= rand(ee)
         if t < 0
-            return put * u(xold, 0) + sol
+            return sol + put * u(x, 0)
         end
 
-        if rand() < 1 - a0 * Δx^2 / 2
+        if sourcejump != 0 # ez to calculate for multiple loops if you stay inside boundary
             x += rand(Bool) ? Δx : -Δx
-            put *= common_multiplier # note that this can easly be calculated for multiple loops
-        else
-            put *= (a(x, t) - a0) * binv / (a0 * Δx^2 / 2) # this has only be done O(1) in an estimator
+            put *= 2 * (binv / (1 - a0 * Δx^2 / 2)) / Δx^2
+            sourcejump -= 1
+            return x < 0 ? put * u(0, t) + sol :
+                   x > 1 ? put * u(1, t) + sol : continue
+
+        else # this is only done O(tstart) times in an estimator
+            sourcejump = rand(g)
+            sol += put * f(x, t) * binv / (a0 * Δx^2 / 2)
+            put *= (a(x, t) - a0) * binv / (a0 * Δx^2 / 2)
         end
-
-        return x < 0 ? put * u(0, t) + sol :
-               x > 1 ? put * u(1, t) + sol : continue
-
     end
-
 end
 
 yvar(x, t, Δx, nsim, a0) = sum(Yvar(x, t, Δx, a0) for _ in 1:nsim) / nsim
@@ -63,9 +54,8 @@ function a(x, t)
 end
 
 a0 = 1
-
 x = 0.5
-t = 2
+t = 1
 nsim = 10^4
 Δx = 0.05
 
