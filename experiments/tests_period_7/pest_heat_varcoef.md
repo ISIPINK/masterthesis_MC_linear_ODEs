@@ -2,7 +2,6 @@ $$
 \begin{aligned}
 u_{t} &= u_{xx} + \alpha(x,t) u +f \\
 u_{t} &= \frac{u_{+} -2u + u_{-}}{\Delta x^{2}} + (\alpha(x,t) + \alpha_{0}) u +f \\
-
 u_{t} + \left( \frac{2}{\Delta x ^{2}} - \alpha_{0} \right) u  &= \frac{u_{+} + u_{-}}{\Delta x^{2}} +\alpha(x,t) u+ f
 \end{aligned}
 $$
