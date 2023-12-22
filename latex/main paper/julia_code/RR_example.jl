@@ -1,0 +1,1 @@
+Y(t) = rand() < t ? 1 + Y(rand() * t) : 1 # correct for t<1

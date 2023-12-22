@@ -1,0 +1,1 @@
+Y(t, eps) = t > eps ? 1 + t * Y(rand() * t, eps) : 1

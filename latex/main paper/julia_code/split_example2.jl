@@ -1,0 +1,1 @@
+Y(t) = rand() < t ? 1 + (Y(rand() * t) + Y(rand() * t)) / 2 : 1

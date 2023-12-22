@@ -128,3 +128,14 @@ let # stack implementation example should be using datastructers
     sol(t, a, nsim) = sum(X(t, a) for _ in 1:nsim) / nsim
     println("error = $(sol(1, 1, 10^5) - [ℯ, ℯ])")
 end
+
+
+let # importance sampling
+    function Y(t)
+        v = sqrt(t) * U()
+        B(sqrt(t)) ? 1 + 2 * v * Y(v^2) : 1
+    end
+
+    y(t, nsim) = sum(Y(t) for _ in 1:nsim) / nsim
+    println("error = $(y(1,10^3)-ℯ)")
+end

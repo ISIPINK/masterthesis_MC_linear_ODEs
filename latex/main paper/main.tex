@@ -241,11 +241,17 @@ By integrating both sides of (\ref{ydy}), we obtain:
 (\ref{Integral ydy}) represents a recursive integral equation,
 specifically, a linear Volterra integral equation of the second type.
 
-\begin{notation}[$U$]
+\begin{notation}[$U,U_{j}$]
     We will frequently use the uniform distribution, so we will abbreviate it
     \begin{equation}
-        U \sim \text{Uniform}(0,1).
+        U_{j}  \text{ i.i.d Uniform}(0,1).
     \end{equation}
+
+    The subscripts are used to clarify independence
+    between uniforms. However,
+    when there is no risk of confusion,
+    we simply use $U$.
+
 \end{notation}
 
 By estimating the recursive integral in (\ref{Integral ydy})
@@ -268,6 +274,8 @@ expression for $Y$:
     Y(t) = 1 + t  Y(Ut).
 \end{equation}
 
+\juliacode{julia_code/RMC_example.jl}
+
 (\ref{recursive RV}) is a Recursive Random Variable
 Equation (RRVE).
 
@@ -285,21 +293,21 @@ $Y(t) \approx 1$ near $t = 0$ introducing minimal bias.
 Later, we will discuss Russian roulette; see Definition \ref{Russian roulette},
 which can be used as an unbiased stopping mechanism.
 
-\vspace*{0.2cm}
+% \vspace*{0.2cm}
 
-\begin{pythonn}[implementation of (\ref{recursive RV})] \label{python eps ydy}
-    \pythoncode{python code/eps_ydy.py}
-    To gain insight into the realizations of an RRVE, it can be helpful to plot
-    all recursive calls $(t,Y(t))$, as shown in Figure \ref{fig:intro example}
-    for this implementation.
+% \begin{pythonn}[implementation of (\ref{recursive RV})] \label{python eps ydy}
+%     \pythoncode{python code/eps_ydy.py}
+%     To gain insight into the realizations of an RRVE, it can be helpful to plot
+%     all recursive calls $(t,Y(t))$, as shown in Figure \ref{fig:intro example}
+%     for this implementation.
 
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{plots/intro example.png}
-        \caption{Recursive calls of Code \ref{python eps ydy}}
-        \label{fig:intro example}
-    \end{figure}
-\end{pythonn}
+%     \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{plots/intro example.png}
+%         \caption{Recursive calls of Code \ref{python eps ydy}}
+%         \label{fig:intro example}
+%     \end{figure}
+% \end{pythonn}
 
 \subsection{Modifying Monte Carlo}
 
@@ -387,32 +395,34 @@ less computationally expensive approximation sometimes.
     by approximating the value of $Y$ near $t = 0$ with $1$
     sometimes. Specifically, we replace the coefficient $t$
     in front of the recursive term with $B(t)$ when $t < 1$.
-    The modified recursive expression for $Y(t)$ becomes:
+    The modified recursive expression for $Y(t)$ for $t<1$ becomes:
 
     \begin{equation}\label{eq:rr example}
-        y(t) \cong Y(t) =
-        \begin{cases}
-            1 + B(t)Y(Ut) & \text{ if } t < 1 \\
-            1 + tY(Ut)    & \text{ else}
-        \end{cases}.
+        y(t) \cong Y(t) = 1 + B(t)Y(Ut)
     \end{equation}
-\end{example}
+    \juliacode{julia_code/RR_example.jl}
 
-\vspace{0.2cm}
-
-\begin{pythonn}[implementation of (\ref{eq:rr example})] \label{RRpython}
-    \pythoncode{python code/RR_ydy.py}
     Interestingly, $\forall t \le 1:Y(t)$ is the number of recursion calls
     to sample $Y(t)$ such that the average number of recursion
     calls to sample $Y(t)$ equals $e^{t}$.
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{plots/russian roulette example.png}
-        \caption{Recursive calls $(t,Y(t))$ of Code \ref{RRpython} }
-        \label{fig:russian roulette}
-    \end{figure}
 
-\end{pythonn}
+\end{example}
+
+% \vspace{0.2cm}
+
+% \begin{pythonn}[implementation of (\ref{eq:rr example})] \label{RRpython}
+%     \pythoncode{python code/RR_ydy.py}
+%     Interestingly, $\forall t \le 1:Y(t)$ is the number of recursion calls
+%     to sample $Y(t)$ such that the average number of recursion
+%     calls to sample $Y(t)$ equals $e^{t}$.
+%     \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{plots/russian roulette example.png}
+%         \caption{Recursive calls $(t,Y(t))$ of Code \ref{RRpython} }
+%         \label{fig:russian roulette}
+%     \end{figure}
+
+% \end{pythonn}
 
 Splitting is a technique that has almost the reverse effect of Russian roulette.
 Instead of reducing the number of simulations of an RV as Russian roulette does,
@@ -439,30 +449,38 @@ additive branching recursion in RRVEs (see Example \ref{ex:coupled splitting}).
     into two parts as follows:
 
     \begin{equation}\label{eq:splitting}
-        y(t) \cong Y(t) =
-        \begin{cases}
-            1 + \frac{B(t)}{2}(Y_{1}(Ut) + Y_{2}(Ut)) & \text{ if } t < 1 \\
-            1 + \frac{t}{2}(Y_{1}(Ut) + Y_{2}(Ut))    & \text{ else}
-        \end{cases}.
+        y(t) \cong Y(t) =1 + \frac{B(t)}{2}(Y_{1}(U_{1}t) + Y_{2}(U_{1}t))
     \end{equation}
+
+    \juliacode{julia_code/split_example1.jl}
+
+    \begin{equation}\label{eq:splitting2}
+        y(t) \cong Y(t) =1 + \frac{B(t)}{2}(Y_{1}(U_{1}t) + Y_{2}(U_{2}t))
+    \end{equation}
+
+    \juliacode{julia_code/split_example2.jl}
 
     where $Y_{1}(t)$ and $Y_{2}(t)$ are i.i.d. with $Y(t)$.
 \end{example}
 
-\vspace{0.2cm}
+% \vspace{0.2cm}
 
-\begin{pythonn}[implementation of (\ref{eq:splitting})]
-    \pythoncode{python code/SRR_ydy.py}
-\end{pythonn}
+% \begin{pythonn}[implementation of (\ref{eq:splitting})]
+%     \pythoncode{python code/SRR_ydy.py}
+% \end{pythonn}
 
 \begin{definition}[control variates] \label{CV}
-    Define control variating $f(X)$ with $\tilde{f}$ an approximation of $f$ as:
-    \begin{equation}
-        f(X) \cong f(X)-\tilde{f}(X) + E[\tilde{f}(X)].
-    \end{equation}
+    Define control variating $f(U)$ with $\tilde{f}$ an approximation of $f$ as:
+
+    \begin{align}
+        f(U) & \cong f(U_{1})-\tilde{f}(U_{1}) + E[\tilde{f}(U)] \\
+             & = (f-\tilde{f})(U_{1}) + E[\tilde{f}(U)]
+        .
+    \end{align}
 
     Note that control variating requires the evaluation of
-    $E[\tilde{f}(X)]$. When this is estimated instead, we refer to it as $2$-level MC.
+    $E[\tilde{f}(U)]$.  When this is estimated instead, we refer to it as $2$-level MC
+    and recursively applying $2$-level is multilevel MC.
 \end{definition}
 
 
@@ -472,19 +490,21 @@ additive branching recursion in RRVEs (see Example \ref{ex:coupled splitting}).
     $y(t) \approx \tilde{y} =1+t$ and define the modified recursive term as follows:
 
     \begin{align}
-        Y(t) & = 1 + E[\tilde{y}(Ut)] + t(Y(Ut) - \tilde{y}(Ut)) \\
-             & = 1 + t + \frac{t^2}{2} + t(Y(Ut) - 1 - Ut).
+        y(t) \cong Y(t) & = 1 + t(Y(U_{1}t) - \tilde{y}(U_{1}t) + E[\tilde{y}(Ut)])     \\
+                        & = 1 + t \left( E[1 + Ut]  \right) + t(Y(U_{1}t) - 1 - U_{1}t) \\
+                        & = 1 + t + \frac{t^2}{2} + t(Y(U_{1}t) - 1 - U_{1}t).
     \end{align}
+    \juliacode{julia_code/CV_example.jl}
 
     Note that while we could cancel out the constant term
     of the control variate, doing so would have a negative impact
-    on the Russian roulette implemented later.
+    on the Russian roulette implemented.
 \end{example}
 
-\vspace*{0.2cm}
-\begin{pythonn}[implementation of Example \ref{ex:CV}]
-    \pythoncode{python code/CVRR_ydy.py}
-\end{pythonn}
+% \vspace*{0.2cm}
+% \begin{pythonn}[implementation of Example \ref{ex:CV}]
+%     \pythoncode{python code/CVRR_ydy.py}
+% \end{pythonn}
 
 \begin{related}[MC modification]
     For further reference on Russian roulette, splitting and control variates
@@ -1423,7 +1443,7 @@ recursing when $\tilde{u}$ isn't known.
 
 
 \begin{julia}[implementation of estimator of (\ref{eq:int semi heat})]\label{jl:point estimator heat}
-    \juliacode{julia code/point_estimator_heat.jl}
+    \juliacode{julia_code/point_estimator_heat.jl}
 \end{julia}
 
 From Code \ref{jl:point estimator heat} we can see that the point estimator is just the boundary condition
