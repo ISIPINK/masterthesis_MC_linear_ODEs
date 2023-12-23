@@ -47,3 +47,16 @@ path_values = path()
 path_values1 = path1()
 plot(path_values, zero(path_values), st=:scatter)
 plot!(path_values1, zero(path_values) .+ 1, st=:scatter)
+
+
+
+function X(t, a)
+    s = 0
+    (sol = [1.0, 0.0]; A = [a+1 0.0; 1.0 a+1])
+    while true
+        s -= log(rand())
+        s > t && break
+        sol = A * sol
+    end
+    sol
+end

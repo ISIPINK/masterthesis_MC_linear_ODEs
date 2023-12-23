@@ -6,5 +6,5 @@ function X(t, a)
         sol += W * q
         t *= rand()
     end
-    return sol
+    sol
 end

@@ -857,7 +857,7 @@ to avoid matrix-matrix multiplication. This efficiency concern becomes
 worse with larger matrix multiplications. An alternative to tail recursion is implementing
 the recursion with a stack.
 
-\begin{related}[tailed recursion]
+\begin{related}[non-branching tail recursion]
     Example \ref{ex:coupled recursion} is inspired by \cite{vicini_path_2021}.
     \cite{vicini_path_2021} proposes an efficient unbiased backpropagation
     algorithm for rendering exploiting properties of non-branching tail recursion.
@@ -886,6 +886,30 @@ the recursion with a stack.
     \juliacode{julia_code/stackrecu.jl}
 \end{julia}
 
+In stack recursion we need to store the sample path because we generate the
+sample path in reverse order then we need it. Reverse number generators exists
+but because of Russian roulette there is no starting point without going through
+a forward (it is still confusing what is forward and backwards ...) pass of the path.
+Poisson time processes don't have this problem because forward paths and backward paths
+have the same distribution.
+
+\begin{definition}[?]
+    \begin{align}
+        y'                              & = A y  \Leftrightarrow                                                      \\
+        y'+\sigma y                     & = (A + \sigma I) y \Leftrightarrow                                          \\
+        e^{-\sigma t} ( e^{\sigma t}y)' & = (A + \sigma I) y    \Leftrightarrow                                       \\
+        y(t)                            & = e^{-\sigma t} y(0) + \int_{0}^{t} e^{(s-t) \sigma} (A + \sigma I ) y(s)ds \\
+    \end{align}
+    Do following substitution: $e^{(s-t)\sigma} = \tau$:
+    \begin{equation} \label{eq:poisson main}
+        y(t) = \int_{0}^{e^{-\sigma t}}  y(0) d\tau + \int_{e^{-\sigma t}}^{1} \left(  \frac{A}{\sigma} + I\right)  y(s)d\tau
+        .
+    \end{equation}
+    (\ref{eq:poisson main}) can be turned into a RRVE by sampling $\tau \sim U$, no Russian roulette is needed for
+    termination because in the recursion the first integral get sampled with probability $1$.
+
+    \juliacode{julia_code/main_poisson.jl}
+\end{definition}
 
 \section{Ordinary Differential Equations}
 
