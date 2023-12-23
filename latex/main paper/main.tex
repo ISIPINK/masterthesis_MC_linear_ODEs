@@ -586,37 +586,47 @@ enhanced with control variates based on the trapezoidal rule.
 \end{related}
 
 
-\begin{definition}[composite MC trapezoidal rule] \label{MCtrap}
-    Define the composite MC trapezoidal rule for approximating the integral
-    of function $f$ over the interval $[a, b]$ with a uniform grid
-    $(x_{j}) = \text{linspace}(a,b,n)$ with $n$
-    intervals and a Russian roulette rate $l$ as follows:
+\begin{definition}[composite (MC) trapezoidal rule] \label{MCtrap}
+    Define the MC trapezoidal rule for approximating the integral
+    of function $f$ over the interval $[0, 1]$ with a uniform grid
+    with $n$ intervals as follows:
+
+    \begin{equation}
+        \int_{0}^{1} f(s) ds \approx \Delta x \sum_{j=0}^{n-1}  \frac{f(x_{j}) + f(x_{j}+\Delta x)}{2} .
+    \end{equation}
+    \juliacode{julia_code/composite_trapezoidal.jl}
+
+    Define the  corresponding composite MC trapezoidal
+    with a Russian roulette rate $l$ as follows:
 
     \begin{align} \label{eq:cMCtrap}
-        \int_{a}^{b} f(s) ds \cong \Delta x \sum_{j=1}^{n} & \frac{f(x_{j}) + f(x_{j}+\Delta x)}{2} \nonumber \\
-                                                           & + l B\left(\frac{1}{l}\right)
+        \int_{0}^{1} f(s) ds \cong \Delta x \sum_{j=0}^{n-1} & \frac{f(x_{j}) + f(x_{j}+\Delta x)}{2} \nonumber \\
+                                                             & + l B\left(\frac{1}{l}\right)
         \left(f(S_j) - f(x_{j}) - \frac{S_j - x_{j}}{\Delta x}(f(x_{j}+\Delta x) - f(x_{j}))\right),
     \end{align}
+
+    \juliacode{julia_code/MC_composite_trapezoidal.jl}
 
     where $S_j \sim \text{Uniform}(x,x+\Delta x)$.
 
 \end{definition}
 
-\begin{pythonn}[implementation of (\ref{eq:cMCtrap})]
-    We implement (\ref{eq:cMCtrap}) for $\int_{0}^{1}e^{s}ds$.
-    \vspace*{0.5cm}
-    \pythoncode{python code/trap1.py}
+% \begin{pythonn}[implementation of (\ref{eq:cMCtrap})]
+%     We implement (\ref{eq:cMCtrap}) for $\int_{0}^{1}e^{s}ds$.
+%     \vspace*{0.5cm}
+%     \pythoncode{python code/trap1.py}
 
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{plots/MCtrap.png}
-        \caption{Log-log plot of the error of (\ref{eq:cMCtrap}) for
-        $\int_{0}^{1}e^{s}ds$ with $l=100$. At floating point accuracy,
-        the convergence ceases.
-        }
-        \label{fig:MCtrap}
-    \end{figure}
-\end{pythonn}
+% \end{pythonn}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plots/MCtrap.png}
+    \caption{Log-log plot of the error of (\ref{eq:cMCtrap}) for
+    $\int_{0}^{1}e^{s}ds$ with $l=100$. At floating point accuracy,
+    the convergence ceases.
+    }
+    \label{fig:MCtrap}
+\end{figure}
 
 Figure \ref{fig:MCtrap} suggests that the order of convergence of RMSE of the
 composite MC trapezoidal rule is better by $0.5$ than the normal composite trapezoidal rule.

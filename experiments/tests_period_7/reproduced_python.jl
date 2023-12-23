@@ -36,10 +36,9 @@ end
 
 
 let # MC trap example
-    f(x) = exp(x)
-    trapezium(n) = sum((f(j / n) + f((j + 1) / n)) / 2 for j in 0:n-1) / n
+    trapezium(f, n) = sum((f(j / n) + f((j + 1) / n)) / 2 for j in 0:n-1) / n
 
-    function MCtrapezium(n, l=100)
+    function MCtrapezium(f, n, l=100)
         sol = 0
         for j in 0:n-1
             if B(1 / l)
@@ -51,11 +50,12 @@ let # MC trap example
         return sol + trapezium(n)
     end
 
+    f(x) = exp(x)
     exact(a, b) = exp(b) - exp(a)
     error(s) = (s - exact(0, 1)) / exact(0, 1)
 
-    println("error: ", error(trapezium(10^5)))
-    println("MCerror: ", error(MCtrapezium(10^5, 100)))
+    println("error: ", error(trapezium(f, 10^6)))
+    println("MCerror: ", error(MCtrapezium(f, 10^6, 100)))
 end
 
 
