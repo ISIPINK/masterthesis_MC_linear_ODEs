@@ -788,21 +788,17 @@ In this subsection, we discuss recursion-related techniques.
         \end{bmatrix}
         X(Ut).
     \end{equation}
+    \juliacode{julia_code/coupled_recursion.jl}
 
     Observe how this eliminates the additive branching recursion
     present in (\ref{couple recu ex2}).
 
 \end{example}
 
-\begin{pythonn} [implementation of (\ref{coupled mat})]
-    \pythoncode{python code/coupled_mat.py}
-\end{pythonn}
+% \begin{pythonn} [implementation of (\ref{coupled mat})]
+%     \pythoncode{python code/coupled_mat.py}
+% \end{pythonn}
 
-\begin{related}[coupled recursion]
-    Example \ref{ex:coupled recursion} is inspired by \cite{vicini_path_2021}.
-    \cite{vicini_path_2021} proposes an efficient unbiased backpropagation
-    algorithm for rendering.
-\end{related}
 
 \begin{technique}[recursion in recursion]\label{tech:recu in recu}
     Recursion in recursion is like proving an induction
@@ -835,24 +831,51 @@ The non-branching recursion presented in the RRVEs can
 be implemented using tail recursion thanks to the associativity
 of all operations ($(xy)z = x(yz)$) involved.
 
-\begin{pythonn}[tail recursion on (\ref{coupled mat})] \label{py:tail recursion couple}
+% \begin{pythonn}[tail recursion on (\ref{coupled mat})] \label{py:tail recursion couple}
+%     We implemented (\ref{coupled mat}) using tail recursion this time. We
+%     collect addition operations in a vector called $sol$, and multiplications
+%     in a matrix named $W$. $W$ may also be referred to as accumulated weight
+%     or throughput.
+%     \vspace{0.3cm}
+%     \pythoncode{python code/tailrecu.py}
+% \end{pythonn}
+
+\begin{julia}[tail recursion on (\ref{coupled mat})] \label{jl:tail recursion couple}
     We implemented (\ref{coupled mat}) using tail recursion this time. We
     collect addition operations in a vector called $sol$, and multiplications
     in a matrix named $W$. $W$ may also be referred to as accumulated weight
     or throughput.
     \vspace{0.3cm}
-    \pythoncode{python code/tailrecu.py}
-\end{pythonn}
+    \juliacode{julia_code/tailrecu.jl}
+\end{julia}
 
-Tail recursion is not always desirable as it discards intermediate values
-of the recursive calls and can increase computational costs. To retain
-some of these intermediate values, it is possible to use tail recursion partially.
-In the example shown in Code \ref{py:tail recursion couple}, it would be more efficient
-to avoid matrix multiplication on line 7. This efficiency concern becomes
+Tail recursion avoids intermediate values
+of the recursive calls which may be useful and
+can increase computational costs because of the ordering of operations.
+In the example shown in Code \ref{jl:tail recursion couple}, it would be more efficient
+to avoid matrix-matrix multiplication. This efficiency concern becomes
 worse with larger matrix multiplications. An alternative to tail recursion is implementing
 the recursion with a stack.
 
-\begin{pythonn}[stack recursion on (\ref{coupled mat})] \label{py:stack recursion couple}
+\begin{related}[tailed recursion]
+    Example \ref{ex:coupled recursion} is inspired by \cite{vicini_path_2021}.
+    \cite{vicini_path_2021} proposes an efficient unbiased backpropagation
+    algorithm for rendering exploiting properties of non-branching tail recursion.
+    To access intermediate values in tail recursion they use path replay.
+\end{related}
+
+% \begin{pythonn}[stack recursion on (\ref{coupled mat})] \label{py:stack recursion couple}
+%     We implement (\ref{coupled mat}) but this time with a stack.
+%     We want to avoid matrix multiplication and only use matrix-vector multiplications.
+%     To do this on (\ref{coupled mat}) we need to know $X(Ut)$ when
+%     it doesn't get Russian rouletted away. If we sample $Ut$ we can recurse
+%     on our reasoning until Russian roulette termination, so we need the path
+%     of all the samples.
+%     \vspace{0.3cm}
+%     \pythoncode{python code/stackrecu.py}
+% \end{pythonn}
+
+\begin{julia}[stack recursion on (\ref{coupled mat})] \label{jl:stack recursion couple}
     We implement (\ref{coupled mat}) but this time with a stack.
     We want to avoid matrix multiplication and only use matrix-vector multiplications.
     To do this on (\ref{coupled mat}) we need to know $X(Ut)$ when
@@ -860,8 +883,8 @@ the recursion with a stack.
     on our reasoning until Russian roulette termination, so we need the path
     of all the samples.
     \vspace{0.3cm}
-    \pythoncode{python code/stackrecu.py}
-\end{pythonn}
+    \juliacode{julia_code/stackrecu.jl}
+\end{julia}
 
 
 \section{Ordinary Differential Equations}
