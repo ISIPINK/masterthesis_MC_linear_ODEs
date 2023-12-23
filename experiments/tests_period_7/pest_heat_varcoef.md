@@ -15,7 +15,7 @@ u &= e^{-t \beta }
 \left(
      u_{0}  + \int_{0}^{t}e^{s \beta }
     \left(
-        \frac{u_{+} + u_{-}}{\Delta x^{2}} +\alpha(x,s) u+ f
+        \frac{u_{+} + u_{-}}{\Delta x^{2}} +(\alpha(x,s)- \alpha_{0}) u+ f
      \right)
      ds
 \right)  \\
@@ -23,7 +23,7 @@ u &=
      \int_{0}^{e^{-t \beta }} u_{0} d\tau  + \int_{e^{-t \beta }}^{1}
      \beta^{-1}
     \left(
-        \frac{u_{+} + u_{-}}{\Delta x^{2}} +\alpha(x,s) u+ f
+        \frac{u_{+} + u_{-}}{\Delta x^{2}} +(\alpha(x,s)- \alpha_{0}) u+ f
      \right)
      d\tau
 \end{aligned}

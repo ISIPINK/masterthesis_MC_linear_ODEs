@@ -893,14 +893,16 @@ a forward (it is still confusing what is forward and backwards ...) pass of the 
 Poisson time processes don't have this problem because forward paths and backward paths
 have the same distribution.
 
-\begin{definition}[Main Poisson ?]
+\begin{definition}[Main Poisson ?] \label{def:main poisson}
+
     \begin{align}
         y'                              & = A y + f \Leftrightarrow                                                                          \\
         y'+\sigma y                     & = (A + \sigma I) y + f\Leftrightarrow                                                              \\
         e^{-\sigma t} ( e^{\sigma t}y)' & = (A + \sigma I) y + f  \Leftrightarrow                                                            \\
         y(t)                            & = e^{-\sigma t} y(0) + \int_{0}^{t} e^{(s-t) \sigma} \left(  (A + \sigma I ) y(s) +f(s)\right) ds.
     \end{align}
-    With $\sigma>0$. Do following substitution: $e^{(s-t)\sigma} = \tau$:
+    With $\sigma>0$. Do following substitution: $e^{(s-t)\sigma} = \tau$ equivalent to importance sampling
+    the exponential term:
     \begin{equation} \label{eq:poisson main}
         y(t) = \int_{0}^{e^{-\sigma t}}  y(0) d\tau + \int_{e^{-\sigma t}}^{1} \left(  \frac{A}{\sigma} + I\right)  y(s) + \frac{f(s)}{\sigma} d\tau
         .
@@ -909,7 +911,8 @@ have the same distribution.
     \juliacode{julia_code/main_poisson.jl}
 
     (\ref{eq:poisson main}) can be turned into a RRVE by sampling $\tau \sim U$, no Russian roulette is needed for
-    termination because in the recursion the first integral get sampled with probability $1$.
+    termination because in the recursion the first integral get sampled with probability $1$. No recursion is used
+    for the implementation as we can sample the Poisson proces in the reverse order.
 
 \end{definition}
 
@@ -1471,53 +1474,97 @@ Brownian motion.
     Given $\left\{\tilde{u}(j \Delta x,0),\tilde{u}(1,t),\tilde{u}(0,t) | \forall j \in \{0, 1, \ldots, N\}, \forall t \in  [0,1]  \right\} $.
 \end{definition}
 
+
 % maybe we need to find a reference for this
 It well-known that the solution to the semi-discretization 1D heat equation converges to the solution of the 1D heat equation with
 corresponding boundary conditions as $\Delta x \rightarrow 0$. \\
 We want a point estimator for the solution to the semi-discretization 1D heat equation. We obtain this by
-using techniques we previously discussed.
+using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and looking at $1$ point.
 
-\begin{align}
-    \tilde{u}_t(j \Delta x,t)                                                 & = \frac{\tilde{u}((j+1) \Delta x, t)-2\tilde{u}(j \Delta x, t)+\tilde{u}((j-1) \Delta x, t)}{\Delta x^{2}} \\
-    \tilde{u}_t(j \Delta x,t) + \frac{2}{\Delta x^{2}}\tilde{u}(j \Delta x,t) & = \frac{\tilde{u}((j+1) \Delta x, t)+\tilde{u}((j-1) \Delta x, t)}{\Delta x^{2}}
-\end{align}
+% \begin{align}
+%     \tilde{u}_t(j \Delta x,t)                                                 & = \frac{\tilde{u}((j+1) \Delta x, t)-2\tilde{u}(j \Delta x, t)+\tilde{u}((j-1) \Delta x, t)}{\Delta x^{2}} \\
+%     \tilde{u}_t(j \Delta x,t) + \frac{2}{\Delta x^{2}}\tilde{u}(j \Delta x,t) & = \frac{\tilde{u}((j+1) \Delta x, t)+\tilde{u}((j-1) \Delta x, t)}{\Delta x^{2}}
+% \end{align}
 
-Explantation of this standard ODE step.
+% Explantation of this standard ODE step.
 
-\begin{align}
-    \tilde{u}(j \Delta x,t) = e^{-\frac{2}{\Delta x^{2}} t} \left[\tilde{u}(j \Delta x,0)
-    + \frac{1}{\Delta x^{2}} \int_{0}^{t} e^{\frac{2}{\Delta x^{2}} s}
-    (\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s))ds  \right].
-\end{align}
+% \begin{align}
+%     \tilde{u}(j \Delta x,t) = e^{-\frac{2}{\Delta x^{2}} t} \left[\tilde{u}(j \Delta x,0)
+%     + \frac{1}{\Delta x^{2}} \int_{0}^{t} e^{\frac{2}{\Delta x^{2}} s}
+%     (\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s))ds  \right].
+% \end{align}
 
-Instead of directly uniformly sampling this integral we first do following substitution
-$\tau = e^{\frac{2}{\Delta x^{2}}(s-t)}, d\tau =\frac{2}{\Delta x^{2}}  e^{\frac{2}{\Delta x^{2}}(s-t)}ds $
-which reduces variance. Note that it is equivalent to importance sampling
-the exponential term.
+% Instead of directly uniformly sampling this integral we first do following substitution
+% $\tau = e^{\frac{2}{\Delta x^{2}}(s-t)}, d\tau =\frac{2}{\Delta x^{2}}  e^{\frac{2}{\Delta x^{2}}(s-t)}ds $
+% which reduces variance. Note that it is equivalent to importance sampling
+% the exponential term.
 
-\begin{align}
-    \tilde{u}(j \Delta x,t) & = e^{-\frac{2}{\Delta x^{2}} t} \tilde{u}(j \Delta x,0)
-    + \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau \nonumber \\
-                            & = \int_{0}^{e^{-\frac{2t}{\Delta x^{2}}}}  \tilde{u}(j \Delta x,0) d\tau+
+% \begin{align}
+%     \tilde{u}(j \Delta x,t) & = e^{-\frac{2}{\Delta x^{2}} t} \tilde{u}(j \Delta x,0)
+%     + \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau \nonumber \\
+%                             & = \int_{0}^{e^{-\frac{2t}{\Delta x^{2}}}}  \tilde{u}(j \Delta x,0) d\tau+
+%     \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau. \label{eq:int semi heat}
+% \end{align}
+
+\begin{equation}
+    \tilde{u}(j \Delta x,t) = \int_{0}^{e^{-\frac{2t}{\Delta x^{2}}}}  \tilde{u}(j \Delta x,0) d\tau+
     \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau. \label{eq:int semi heat}
-\end{align}
+\end{equation}
 
-(\ref{eq:int semi heat}) can be turned into a estimator $Y(j \Delta x,t,\Delta x ) \cong  \tilde{u}(j \Delta x,t)$
-by sampling $\tau \sim U$ (and transforming everything back), treating the $2$ integrals as $1$,
-sampling $1$ of the $\tilde{u}$ of the second integral to avoid branching recursion and
-recursing when $\tilde{u}$ isn't known.
 
 
 \begin{julia}[implementation of estimator of (\ref{eq:int semi heat})]\label{jl:point estimator heat}
-    \juliacode{julia_code/point_estimator_heat.jl}
+
+    (\ref{eq:int semi heat}) can be turned into a estimator $Y(j \Delta x,t,\Delta x ) \cong  \tilde{u}(j \Delta x,t)$
+    by sampling $\tau \sim U$ (and transforming everything back), treating the $2$ integrals as $1$,
+    sampling $1$ of the $\tilde{u}$ of the second integral to avoid branching recursion and
+    recursing when $\tilde{u}$ isn't known. Note that we can't reverse the order of the Poisson process
+    because of termination on the boundary but tail recursion
+    is efficient because sampling $1$ term avoids matrix multiplications completely. \\
+    \vspace{0.3cm}
+    % \juliacode{julia_code/point_estimator_heat.jl}
+    \juliacode{julia_code/point_estimator_heat_tail.jl}
 \end{julia}
 
 From Code \ref{jl:point estimator heat} we can see that the point estimator is just the boundary condition
-for the first passage point from the time space domain for a Poisson time proces and a random walk in space
-(maybe we should define those processes).
+for the first passage point from the time space domain for a Poisson time proces and a random walk in space.
 In this implementation as  $\Delta x \rightarrow 0$  the cost of calculating the first passage time grows
-$\approx O(\Delta x ^{-2})$ and the process converges to Brownian motion by Donsker's theorem. \\
-Note that the estimator needs only $1$ function call from the boundary conditions.
+$\approx O(\Delta x ^{-2})$ and the process converges to Brownian motion. Note that the estimator needs
+only $1$ function call from the boundary conditions. \\
+
+A similar derivation can be done for
+\begin{equation}
+    u_{t} = u_{xx} + a(x,t)u + f(x,t)
+    .
+\end{equation}
+Again using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}} -a_{0}$ and looking at $1$ point we obtain:
+
+\begin{equation}
+    u =
+    \int_{0}^{e^{-t \sigma }} u_{0} d\tau  + \int_{e^{-t \sigma }}^{1}
+    \sigma^{-1}
+    \left(
+    \frac{u_{+} + u_{-}}{\Delta x^{2}} +(a(x,s)- a_{0}) u+ f
+    \right)
+    d\tau
+    .
+\end{equation}
+A typical choice for $a_{0} $ is $\min (a(x,s))$. As $\Delta x \rightarrow 0$ the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ term is
+the main contribution to the second integral therefore we sample it with $(1 - a_{0} \frac{\Delta x^2}{2})$ probability and
+the rest with $a_{0} \frac{\Delta x^2}{2}$ probability. In total for $1$ sample, the $f(x,s)$ and the $a(x,s)u$ term only
+has to be sampled some times and this does not scale with $\Delta x$.
+
+\begin{julia}
+    Because of the high chance of sampling the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ it efficient
+    to sample until we don't sample it. This is geometrically distributed.
+    \vspace{0.3cm}
+    \juliacode{julia_code/pest_heat_varcoef.jl}
+\end{julia}
+
+As $\Delta x \rightarrow 0$ the bottleneck is sampling the proces that moves through space and time similar
+to first passage sampling.
+This proces doesn't depend directly on $a(x,t)$ and $f(x,t)$, therefore we can optimize it
+independent of it and even partly precompute it.
 
 % \begin{lemma}[Brownian motion and the heat equation] \label{lem:BM HE}
 %     For problem (\ref{def:heat equation}) if $ |\psi|$ is bounded

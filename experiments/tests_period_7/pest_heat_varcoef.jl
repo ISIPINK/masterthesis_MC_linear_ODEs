@@ -6,30 +6,27 @@ using BenchmarkTools
 using Profile
 using PProf
 
-function Yvar(x, t, Δx, a0)
-    binv = 1 / (2 / Δx^2 - a0)
-    g = Geometric(a0 * Δx^2 / 2)
-    ee = Exponential(binv)
-    sol = 0
-    put = 1
+function Yvar(x, t, dx, a0)
+    siginv = 1 / (2 / dx^2 - a0)
+    g = Geometric(a0 * dx^2 / 2)
+    ee = Exponential(siginv)
+    (sol = 0; w = 1)
     sourcejump = rand(g)
     while true
         t -= rand(ee)
-        if t <= 0
-            return sol + put * u(x, 0)
-        end
+        t <= 0 && return sol + w * u(x, 0)
 
-        if sourcejump != 0 # ez to calculate for multiple loops if you stay inside boundary
-            x += rand(Bool) ? Δx : -Δx
-            put *= 2 * (binv / (1 - a0 * Δx^2 / 2)) / Δx^2
+        if sourcejump != 0
+            x += rand(Bool) ? dx : -dx
+            w *= 2 * (siginv / (1 - a0 * dx^2 / 2)) / dx^2
             sourcejump -= 1
-            return x <= 0 ? put * u(0, t) + sol :
-                   x >= 1 ? put * u(1, t) + sol : continue
+            return x <= 0 ? w * u(0, t) + sol :
+                   x >= 1 ? w * u(1, t) + sol : continue
 
         else # this is only done O(tstart) times in an estimator
             sourcejump = rand(g)
-            sol += put * f(x, t) * binv / (a0 * Δx^2 / 2)
-            put *= (a(x, t) - a0) * binv / (a0 * Δx^2 / 2)
+            sol += w * f(x, t) * siginv / (a0 * dx^2 / 2)
+            w *= (a(x, t) - a0) * siginv / (a0 * dx^2 / 2)
         end
     end
 end
