@@ -694,20 +694,21 @@ $Y_{1} \cong Y_{2} \cong y$.
     \end{equation}
 
     To estimate the recursive integral in (\ref{eq:nonlinear example}),
-    we use i.i.d. $Y_1,Y_2 \sim Y$ in following RRVE:
+    we use  $Y_1,Y_2 \text{ i.i.d. } Y$ in following RRVE:
 
     \begin{equation} \label{RRVE: nonlinear example}
-        y(t) \cong Y(t) = -1 + (t-1) Y_1(S) Y_2(S),
+        y(t) \cong Y(t) = -1 + (t-1) Y_1(S_{1}) Y_2(S_{1}),
     \end{equation}
+    \juliacode{julia_code/nonlinear_example.jl}
 
-    where $S \sim \text{Uniform}(1,t)$.
+    where $S_{1} \sim \text{Uniform}(1,t)$.
 \end{example}
 
-\vspace*{0.2cm}
-\begin{pythonn}[implementation of Example \ref{ex:nonlinear example}]\label{py:nonlinear example}
-    \pythoncode{python code/dyy2.py}
-    In this implementation $Y(t)$ only takes values $\{-1,0\}$.
-\end{pythonn}
+% \vspace*{0.2cm}
+% \begin{pythonn}[implementation of Example \ref{ex:nonlinear example}]\label{py:nonlinear example}
+%     \pythoncode{python code/dyy2.py}
+%     In this implementation $Y(t)$ only takes values $\{-1,0\}$.
+% \end{pythonn}
 
 \begin{example}[$e^{E[X]}$] \label{ex:exp int}
     $e^{\int x(s)ds}$ is a common expression encountered when studying ODEs.
@@ -737,6 +738,7 @@ $Y_{1} \cong Y_{2} \cong y$.
             \right)
         \right).
     \end{align}
+    \juliacode{julia_code/expX.jl}
     Sampling (\ref{eq:exp int}) requires a finite amount of samples from $X_{j}$'s
     with probability $1$.
 \end{example}
