@@ -1,7 +1,7 @@
-function Y(t, sig, A::Function, y0)
+function Y(t, sig, A::Function, f::Function, y0)
     (s = -log(rand()) / sig; sol = y0)
     while s < t
-        sol += A(s) * sol ./ sig
+        sol += (A(s) * sol .+ f(s)) ./ sig
         s -= log(rand()) / sig
     end
     sol

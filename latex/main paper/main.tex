@@ -43,7 +43,7 @@ style=alphabetic,
 \usepackage{listings}
 \input{custom commands.tex}
 
-\addbibresource{bibliography2.bib} 
+\addbibresource{bibliography3.bib} 
 \setlength{\parindent}{0pt}
 
 \selectlanguage{English}
@@ -893,23 +893,30 @@ a forward (it is still confusing what is forward and backwards ...) pass of the 
 Poisson time processes don't have this problem because forward paths and backward paths
 have the same distribution.
 
-\begin{definition}[?]
+\begin{definition}[Main Poisson ?]
     \begin{align}
-        y'                              & = A y  \Leftrightarrow                                                      \\
-        y'+\sigma y                     & = (A + \sigma I) y \Leftrightarrow                                          \\
-        e^{-\sigma t} ( e^{\sigma t}y)' & = (A + \sigma I) y    \Leftrightarrow                                       \\
-        y(t)                            & = e^{-\sigma t} y(0) + \int_{0}^{t} e^{(s-t) \sigma} (A + \sigma I ) y(s)ds \\
+        y'                              & = A y + f \Leftrightarrow                                                                          \\
+        y'+\sigma y                     & = (A + \sigma I) y + f\Leftrightarrow                                                              \\
+        e^{-\sigma t} ( e^{\sigma t}y)' & = (A + \sigma I) y + f  \Leftrightarrow                                                            \\
+        y(t)                            & = e^{-\sigma t} y(0) + \int_{0}^{t} e^{(s-t) \sigma} \left(  (A + \sigma I ) y(s) +f(s)\right) ds.
     \end{align}
-    Do following substitution: $e^{(s-t)\sigma} = \tau$:
+    With $\sigma>0$. Do following substitution: $e^{(s-t)\sigma} = \tau$:
     \begin{equation} \label{eq:poisson main}
-        y(t) = \int_{0}^{e^{-\sigma t}}  y(0) d\tau + \int_{e^{-\sigma t}}^{1} \left(  \frac{A}{\sigma} + I\right)  y(s)d\tau
+        y(t) = \int_{0}^{e^{-\sigma t}}  y(0) d\tau + \int_{e^{-\sigma t}}^{1} \left(  \frac{A}{\sigma} + I\right)  y(s) + \frac{f(s)}{\sigma} d\tau
         .
     \end{equation}
+
+    \juliacode{julia_code/main_poisson.jl}
+
     (\ref{eq:poisson main}) can be turned into a RRVE by sampling $\tau \sim U$, no Russian roulette is needed for
     termination because in the recursion the first integral get sampled with probability $1$.
 
-    \juliacode{julia_code/main_poisson.jl}
 \end{definition}
+
+\begin{related}[Main Poisson]
+    A very similar estimator is used to solve ODEs derived from the
+    telegrapher equations in \cite{acebron_monte_2016}.
+\end{related}
 
 \section{Ordinary Differential Equations}
 
