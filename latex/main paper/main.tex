@@ -143,7 +143,7 @@ estimate an integral.
     with the Best Linear Unbiased Estimators (BLUEs), MC Integration
     in that case, can be summarized in the following formula:
     \begin{equation}\label{eq:BLUE}
-        \int_{\Omega} f(s)ds \approx \frac{1}{n} \sum_{i=1}^{n}f(S_{j}),
+        \int_{\Omega} f(s)ds \approx \frac{1}{n} \sum_{j=1}^{n}f(S_{j}),
     \end{equation}
     \juliacode{julia_code/uniform_MC.jl}
     where $n$ is the amount of samples used and $S_{j}$ i.i.d. $\text{Uniform}(\Omega)$.
@@ -204,7 +204,7 @@ When it comes to comparing better trade-offs,
 Information-Based Complexity (IBC) is often employed.
 It's worth mentioning that IBC primarily serves as a
 qualitative measure and does not necessarily imply the
-practicality of an algorithm. While we won't delve into a
+practicality of an algorithm. While we will not delve into a
 rigorous definition of IBC here, it plays a vital role in
 assessing the efficiency of algorithms.
 
@@ -1523,17 +1523,17 @@ using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and looking
     sampling $1$ of the $\tilde{u}$ of the second integral to avoid branching recursion and
     recursing when $\tilde{u}$ isn't known. Note that we can't reverse the order of the Poisson process
     because of termination on the boundary but tail recursion
-    is efficient because sampling $1$ term avoids matrix multiplications completely. \\
-    \vspace{0.3cm}
-    % \juliacode{julia_code/point_estimator_heat.jl}
+    is efficient because sampling $1$ term avoids matrix multiplications completely.
+
     \juliacode{julia_code/point_estimator_heat_tail.jl}
+
+    The point estimator is just the boundary condition
+    for the first passage point from the time space domain for a Poisson time proces and a random walk in space.
+    In this implementation as  $\Delta x \rightarrow 0$  the cost of calculating the first passage time grows
+    $\approx O(\Delta x ^{-2})$ and the process converges to Brownian motion. Note that the estimator needs
+    only $1$ function call from the boundary conditions.
 \end{julia}
 
-From Code \ref{jl:point estimator heat} we can see that the point estimator is just the boundary condition
-for the first passage point from the time space domain for a Poisson time proces and a random walk in space.
-In this implementation as  $\Delta x \rightarrow 0$  the cost of calculating the first passage time grows
-$\approx O(\Delta x ^{-2})$ and the process converges to Brownian motion. Note that the estimator needs
-only $1$ function call from the boundary conditions. \\
 
 A similar derivation can be done for
 \begin{equation}
@@ -1753,13 +1753,13 @@ Similar to RMC for boundary Green's function we can recursively sample first pas
     first passage is almost invalid.
 \end{technique}
 
-\begin{example}[Euler first passage sampling]
+\begin{example}[Euler first passage sampling] \label{ex:euler first passage sampling}
     In this example, we approximately sample the first passage of Brownian motion
     for a parabolic barrier by simulating Brownian motion with the Euler scheme. We plotted
     this in Figure \ref{fig:Euler first passage para}. The accuracy of the sampled first passage
     are $O(\Delta t)$ and the cost to sample is $O(\Delta t ^{-1})$.
 
-
+    \juliacode{julia_code/sample_euler_triangle.jl}
     \begin{figure}[h!]
         \centering
         \includegraphics[width=0.8\textwidth]{plots/Euler first passage para.png}
@@ -1776,39 +1776,33 @@ Similar to RMC for boundary Green's function we can recursively sample first pas
     samples from a triangular barrier so its
     valid states are contained in the parabola generated
     by the Euler scheme. The precomputed samples are created
-    by (\ref{jl:euler FP sampling}) and used to produce first passages
-    in (\ref{jl:recu FP sampling}).
+    by (\ref{ex:euler first passage sampling}).
     Assuming that the error of the base sampler is insignificant.
     The accuracy of the sampled first passage
     are $O(\varepsilon)$ and the cost to sample is $O(\ln \left(\varepsilon^{-1}\right))$.
 
-\end{example}
-
-\begin{julia}[Euler first passage sampling] \label{jl:euler FP sampling}
-    \juliacode{julia_code/sample_euler_triangle.jl}
-\end{julia}
-
-% \begin{pythonn}[Euler first passage sampling] \label{py:euler FP sampling}
-%     \pythoncode{python code/sample_euler_triangle.py}
-% \end{pythonn}
-
-\begin{julia}[recursive first passage sampling] \label{jl:recu FP sampling}
+    \juliacode{julia_code/sample_recu_para.jl}
     The maximum scaling of the triangular barrier that fits
     in the parabola is derived through (\ref{lem:self affine})
     and using the fact that a parabola domain is convex. To dampen barrier
-    overstepping of (\ref{jl:euler FP sampling}) we use a smaller scaling
-    than the maximum. \\
-    \juliacode{julia_code/sample_recu_para.jl}
+    overstepping of (\ref{ex:euler first passage sampling}) we use a smaller scaling
+    than the maximum.
+
     \begin{figure}[h!]
         \centering
         \includegraphics[width=1\textwidth]{plots/recursive first passage para.png}
         \caption{ $50000$ of realizations of recursive first passage sampling produced
-            by (\ref{jl:recu FP sampling}). The precomputed sample of $5000$ first
+            by (\ref{ex:recursive first passage sampling}). The precomputed sample of $5000$ first
             passages of a triangular barrier uses the Euler scheme with
             step size $0.001$.}
         \label{fig:recursive first passage para}
     \end{figure}
-\end{julia}
+
+\end{example}
+
+% \begin{pythonn}[Euler first passage sampling] \label{py:euler FP sampling}
+%     \pythoncode{python code/sample_euler_triangle.py}
+% \end{pythonn}
 
 % \begin{pythonn}[recursive first passage sampling] \label{py:recu FP sampling}
 %     The maximum scaling of the triangular barrier that fits
@@ -1867,7 +1861,7 @@ Similar to RMC for boundary Green's function we can recursively sample first pas
     these paths together. An advantage over normally generating paths
     is that a path can be represented by its subpaths and their scalings
     requiring less memory than a fully stored path. This can be useful
-    in case you need to look back to a part of the path.
+    in case you need to look back to a small part of the path.
     The only downsides are that the time steps are inhomogeneous
     and it requires storing paths for the simpler first passage problem.
 \end{technique}
