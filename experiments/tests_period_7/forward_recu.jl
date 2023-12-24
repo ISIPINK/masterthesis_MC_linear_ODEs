@@ -1,3 +1,4 @@
+# see main poisson example
 function Y(t)
     t += log(rand())
     (t < 0) ? 1 : 2 * Y(t)

@@ -1125,31 +1125,32 @@ samples.
         \end{bmatrix}
         X(S_{1},S_{2}),
     \end{equation}
-    with $W$ some weighting matrix
-    (see Code \ref{py:coupled splitting}),
+    \juliacode{julia_code/coupled_splitting.jl}
+    with $W$ some weighting matrix,
     $S_{1}$ and $S_{2}$ can be chosen
     in various ways. (\ref{RRVE:coupled splitting}) is unbiased in the following way:
     $X(t_{1},t_{2}) \cong [y(t_{1}) \quad y(t_{2})]^{T}$.
 
 \end{example}
 
-\begin{pythonn}[implementation of (\ref{RRVE:coupled splitting})] \label{py:coupled splitting}
-    We implemented (\ref{RRVE:coupled splitting}) with recursion. In this case,
-    a forward implementation is more efficient. \\
-    \pythoncode{python code/coupled_splitting.py}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plots/coupled split.png}
+    \caption{Recursive calls of (\ref{RRVE:coupled splitting}) when
+    calling $X(0)$ once. We chose $X$ to have $20$ points and
+    colored each call. The $S_{j}$ are coupled such that
+    they are equally spaced.
+    The initial conditions for this call are $y(-1)=e^{-1}$ and $y(1)=e^{1}$,
+    with Russian roulette rate $l=1.2$. }
+    \label{fig:coupled splitting}
+\end{figure}
 
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{plots/coupled split.png}
-        \caption{Recursive calls of (\ref{RRVE:coupled splitting}) when
-        calling $X(0)$ once. We chose $X$ to have $20$ points and
-        colored each call. The $S_{j}$ are coupled such that
-        they are equally spaced.
-        The initial conditions for this call are $y(-1)=e^{-1}$ and $y(1)=e^{1}$,
-        with Russian roulette rate $l=1.2$. }
-        \label{fig:coupled splitting}
-    \end{figure}
-\end{pythonn}
+% \begin{pythonn}[implementation of (\ref{RRVE:coupled splitting})] \label{py:coupled splitting}
+%     We implemented (\ref{RRVE:coupled splitting}) with recursion. In this case,
+%     a forward implementation is more efficient. \\
+%     \pythoncode{python code/coupled_splitting.py}
+
+% \end{pythonn}
 
 \begin{related}[coupled splitting]
     Coupled splitting is partly inspired by the approach
