@@ -1776,36 +1776,58 @@ Similar to RMC for boundary Green's function we can recursively sample first pas
     samples from a triangular barrier so its
     valid states are contained in the parabola generated
     by the Euler scheme. The precomputed samples are created
-    by (\ref{py:euler FP sampling}) and used to produce first passages
-    in (\ref{py:recu FP sampling}).
+    by (\ref{jl:euler FP sampling}) and used to produce first passages
+    in (\ref{jl:recu FP sampling}).
     Assuming that the error of the base sampler is insignificant.
     The accuracy of the sampled first passage
     are $O(\varepsilon)$ and the cost to sample is $O(\ln \left(\varepsilon^{-1}\right))$.
 
 \end{example}
 
-\begin{pythonn}[Euler first passage sampling] \label{py:euler FP sampling}
-    \pythoncode{python code/sample_euler_triangle.py}
-\end{pythonn}
+\begin{julia}[Euler first passage sampling] \label{jl:euler FP sampling}
+    \juliacode{julia_code/sample_euler_triangle.jl}
+\end{julia}
 
-\begin{pythonn}[recursive first passage sampling] \label{py:recu FP sampling}
+% \begin{pythonn}[Euler first passage sampling] \label{py:euler FP sampling}
+%     \pythoncode{python code/sample_euler_triangle.py}
+% \end{pythonn}
+
+\begin{julia}[recursive first passage sampling] \label{jl:recu FP sampling}
     The maximum scaling of the triangular barrier that fits
     in the parabola is derived through (\ref{lem:self affine})
     and using the fact that a parabola domain is convex. To dampen barrier
-    overstepping of (\ref{py:euler FP sampling}) we use a smaller scaling
+    overstepping of (\ref{jl:euler FP sampling}) we use a smaller scaling
     than the maximum. \\
-    \pythoncode{python code/sample_recu_para.py}
-
+    \juliacode{julia_code/sample_recu_para.jl}
     \begin{figure}[h!]
         \centering
         \includegraphics[width=1\textwidth]{plots/recursive first passage para.png}
         \caption{ $50000$ of realizations of recursive first passage sampling produced
-            by (\ref{py:recu FP sampling}). The precomputed sample of $5000$ first
+            by (\ref{jl:recu FP sampling}). The precomputed sample of $5000$ first
             passages of a triangular barrier uses the Euler scheme with
             step size $0.001$.}
         \label{fig:recursive first passage para}
     \end{figure}
-\end{pythonn}
+\end{julia}
+
+% \begin{pythonn}[recursive first passage sampling] \label{py:recu FP sampling}
+%     The maximum scaling of the triangular barrier that fits
+%     in the parabola is derived through (\ref{lem:self affine})
+%     and using the fact that a parabola domain is convex. To dampen barrier
+%     overstepping of (\ref{py:euler FP sampling}) we use a smaller scaling
+%     than the maximum. \\
+%     \pythoncode{python code/sample_recu_para.py}
+
+%     \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=1\textwidth]{plots/recursive first passage para.png}
+%         \caption{ $50000$ of realizations of recursive first passage sampling produced
+%             by (\ref{py:recu FP sampling}). The precomputed sample of $5000$ first
+%             passages of a triangular barrier uses the Euler scheme with
+%             step size $0.001$.}
+%         \label{fig:recursive first passage para}
+%     \end{figure}
+% \end{pythonn}
 
 \begin{related}[recursive first passage sampling]
     The original walk on spheres is a recursive first passage algorithm.

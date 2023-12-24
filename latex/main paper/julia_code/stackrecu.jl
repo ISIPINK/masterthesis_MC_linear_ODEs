@@ -4,7 +4,7 @@ function sample_path(t)
         t *= rand()
         push!(res, t)
     end
-    return res
+    res
 end
 
 function X(t, a)
@@ -15,5 +15,5 @@ function X(t, a)
         sol = q + A * sol
         pop!(path)
     end
-    return sol
+    sol
 end
