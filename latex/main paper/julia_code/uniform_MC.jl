@@ -1,0 +1,1 @@
+uniform_MC_int(f, n) = sum(f(rand()) for _ in 1:n) / n

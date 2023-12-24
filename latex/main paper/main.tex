@@ -93,9 +93,9 @@ The most important fields we draw from are:
           which contain many practical recursive
           MC techniques,
 
-    \item  stochastic gradient descent literature
-          that is connected through continuous gradient descent
-          see \cite{huang_hybrid_2017} for an introduction,
+          % \item  stochastic gradient descent literature
+          %       that is connected through continuous gradient descent
+          %       see \cite{huang_hybrid_2017} for an introduction,
 
     \item  Information-Based Complexity (IBC) literature, which was
           unexpected to us, there are some interesting
@@ -145,6 +145,7 @@ estimate an integral.
     \begin{equation}\label{eq:BLUE}
         \int_{\Omega} f(s)ds \approx \frac{1}{n} \sum_{i=1}^{n}f(S_{j}),
     \end{equation}
+    \juliacode{julia_code/uniform_MC.jl}
     where $n$ is the amount of samples used and $S_{j}$ i.i.d. $\text{Uniform}(\Omega)$.
 \end{definition}
 
@@ -893,8 +894,7 @@ a forward (it is still confusing what is forward and backwards ...) pass of the 
 Poisson time processes don't have this problem because forward paths and backward paths
 have the same distribution.
 
-\begin{definition}[Main Poisson ?] \label{def:main poisson}
-
+\begin{definition}[main Poisson] \label{def:main poisson}
     \begin{align}
         y'                              & = A y + f \Leftrightarrow                                                                          \\
         y'+\sigma y                     & = (A + \sigma I) y + f\Leftrightarrow                                                              \\
@@ -916,7 +916,7 @@ have the same distribution.
 
 \end{definition}
 
-\begin{related}[Main Poisson]
+\begin{related}[main Poisson]
     A very similar estimator is used to solve ODEs derived from the
     telegrapher equations in \cite{acebron_monte_2016}.
 \end{related}
@@ -1221,29 +1221,30 @@ this behavior.
                                  \end{cases}.
         \label{eq:RRMC IVP outer}
     \end{align}
+    \juliacode{julia_code/RRMC_IVP.jl}
     We refer to (\ref{eq:RRMC IVP inner}) as the inner recursion and
     (\ref{eq:RRMC IVP outer}) as the outer recursion of the recursion in
     recursion.
+    The measured RMSE for estimating $y(t)$ is of the order
+    $O\left(h^{1.5} \right)$, where $h$ represents
+    the step size. For the implementation we used a scaled version
+    of the time process from Example \ref{ex: russian roulette}
+    for the inner recursion, such that the average number of total inner recursion calls
+    is $e n$, where $n$ represents the total number of outer recursion calls.
 \end{example}
 
-\begin{pythonn}[implementation of Example \ref{ex:RRMC IVP}] \label{py:RRMC IVP}
-    \pythoncode{python code/RRMC_IVP.py}
+% \begin{pythonn}[implementation of Example \ref{ex:RRMC IVP}] \label{py:RRMC IVP}
+%     \pythoncode{python code/RRMC_IVP.py}
 
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{plots/RRMC IVP.png}
-        \caption{Recursive calls of (\ref{eq:RRMC IVP outer})
-            when calling $Y_{\text{out}}(3,h)$ $30$ times for different $h$.  }
-        \label{fig:RRMC IVP}
-    \end{figure}
-\end{pythonn}
+%     \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{plots/RRMC IVP.png}
+%         \caption{Recursive calls of (\ref{eq:RRMC IVP outer})
+%             when calling $Y_{\text{out}}(3,h)$ $30$ times for different $h$.  }
+%         \label{fig:RRMC IVP}
+%     \end{figure}
+% \end{pythonn}
 
-The measured RMSE of $Y(t)$ estimating $y(t)$ in Example
-\ref{ex:RRMC IVP} is of the order $O\left(h^{1.5} \right)$, where $h$ represents
-the step size.
-We used a scaled version of the time process from Example \ref{ex: russian roulette}
-for the inner recursion, such that the average number of total inner recursion calls
-is $e n$, where $n$ represents the total number of outer recursion calls.
 
 \begin{conjecture}[local RMSE RMC]
     Consider a general linear IVP:
@@ -1264,7 +1265,7 @@ is $e n$, where $n$ represents the total number of outer recursion calls.
 \end{conjecture}
 
 
-We can improve RRMC with control variates.
+To achieve a higher order of convergence RRMC can be combined with control variates.
 \begin{example}[CV RRMC $y_t=y$]\label{ex:CV RRMC IVP}
     Let us control variate Example \ref{ex:RRMC IVP}.
 
@@ -1313,97 +1314,98 @@ We can improve RRMC with control variates.
 Similar to explicit solvers, RRMC performs poorly on stiff problems.
 We attempted to make RRMC more like implicit solvers but this proved difficult.
 Instead, we believe that an approach more like exponential integrators
-is more viable. We experimented with Diagonal RRMC in this direction with
-little success.
+is more viable.
+% We experimented with Diagonal RRMC in this direction with
+% little success.
 
-\begin{definition}[Diagonal RRMC] \label{def:DRRMC}
-    Consider a general linear ODE IVP problem:
-    \begin{equation}
-        x' = Ax+g, \quad x(0)= x_{0}.
-    \end{equation}
-    In some cases, repeatedly multiplying by matrix $A$ can lead to instability.
-    Diagonal RRMC attempts to address this issue by adding a positive diagonal matrix $D$
-    to matrix $A$ .
+% \begin{definition}[Diagonal RRMC] \label{def:DRRMC}
+%     Consider a general linear ODE IVP problem:
+%     \begin{equation}
+%         x' = Ax+g, \quad x(0)= x_{0}.
+%     \end{equation}
+%     In some cases, repeatedly multiplying by matrix $A$ can lead to instability.
+%     Diagonal RRMC attempts to address this issue by adding a positive diagonal matrix $D$
+%     to matrix $A$ .
 
-    \begin{equation}
-        x' + Dx = (A+D)x+g.
-    \end{equation}
+%     \begin{equation}
+%         x' + Dx = (A+D)x+g.
+%     \end{equation}
 
-    The following integral equation can be derived by using integrating factor:
+%     The following integral equation can be derived by using integrating factor:
 
-    \begin{equation}\label{eq:int eq DRRMC}
-        x(t)= e^{D(t_{n}-t)}x(t_{n}) + \int_{t_{n}}^{t} e^{D(s-t)}(A(s)+D)x(s)ds+\int_{t_{n}}^{t} e^{D(s-t)}g(s)ds.
-    \end{equation}
+%     \begin{equation}\label{eq:int eq DRRMC}
+%         x(t)= e^{D(t_{n}-t)}x(t_{n}) + \int_{t_{n}}^{t} e^{D(s-t)}(A(s)+D)x(s)ds+\int_{t_{n}}^{t} e^{D(s-t)}g(s)ds.
+%     \end{equation}
 
-    The recursive integral has the following trivial control variate:
+%     The recursive integral has the following trivial control variate:
 
-    \begin{equation}\label{eq: CV DRRMC}
-        \int_{t_{n}}^{t}  e^{D(s-t)}(A(t_{n})+D)x(t_{n})ds = D^{-1}(I-e^{D(t_{n}-t)})(A(t_{n})+D)x(t_{n}).
-    \end{equation}
+%     \begin{equation}\label{eq: CV DRRMC}
+%         \int_{t_{n}}^{t}  e^{D(s-t)}(A(t_{n})+D)x(t_{n})ds = D^{-1}(I-e^{D(t_{n}-t)})(A(t_{n})+D)x(t_{n}).
+%     \end{equation}
 
-    Note that $D$ may be chosen differently for every outer recursion.
-\end{definition}
+%     Note that $D$ may be chosen differently for every outer recursion.
+% \end{definition}
 
-\begin{example}[DRRMC] \label{ex:DRRMC}
-    Consider:
-    \begin{equation}
-        x'= Ax, x(0)=
-        \begin{bmatrix}
-            1 \\
-            0
-        \end{bmatrix}.
-    \end{equation}
+% \begin{example}[DRRMC] \label{ex:DRRMC}
+%     Consider:
+%     \begin{equation}
+%         x'= Ax, x(0)=
+%         \begin{bmatrix}
+%             1 \\
+%             0
+%         \end{bmatrix}.
+%     \end{equation}
 
-    With
+%     With
 
-    \begin{equation}
-        A = \begin{bmatrix}
-            0     & 1     \\
-            -1000 & -1001
-        \end{bmatrix}.
-    \end{equation}
+%     \begin{equation}
+%         A = \begin{bmatrix}
+%             0     & 1     \\
+%             -1000 & -1001
+%         \end{bmatrix}.
+%     \end{equation}
 
-    This has the following solution:
+%     This has the following solution:
 
-    \begin{equation}
-        x(t) = \frac{1}{999}
-        \begin{bmatrix}
-            -  e^{-1000t}+ 1000 e^{-t} \\
-            1000 e^{-1000t}- 1000e^{-t}
-        \end{bmatrix}.
-    \end{equation}
+%     \begin{equation}
+%         x(t) = \frac{1}{999}
+%         \begin{bmatrix}
+%             -  e^{-1000t}+ 1000 e^{-t} \\
+%             1000 e^{-1000t}- 1000e^{-t}
+%         \end{bmatrix}.
+%     \end{equation}
 
-    We choose $D$ fixed across outer recursions:
+%     We choose $D$ fixed across outer recursions:
 
-    \begin{equation}
-        D = \begin{bmatrix}
-            1 & 0    \\
-            0 & 1000
-        \end{bmatrix}.
-    \end{equation}
+%     \begin{equation}
+%         D = \begin{bmatrix}
+%             1 & 0    \\
+%             0 & 1000
+%         \end{bmatrix}.
+%     \end{equation}
 
-    We make a convergence plot for this example with
-    (\ref{eq:int eq DRRMC}) with control variate
-    (\ref{eq: CV DRRMC}) implemented with recursion in recursion
-    on Figure \ref{fig:DRRMC}.
+%     We make a convergence plot for this example with
+%     (\ref{eq:int eq DRRMC}) with control variate
+%     (\ref{eq: CV DRRMC}) implemented with recursion in recursion
+%     on Figure \ref{fig:DRRMC}.
 
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{plots/DRRMC.png}
-        \caption{Log-log plot of the error of Example \ref{ex:DRRMC}.
-            We plotted the second component of the error transparent.
-        }
-        \label{fig:DRRMC}
-    \end{figure}
+%     \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{plots/DRRMC.png}
+%         \caption{Log-log plot of the error of Example \ref{ex:DRRMC}.
+%             We plotted the second component of the error transparent.
+%         }
+%         \label{fig:DRRMC}
+%     \end{figure}
 
-\end{example}
+% \end{example}
 
-\begin{related}[DRRMC]
-    DRRMC is inspired by the $\bar{\sigma}$ parameter in \cite{sawhney_grid-free_2022}.
-    However, instead of relying on importance sampling, we employ control
-    variates to address the nonlinearity introduced by the exponential
-    function.
-\end{related}
+% \begin{related}[DRRMC]
+%     DRRMC is inspired by the $\bar{\sigma}$ parameter in \cite{sawhney_grid-free_2022}.
+%     However, instead of relying on importance sampling, we employ control
+%     variates to address the nonlinearity introduced by the exponential
+%     function.
+% \end{related}
 
 \section{Brownian Motion}
 
