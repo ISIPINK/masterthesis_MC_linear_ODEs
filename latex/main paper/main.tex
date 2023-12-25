@@ -56,7 +56,7 @@ style=alphabetic,
 \newpage
 
 \begin{abstract}
-    \input{english_abstract.tex}
+  \input{english_abstract.tex}
 \end{abstract}
 
 
@@ -89,21 +89,21 @@ Other literature is a bit further away.
 The most important fields we draw from are:
 
 \begin{itemize}
-    \item rendering and WoS/first passage literature
-          which contain many practical recursive
-          MC techniques,
+  \item rendering and WoS/first passage literature
+        which contain many practical recursive
+        MC techniques,
 
-          % \item  stochastic gradient descent literature
-          %       that is connected through continuous gradient descent
-          %       see \cite{huang_hybrid_2017} for an introduction,
+        % \item  stochastic gradient descent literature
+        %       that is connected through continuous gradient descent
+        %       see \cite{huang_hybrid_2017} for an introduction,
 
-    \item  Information-Based Complexity (IBC) literature, which was
-          unexpected to us, there are some interesting
-          biased algorithms applied on ODEs that achieve optimal
-          IBC rates for RMSE for some smoothness classes, similar to us
-          \citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011}
-          \cite{daun_randomized_2011} uses control variates
-          to achieve optimal IBC.
+  \item  Information-Based Complexity (IBC) literature, which was
+        unexpected to us, there are some interesting
+        biased algorithms applied on ODEs that achieve optimal
+        IBC rates for RMSE for some smoothness classes, similar to us
+        \citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011}
+        \cite{daun_randomized_2011} uses control variates
+        to achieve optimal IBC.
 \end{itemize}
 
 A recurrent theme in these fields is that optimal IBC
@@ -128,25 +128,25 @@ and variance reduction techniques.
 In this subsection, we review basic MC theory. \\
 
 \begin{notation}[Random Variables]
-    Random variables (RVs) will be denoted with capital letters, e.g., $X$, $Y$ or $Z$.
+  Random variables (RVs) will be denoted with capital letters, e.g., $X$, $Y$ or $Z$.
 \end{notation}
 
 
 MC integration is any method that involves random sampling to
 estimate an integral.
 \begin{definition}[Uniform Monte Carlo Integration]
-    We define uniform MC integration of
-    $f:\mathbb{R}^{n} \rightarrow \mathbb{R}^{m}$
-    over $\Omega \subset \mathbb{R}^{n}$ as
-    an estimation of the expected value of $f(S)$, with
-    $S \sim \text{Uniform}(\Omega)$. Combined
-    with the Best Linear Unbiased Estimators (BLUEs), MC Integration
-    in that case, can be summarized in the following formula:
-    \begin{equation}\label{eq:BLUE}
-        \int_{\Omega} f(s)ds \approx \frac{1}{n} \sum_{j=1}^{n}f(S_{j}),
-    \end{equation}
-    \juliacode{julia_code/uniform_MC.jl}
-    where $n$ is the amount of samples used and $S_{j}$ i.i.d. $\text{Uniform}(\Omega)$.
+  We define uniform MC integration of
+  $f:\mathbb{R}^{n} \rightarrow \mathbb{R}^{m}$
+  over $\Omega \subset \mathbb{R}^{n}$ as
+  an estimation of the expected value of $f(S)$, with
+  $S \sim \text{Uniform}(\Omega)$. Combined
+  with the Best Linear Unbiased Estimators (BLUEs), MC Integration
+  in that case, can be summarized in the following formula:
+  \begin{equation}\label{eq:BLUE}
+    \int_{\Omega} f(s)ds \approx \frac{1}{n} \sum_{j=1}^{n}f(S_{j}),
+  \end{equation}
+  \juliacode{julia_code/uniform_MC.jl}
+  where $n$ is the amount of samples used and $S_{j}$ i.i.d. $\text{Uniform}(\Omega)$.
 \end{definition}
 
 Because estimators are random variables (RVs), the cost and error are also random
@@ -158,10 +158,10 @@ using statistics. \\
 Accuracy comparisons between estimators
 are typically conducted with (root-)mean-square error (RMSE).
 \begin{definition}[Root-Mean-Square Error]
-    We define the Root-Mean-Square Error (RMSE) of an estimator $\tilde{\theta}$ for $\theta$  as follows:
-    \begin{equation}
-        \text{RMSE}(\tilde{\theta}) = \sqrt{E[||\tilde{\theta}-\theta||^{2}_{2}]}.
-    \end{equation}
+  We define the Root-Mean-Square Error (RMSE) of an estimator $\tilde{\theta}$ for $\theta$  as follows:
+  \begin{equation}
+    \text{RMSE}(\tilde{\theta}) = \sqrt{E[||\tilde{\theta}-\theta||^{2}_{2}]}.
+  \end{equation}
 \end{definition}
 
 Even comparisons based on RMSE can be counterintuitive; consider Stein's paradox,
@@ -185,16 +185,16 @@ between average simulation time and variance which motivate
 the definition of MC efficiency for comparing estimators.
 
 \begin{definition}[Monte Carlo Efficiency]
-    Define MC efficiency of an
-    estimator $F$ as follows:
-    \begin{equation}
-        \epsilon[F]=\frac{1}{\text{Var}(F) T(F)},
-    \end{equation}
-    with $T$ the average simulation time.
+  Define MC efficiency of an
+  estimator $F$ as follows:
+  \begin{equation}
+    \epsilon[F]=\frac{1}{\text{Var}(F) T(F)},
+  \end{equation}
+  with $T$ the average simulation time.
 \end{definition}
 
 \begin{related}[Monte Carlo Efficiency]
-    For a reference see \cite{veach_robust_1997} page 45.
+  For a reference see \cite{veach_robust_1997} page 45.
 \end{related}
 
 For smooth $1$ dimensional integration, the linear trade-off between
@@ -209,17 +209,17 @@ rigorous definition of IBC here, it plays a vital role in
 assessing the efficiency of algorithms.
 
 \begin{definition}[Information-Based Complexity]
-    IBC is a way to describe asymptotically (for increasing accuracy/function calls)
-    the trade-off between the average amount of function calls (information)
-    needed and accuracy.
+  IBC is a way to describe asymptotically (for increasing accuracy/function calls)
+  the trade-off between the average amount of function calls (information)
+  needed and accuracy.
 \end{definition}
 
 \begin{example}[IBC of (\ref{eq:BLUE})]
-    In (\ref{eq:BLUE}) the function calls trades of
-    linearly with variance. For $n$ function calls,
-    the RMSE $= O\left(\frac{1}{\sqrt{n}}\right)$ or equivalently, if we want a
-    RMSE of $\varepsilon$ we would need $O\left(\frac{1}{\varepsilon^{2}}\right)$
-    function calls.
+  In (\ref{eq:BLUE}) the function calls trades of
+  linearly with variance. For $n$ function calls,
+  the RMSE $= O\left(\frac{1}{\sqrt{n}}\right)$ or equivalently, if we want a
+  RMSE of $\varepsilon$ we would need $O\left(\frac{1}{\varepsilon^{2}}\right)$
+  function calls.
 \end{example}
 
 
@@ -229,29 +229,29 @@ with the following  initial value problem:
 
 
 \begin{equation} \label{ydy}
-    y_t = y, \quad y(0) = 1.
+  y_t = y, \quad y(0) = 1.
 \end{equation}
 
 
 By integrating both sides of (\ref{ydy}), we obtain:
 
 \begin{equation} \label{Integral ydy}
-    y(t) = 1 + \int_{0}^{t} y(s) ds.
+  y(t) = 1 + \int_{0}^{t} y(s) ds.
 \end{equation}
 
 (\ref{Integral ydy}) represents a recursive integral equation,
 specifically, a linear Volterra integral equation of the second type.
 
 \begin{notation}[$U,U_{j}$]
-    We will frequently use the uniform distribution, so we will abbreviate it
-    \begin{equation}
-        U_{j}  \text{ i.i.d Uniform}(0,1).
-    \end{equation}
+  We will frequently use the uniform distribution, so we will abbreviate it
+  \begin{equation}
+    U_{j}  \text{ i.i.d Uniform}(0,1).
+  \end{equation}
 
-    The subscripts are used to clarify independence
-    between uniforms. However,
-    when there is no risk of confusion,
-    we simply use $U$.
+  The subscripts are used to clarify independence
+  between uniforms. However,
+  when there is no risk of confusion,
+  we simply use $U$.
 
 \end{notation}
 
@@ -259,7 +259,7 @@ By estimating the recursive integral in (\ref{Integral ydy})
 using MC, we derive the following estimator:
 
 \begin{equation}
-    Y(t) = 1 + t  y(Ut).
+  Y(t) = 1 + t  y(Ut).
 \end{equation}
 
 
@@ -272,7 +272,7 @@ By replacing $y$ with $Y$ itself, we obtain a recursive
 expression for $Y$:
 
 \begin{equation} \label{recursive RV}
-    Y(t) = 1 + t  Y(Ut).
+  Y(t) = 1 + t  Y(Ut).
 \end{equation}
 
 \juliacode{julia_code/RMC_example.jl}
@@ -281,10 +281,10 @@ expression for $Y$:
 Equation (RRVE).
 
 \begin{definition}[Recursive Random Variable
-        Equation (RRVE)]
-    A Recursive Random Variable Equation (RRVE) is
-    an equation that defines a
-    family of random variables in terms of itself.
+    Equation (RRVE)]
+  A Recursive Random Variable Equation (RRVE) is
+  an equation that defines a
+  family of random variables in terms of itself.
 \end{definition}
 
 If one were to try to simulate $Y$ with (\ref{recursive RV}),
@@ -321,9 +321,9 @@ about the problem or computational costs. \\
 We will frequently interchange RVs with the same expected values.
 This is why we introduce the following notation.
 \begin{notation}[$\cong$]
-    \[
-        X \cong Y \iff E[X]=E[Y]
-        .\]
+  \[
+    X \cong Y \iff E[X]=E[Y]
+    .\]
 \end{notation}
 
 Russian roulette is an MC technique commonly employed in rendering algorithms.
@@ -331,81 +331,81 @@ The concept behind Russian roulette is to replace an RV with a
 less computationally expensive approximation sometimes.
 
 \begin{definition}[Russian roulette] \label{Russian roulette}
-    We define Russian roulette on $X$ with free parameters
-    $Y_{1} \cong Y_{2}$, $p \in [0,1]$
-    and $U$ independent of $Y_{1}$, $Y_{2}$, $X$
-    as follows:
+  We define Russian roulette on $X$ with free parameters
+  $Y_{1} \cong Y_{2}$, $p \in [0,1]$
+  and $U$ independent of $Y_{1}$, $Y_{2}$, $X$
+  as follows:
 
-    \begin{equation}
-        X \cong
-        \begin{cases}
-            \frac{1}{p}(X - (1-p)Y_{1}) & \text{ if } U < p \\
-            Y_{2}                       & \text{ else }
-        \end{cases}.
-    \end{equation}
+  \begin{equation}
+    X \cong
+    \begin{cases}
+      \frac{1}{p}(X - (1-p)Y_{1}) & \text{ if } U < p \\
+      Y_{2}                       & \text{ else }
+    \end{cases}.
+  \end{equation}
 \end{definition}
 
 
 \begin{notation}[$B(p)$]
-    Often Russian roulette will be used with $Y_{1}= Y_{2}= 0$.
-    In that case, we use Bernoulli variables to shorten notation.
-    \begin{equation}
-        B(p) \sim \text{Bernoulli}(p) =
-        \begin{cases}
-            1 & \text{ if } U<p \\
-            0 & \text{ else }
-        \end{cases} .
-    \end{equation}
+  Often Russian roulette will be used with $Y_{1}= Y_{2}= 0$.
+  In that case, we use Bernoulli variables to shorten notation.
+  \begin{equation}
+    B(p) \sim \text{Bernoulli}(p) =
+    \begin{cases}
+      1 & \text{ if } U<p \\
+      0 & \text{ else }
+    \end{cases} .
+  \end{equation}
 \end{notation}
 
 \begin{example}[Russian roulette] \label{ex:simple russian roulette}
-    Let us consider the estimation of $E[Z]$, where $Z$ is defined as follows:
+  Let us consider the estimation of $E[Z]$, where $Z$ is defined as follows:
 
-    \begin{equation}
-        Z = U + \frac{f(U)}{1000}.
-    \end{equation}
+  \begin{equation}
+    Z = U + \frac{f(U)}{1000}.
+  \end{equation}
 
-    Here, $f:\mathbb{R} \rightarrow [0,1]$ is an expensive function to compute.
-    Directly estimating $E[Z]$ would involve evaluating $f$ for each sample,
-    which can be computationally costly. To address this, we can modify $Z$ to:
+  Here, $f:\mathbb{R} \rightarrow [0,1]$ is an expensive function to compute.
+  Directly estimating $E[Z]$ would involve evaluating $f$ for each sample,
+  which can be computationally costly. To address this, we can modify $Z$ to:
 
-    \begin{equation}
-        Z \cong U + B\left(\frac{1}{100}\right)\frac{f(U)}{10}.
-    \end{equation}
+  \begin{equation}
+    Z \cong U + B\left(\frac{1}{100}\right)\frac{f(U)}{10}.
+  \end{equation}
 
-    This requires calling $f$ on
-    average once every $100$ samples. This significantly reduces the
-    computational burden while increasing the variance slightly thereby increasing
-    the MC efficiency.\\
+  This requires calling $f$ on
+  average once every $100$ samples. This significantly reduces the
+  computational burden while increasing the variance slightly thereby increasing
+  the MC efficiency.\\
 \end{example}
 
 \begin{related}[Example \ref{ex:simple russian roulette}]
-    In Example \ref{ex:simple russian roulette}, it is also
-    possible to estimate the expectations of the $2$ terms
-    of $Z$ separately. Given the variances and computational costs
-    of both terms, you can calculate the asymptotically optimal division
-    of samples for each term. However, this is no longer the case with RMC.
-    In \cite{rath_ears_2022}, a method is presented to estimate the optimal
-    Russian roulette/splitting factors for rendering.
+  In Example \ref{ex:simple russian roulette}, it is also
+  possible to estimate the expectations of the $2$ terms
+  of $Z$ separately. Given the variances and computational costs
+  of both terms, you can calculate the asymptotically optimal division
+  of samples for each term. However, this is no longer the case with RMC.
+  In \cite{rath_ears_2022}, a method is presented to estimate the optimal
+  Russian roulette/splitting factors for rendering.
 \end{related}
 
 
 \begin{example}[Russian roulette on (\ref{recursive RV})] \label{ex: russian roulette}
-    To address the issue of indefinite recursion in
-    (\ref{recursive RV}), Russian roulette can be employed
-    by approximating the value of $Y$ near $t = 0$ with $1$
-    sometimes. Specifically, we replace the coefficient $t$
-    in front of the recursive term with $B(t)$ when $t < 1$.
-    The modified recursive expression for $Y(t)$ for $t<1$ becomes:
+  To address the issue of indefinite recursion in
+  (\ref{recursive RV}), Russian roulette can be employed
+  by approximating the value of $Y$ near $t = 0$ with $1$
+  sometimes. Specifically, we replace the coefficient $t$
+  in front of the recursive term with $B(t)$ when $t < 1$.
+  The modified recursive expression for $Y(t)$ for $t<1$ becomes:
 
-    \begin{equation}\label{eq:rr example}
-        y(t) \cong Y(t) = 1 + B(t)Y(Ut)
-    \end{equation}
-    \juliacode{julia_code/RR_example.jl}
+  \begin{equation}\label{eq:rr example}
+    y(t) \cong Y(t) = 1 + B(t)Y(Ut)
+  \end{equation}
+  \juliacode{julia_code/RR_example.jl}
 
-    Interestingly, $\forall t \le 1:Y(t)$ is the number of recursion calls
-    to sample $Y(t)$ such that the average number of recursion
-    calls to sample $Y(t)$ equals $e^{t}$.
+  Interestingly, $\forall t \le 1:Y(t)$ is the number of recursion calls
+  to sample $Y(t)$ such that the average number of recursion
+  calls to sample $Y(t)$ equals $e^{t}$.
 
 \end{example}
 
@@ -431,11 +431,11 @@ we increase it by using more samples (i.e. splitting the sample) which
 reduces the variance.
 
 \begin{definition}[splitting] \label{def:splitting}
-    Splitting $X$ refers to utilizing multiple $X_{j} \sim X$ (not necessarily independent) to
-    reduce variance by taking their average:
-    \begin{equation}
-        X \cong \frac{1}{N} \sum_{j=1}^{N} X_{j}.
-    \end{equation}
+  Splitting $X$ refers to utilizing multiple $X_{j} \sim X$ (not necessarily independent) to
+  reduce variance by taking their average:
+  \begin{equation}
+    X \cong \frac{1}{N} \sum_{j=1}^{N} X_{j}.
+  \end{equation}
 \end{definition}
 
 Splitting the recursive term in an RRVE can result in additive branching recursion,
@@ -446,22 +446,22 @@ we will explore the utilization of coupled recursion as a technique to mitigate
 additive branching recursion in RRVEs (see Example \ref{ex:coupled splitting}).
 
 \begin{example}[splitting on (\ref{eq:rr example})] \label{ex:splitting}
-    We can "split" the recursive term of (\ref{eq:rr example})
-    into two parts as follows:
+  We can "split" the recursive term of (\ref{eq:rr example})
+  into two parts as follows:
 
-    \begin{equation}\label{eq:splitting}
-        y(t) \cong Y(t) =1 + \frac{B(t)}{2}(Y_{1}(U_{1}t) + Y_{2}(U_{1}t))
-    \end{equation}
+  \begin{equation}\label{eq:splitting}
+    y(t) \cong Y(t) =1 + \frac{B(t)}{2}(Y_{1}(U_{1}t) + Y_{2}(U_{1}t))
+  \end{equation}
 
-    \juliacode{julia_code/split_example1.jl}
+  \juliacode{julia_code/split_example1.jl}
 
-    \begin{equation}\label{eq:splitting2}
-        y(t) \cong Y(t) =1 + \frac{B(t)}{2}(Y_{1}(U_{1}t) + Y_{2}(U_{2}t))
-    \end{equation}
+  \begin{equation}\label{eq:splitting2}
+    y(t) \cong Y(t) =1 + \frac{B(t)}{2}(Y_{1}(U_{1}t) + Y_{2}(U_{2}t))
+  \end{equation}
 
-    \juliacode{julia_code/split_example2.jl}
+  \juliacode{julia_code/split_example2.jl}
 
-    where $Y_{1}(t)$ and $Y_{2}(t)$ are i.i.d. with $Y(t)$.
+  where $Y_{1}(t)$ and $Y_{2}(t)$ are i.i.d. with $Y(t)$.
 \end{example}
 
 % \vspace{0.2cm}
@@ -471,35 +471,35 @@ additive branching recursion in RRVEs (see Example \ref{ex:coupled splitting}).
 % \end{pythonn}
 
 \begin{definition}[control variates] \label{CV}
-    Define control variating $f(U)$ with $\tilde{f}$ an approximation of $f$ as:
+  Define control variating $f(U)$ with $\tilde{f}$ an approximation of $f$ as:
 
-    \begin{align}
-        f(U) & \cong f(U_{1})-\tilde{f}(U_{1}) + E[\tilde{f}(U)] \\
-             & = (f-\tilde{f})(U_{1}) + E[\tilde{f}(U)]
-        .
-    \end{align}
+  \begin{align}
+    f(U) & \cong f(U_{1})-\tilde{f}(U_{1}) + E[\tilde{f}(U)] \\
+         & = (f-\tilde{f})(U_{1}) + E[\tilde{f}(U)]
+    .
+  \end{align}
 
-    Note that control variating requires the evaluation of
-    $E[\tilde{f}(U)]$.  When this is estimated instead, we refer to it as $2$-level MC
-    and recursively applying $2$-level is multilevel MC.
+  Note that control variating requires the evaluation of
+  $E[\tilde{f}(U)]$.  When this is estimated instead, we refer to it as $2$-level MC
+  and recursively applying $2$-level is multilevel MC.
 \end{definition}
 
 
 \begin{example}[control variate on (\ref{recursive RV})] \label{ex:CV}
-    To create a control variate for (\ref{recursive RV}) that
-    effectively reduces variance, we employ the approximation
-    $y(t) \approx \tilde{y} =1+t$ and define the modified recursive term as follows:
+  To create a control variate for (\ref{recursive RV}) that
+  effectively reduces variance, we employ the approximation
+  $y(t) \approx \tilde{y} =1+t$ and define the modified recursive term as follows:
 
-    \begin{align}
-        y(t) \cong Y(t) & = 1 + t(Y(U_{1}t) - \tilde{y}(U_{1}t) + E[\tilde{y}(Ut)])     \\
-                        & = 1 + t \left( E[1 + Ut]  \right) + t(Y(U_{1}t) - 1 - U_{1}t) \\
-                        & = 1 + t + \frac{t^2}{2} + t(Y(U_{1}t) - 1 - U_{1}t).
-    \end{align}
-    \juliacode{julia_code/CV_example.jl}
+  \begin{align}
+    y(t) \cong Y(t) & = 1 + t(Y(U_{1}t) - \tilde{y}(U_{1}t) + E[\tilde{y}(Ut)])     \\
+                    & = 1 + t \left( E[1 + Ut]  \right) + t(Y(U_{1}t) - 1 - U_{1}t) \\
+                    & = 1 + t + \frac{t^2}{2} + t(Y(U_{1}t) - 1 - U_{1}t).
+  \end{align}
+  \juliacode{julia_code/CV_example.jl}
 
-    Note that while we could cancel out the constant term
-    of the control variate, doing so would have a negative impact
-    on the Russian roulette implemented.
+  Note that while we could cancel out the constant term
+  of the control variate, doing so would have a negative impact
+  on the Russian roulette implemented.
 \end{example}
 
 % \vspace*{0.2cm}
@@ -508,8 +508,8 @@ additive branching recursion in RRVEs (see Example \ref{ex:coupled splitting}).
 % \end{pythonn}
 
 \begin{related}[MC modification]
-    For further reference on Russian roulette, splitting and control variates
-    see \cite{veach_robust_1997}.
+  For further reference on Russian roulette, splitting and control variates
+  see \cite{veach_robust_1997}.
 \end{related}
 
 \subsection{Monte Carlo Trapezoidal Rule}
@@ -520,95 +520,95 @@ The MC trapezoidal rule is essentially a regular Monte Carlo method
 enhanced with control variates based on the trapezoidal rule.
 
 \begin{definition}[MC trapezoidal rule]
-    We define the MC trapezoidal rule for approximating the integral
-    of function $f$ over the interval $[x, x+\Delta x]$ with a Russian roulette rate
-    $l$ and $\tilde{f}$ represents the linear approximation of $f$ corresponding
-    to the trapezoidal rule as follows:
+  We define the MC trapezoidal rule for approximating the integral
+  of function $f$ over the interval $[x, x+\Delta x]$ with a Russian roulette rate
+  $l$ and $\tilde{f}$ represents the linear approximation of $f$ corresponding
+  to the trapezoidal rule as follows:
 
-    \begin{align}
-         & \int_{x}^{x+\Delta x} f(s) ds                           \\
-         & = \int_{x}^{x+\Delta x}  \tilde{f}(s) ds +
-        \int_{x}^{x+\Delta x}  f(s) - \tilde{f}(s) ds              \\
-         & = \Delta x \frac{f(x) + f(x+\Delta x)}{2}
-        + E \left[f(S) - \tilde{f}(S)\right]                       \\
-         & \cong \Delta x \frac{f(x) + f(x+\Delta x)}{2} \nonumber \\
-         & + \Delta x l B\left( \frac{1}{l}\right)
-        \left(f(S) - f(x) - \frac{S - x}{\Delta x}
-        \left(f(x+\Delta x) - f(x)\right) \right), \label{eq:MCtrap}
-    \end{align}
+  \begin{align}
+     & \int_{x}^{x+\Delta x} f(s) ds                           \\
+     & = \int_{x}^{x+\Delta x}  \tilde{f}(s) ds +
+    \int_{x}^{x+\Delta x}  f(s) - \tilde{f}(s) ds              \\
+     & = \Delta x \frac{f(x) + f(x+\Delta x)}{2}
+    + E \left[f(S) - \tilde{f}(S)\right]                       \\
+     & \cong \Delta x \frac{f(x) + f(x+\Delta x)}{2} \nonumber \\
+     & + \Delta x l B\left( \frac{1}{l}\right)
+    \left(f(S) - f(x) - \frac{S - x}{\Delta x}
+    \left(f(x+\Delta x) - f(x)\right) \right), \label{eq:MCtrap}
+  \end{align}
 
-    where $S \sim \text{Uniform}(x,x+\Delta x)$.
+  where $S \sim \text{Uniform}(x,x+\Delta x)$.
 \end{definition}
 
 \begin{lemma}[RMSE MC Trapezoidal Rule] \label{lem:rmse mctrap}
-    The MC trapezoidal rule
-    for a twice differentiable function has
-    \begin{equation}
-        \text{RMSE} =O\left( \Delta x^{3} \right) .
-    \end{equation}
+  The MC trapezoidal rule
+  for a twice differentiable function has
+  \begin{equation}
+    \text{RMSE} =O\left( \Delta x^{3} \right) .
+  \end{equation}
 \end{lemma}
 
 \begin{proof}
-    Start from (\ref{eq:MCtrap}). The MSE is the variance
-    so we can ignore addition by constants.
+  Start from (\ref{eq:MCtrap}). The MSE is the variance
+  so we can ignore addition by constants.
 
-    \begin{equation}
-        \text{MSE} = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
-        \left(f(S) - f(x) - \frac{S - x}{\Delta x}
-        \left(f(x+\Delta x) - f(x)\right) \right)\right)
-    \end{equation}
-    We substitute $S = \Delta x U + x$ and then apply Taylor's theorem
-    finishing the proof:
+  \begin{equation}
+    \text{MSE} = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
+    \left(f(S) - f(x) - \frac{S - x}{\Delta x}
+    \left(f(x+\Delta x) - f(x)\right) \right)\right)
+  \end{equation}
+  We substitute $S = \Delta x U + x$ and then apply Taylor's theorem
+  finishing the proof:
 
-    \begin{align}
-        \text{MSE} & = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
-        \left(f(\Delta x U+x) - f(x) - U
-        \left(f(x+\Delta x) - f(x)\right) \right)\right)                           \\
-                   & = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
-        \left( U \Delta x f'(x)+ \frac{U^{2} \Delta x ^{2}}{2} f''(Z_{1})
-        - U \left( \Delta x f'(x) +
-        \Delta x ^{2} f''(z_{2})\right) \right)\right)                             \\
-                   & = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
-        \left( \frac{U^{2} \Delta x ^{2}}{2} f''(Z_{1})
-        -  \frac{U\Delta x ^{2}}{2} f''(z_{2}) \right)\right)                      \\
-                   & =\Delta x ^{6} \text{Var}\left(  l B\left( \frac{1}{l}\right)
-        \left( \frac{U^{2} }{2} f''(Z_{1})
-        -  \frac{U}{2} f''(z_{2}) \right)\right),
-    \end{align}
-    for some $Z_{1} \in [x,S], z_{2} \in [x,x+\Delta x]$. The variance term is bounded
-    because the variance of a bounded RV is bounded.
-    Note that the proof doesn't rely on Russian roulette ($l=1$).
+  \begin{align}
+    \text{MSE} & = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
+    \left(f(\Delta x U+x) - f(x) - U
+    \left(f(x+\Delta x) - f(x)\right) \right)\right)                           \\
+               & = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
+    \left( U \Delta x f'(x)+ \frac{U^{2} \Delta x ^{2}}{2} f''(Z_{1})
+    - U \left( \Delta x f'(x) +
+    \Delta x ^{2} f''(z_{2})\right) \right)\right)                             \\
+               & = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
+    \left( \frac{U^{2} \Delta x ^{2}}{2} f''(Z_{1})
+    -  \frac{U\Delta x ^{2}}{2} f''(z_{2}) \right)\right)                      \\
+               & =\Delta x ^{6} \text{Var}\left(  l B\left( \frac{1}{l}\right)
+    \left( \frac{U^{2} }{2} f''(Z_{1})
+    -  \frac{U}{2} f''(z_{2}) \right)\right),
+  \end{align}
+  for some $Z_{1} \in [x,S], z_{2} \in [x,x+\Delta x]$. The variance term is bounded
+  because the variance of a bounded RV is bounded.
+  Note that the proof doesn't rely on Russian roulette ($l=1$).
 \end{proof}
 
 \begin{related}[proof of Lemma \ref{lem:rmse mctrap}]
-    A more generalizable proof for other types of control variates can
-    be constructed by applying the \enquote*{separation of the main part} technique,
-    as shown in Lemma 4 of \cite{heinrich_monte_1993}.
+  A more generalizable proof for other types of control variates can
+  be constructed by applying the \enquote*{separation of the main part} technique,
+  as shown in Lemma 4 of \cite{heinrich_monte_1993}.
 \end{related}
 
 
 \begin{definition}[composite (MC) trapezoidal rule] \label{MCtrap}
-    Define the MC trapezoidal rule for approximating the integral
-    of function $f$ over the interval $[0, 1]$ with a uniform grid
-    with $n$ intervals as follows:
+  Define the MC trapezoidal rule for approximating the integral
+  of function $f$ over the interval $[0, 1]$ with a uniform grid
+  with $n$ intervals as follows:
 
-    \begin{equation}
-        \int_{0}^{1} f(s) ds \approx \Delta x \sum_{j=0}^{n-1}  \frac{f(x_{j}) + f(x_{j}+\Delta x)}{2} .
-    \end{equation}
-    \juliacode{julia_code/composite_trapezoidal.jl}
+  \begin{equation}
+    \int_{0}^{1} f(s) ds \approx \Delta x \sum_{j=0}^{n-1}  \frac{f(x_{j}) + f(x_{j}+\Delta x)}{2} .
+  \end{equation}
+  \juliacode{julia_code/composite_trapezoidal.jl}
 
-    Define the  corresponding composite MC trapezoidal
-    with a Russian roulette rate $l$ as follows:
+  Define the  corresponding composite MC trapezoidal
+  with a Russian roulette rate $l$ as follows:
 
-    \begin{align} \label{eq:cMCtrap}
-        \int_{0}^{1} f(s) ds \cong \Delta x \sum_{j=0}^{n-1} & \frac{f(x_{j}) + f(x_{j}+\Delta x)}{2} \nonumber \\
-                                                             & + l B\left(\frac{1}{l}\right)
-        \left(f(S_j) - f(x_{j}) - \frac{S_j - x_{j}}{\Delta x}(f(x_{j}+\Delta x) - f(x_{j}))\right),
-    \end{align}
+  \begin{align} \label{eq:cMCtrap}
+    \int_{0}^{1} f(s) ds \cong \Delta x \sum_{j=0}^{n-1} & \frac{f(x_{j}) + f(x_{j}+\Delta x)}{2} \nonumber \\
+                                                         & + l B\left(\frac{1}{l}\right)
+    \left(f(S_j) - f(x_{j}) - \frac{S_j - x_{j}}{\Delta x}(f(x_{j}+\Delta x) - f(x_{j}))\right),
+  \end{align}
 
-    \juliacode{julia_code/MC_composite_trapezoidal.jl}
+  \juliacode{julia_code/MC_composite_trapezoidal.jl}
 
-    where $S_j \sim \text{Uniform}(x,x+\Delta x)$.
+  where $S_j \sim \text{Uniform}(x,x+\Delta x)$.
 
 \end{definition}
 
@@ -620,13 +620,13 @@ enhanced with control variates based on the trapezoidal rule.
 % \end{pythonn}
 
 \begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.8\textwidth]{plots/MCtrap.png}
-    \caption{Log-log plot of the error of (\ref{eq:cMCtrap}) for
-    $\int_{0}^{1}e^{s}ds$ with $l=100$. At floating point accuracy,
-    the convergence ceases.
-    }
-    \label{fig:MCtrap}
+  \centering
+  \includegraphics[width=0.8\textwidth]{plots/MCtrap.png}
+  \caption{Log-log plot of the error of (\ref{eq:cMCtrap}) for
+  $\int_{0}^{1}e^{s}ds$ with $l=100$. At floating point accuracy,
+  the convergence ceases.
+  }
+  \label{fig:MCtrap}
 \end{figure}
 
 Figure \ref{fig:MCtrap} suggests that the order of convergence of RMSE of the
@@ -637,11 +637,11 @@ there are $\text{Binomial}(n,\frac{1}{l})$ additional function calls
 (repeated Bernoulli experiments).\\
 
 \begin{theorem}[RMSE Composite Trapezoidal MC Rule] \label{thrm:order trap}
-    The composite trapezoidal MC rule  with $n$ intervals
-    for a twice differentiable function has
-    \begin{equation}
-        \text{RMSE} =O\left(\frac{1}{n^{2.5}} \right) .
-    \end{equation}
+  The composite trapezoidal MC rule  with $n$ intervals
+  for a twice differentiable function has
+  \begin{equation}
+    \text{RMSE} =O\left(\frac{1}{n^{2.5}} \right) .
+  \end{equation}
 \end{theorem}
 
 The proof uses Lemma \ref{lem:rmse mctrap},
@@ -652,10 +652,10 @@ Normally there is a loss of one order but the MC trapezoidal loses only a half o
 because the accumulation happens in variance instead of bias.
 
 \begin{align}
-    \sqrt{\text{Var}\left(\sum_{j=1}^{n}  \Delta x^{3}U_{j}^{2}\right)}
-     & = \Delta x^{3} \sqrt{ \sum_{j=1}^{n}\text{Var} (U_{j}^{2})} \\
-     & = \Delta x^{3} \sqrt{ n \text{Var}(U^{2})}                  \\
-     & = O( \Delta x^{2.5}).
+  \sqrt{\text{Var}\left(\sum_{j=1}^{n}  \Delta x^{3}U_{j}^{2}\right)}
+   & = \Delta x^{3} \sqrt{ \sum_{j=1}^{n}\text{Var} (U_{j}^{2})} \\
+   & = \Delta x^{3} \sqrt{ n \text{Var}(U^{2})}                  \\
+   & = O( \Delta x^{2.5}).
 \end{align}
 
 Note that the meaning of a bound on the error, which behaves as $O(\Delta x^{2})$,
@@ -663,11 +663,11 @@ and a bound on the RMSE, also behaving as $O(\Delta x^{2})$, is different.
 A bound on the error implies a bound on the RMSE, but not vice versa.
 
 \begin{related}[Monte Carlo Trapezoidal Rule]
-    Due to an argument like Stein's paradox,
-    it is always possible to bias the composite MC trapezoidal
-    rule to achieve lower RMSE.
-    The optimal IBC for the deterministic, random, and quantum cases are known
-    for some smoothness classes; see \cite{heinrich_optimal_2001} for details.
+  Due to an argument like Stein's paradox,
+  it is always possible to bias the composite MC trapezoidal
+  rule to achieve lower RMSE.
+  The optimal IBC for the deterministic, random, and quantum cases are known
+  for some smoothness classes; see \cite{heinrich_optimal_2001} for details.
 \end{related}
 
 
@@ -680,29 +680,29 @@ $Y_{1} \cong Y_{2} \cong y$.
 
 
 \begin{example}[$y_t=y^{2}$] \label{ex:nonlinear example}
-    Consider the following ODE:
+  Consider the following ODE:
 
-    \begin{equation} \label{eq:nonlinear example}
-        y_t = y^2, \quad y(1) = -1.
-    \end{equation}
+  \begin{equation} \label{eq:nonlinear example}
+    y_t = y^2, \quad y(1) = -1.
+  \end{equation}
 
-    The solution to this equation is given by $y(t) = -\frac{1}{t}$.
-    By integrating both sides of (\ref{eq:nonlinear example}),
-    we obtain the following integral equation:
+  The solution to this equation is given by $y(t) = -\frac{1}{t}$.
+  By integrating both sides of (\ref{eq:nonlinear example}),
+  we obtain the following integral equation:
 
-    \begin{equation}
-        y(t) = -1 + \int_{1}^{t} y(s) y(s)ds.
-    \end{equation}
+  \begin{equation}
+    y(t) = -1 + \int_{1}^{t} y(s) y(s)ds.
+  \end{equation}
 
-    To estimate the recursive integral in (\ref{eq:nonlinear example}),
-    we use  $Y_1,Y_2 \text{ i.i.d. } Y$ in following RRVE:
+  To estimate the recursive integral in (\ref{eq:nonlinear example}),
+  we use  $Y_1,Y_2 \text{ i.i.d. } Y$ in following RRVE:
 
-    \begin{equation} \label{RRVE: nonlinear example}
-        y(t) \cong Y(t) = -1 + (t-1) Y_1(S_{1}) Y_2(S_{1}),
-    \end{equation}
-    \juliacode{julia_code/nonlinear_example.jl}
+  \begin{equation} \label{RRVE: nonlinear example}
+    y(t) \cong Y(t) = -1 + (t-1) Y_1(S_{1}) Y_2(S_{1}),
+  \end{equation}
+  \juliacode{julia_code/nonlinear_example.jl}
 
-    where $S_{1} \sim \text{Uniform}(1,t)$.
+  where $S_{1} \sim \text{Uniform}(1,t)$.
 \end{example}
 
 % \vspace*{0.2cm}
@@ -712,41 +712,41 @@ $Y_{1} \cong Y_{2} \cong y$.
 % \end{pythonn}
 
 \begin{example}[$e^{E[X]}$] \label{ex:exp int}
-    $e^{\int x(s)ds}$ is a common expression encountered when studying ODEs.
-    In this example, we demonstrate how you can generate unbiased estimates of
-    $e^{E[X]}$ with simulations of $X$. The Taylor series of $e^{x}$ is:
-    \begin{align}
-        e^{E[X]} & = \sum_{n=0}^{\infty} \frac{E^{n}[X]}{n!}     \\
-                 & = 1 + \frac{1}{1}E[X]\left(1+ \frac{1}{2}E[X]
-        \left(1+\frac{1}{3}E[X]\left(1+ ...\right)\right)\right). \label{taylor e}
-    \end{align}
-    Change the fractions of (\ref{taylor e}) to Bernoulli processes
-    and replace all $X$ with independent $X_j \cong X$.
-    \begin{align}
-        e^{E[X]} & = E
-        \left[1 + B\left(\frac{1}{1}\right)E[X_1]
-        \left(1+ B\left(\frac{1}{2}\right)E[X_2]
-        \left(1+B\left(\frac{1}{3}\right)E[X_3]
-        \left(1+ ...\right)
-        \right)
-        \right)
-        \right]                             \\
-                 & \cong \label{eq:exp int}
-        1 + B\left(\frac{1}{1}\right)X_1
-        \left(1+ B\left(\frac{1}{2}\right)X_2
-        \left(1+B\left(\frac{1}{3}\right)X_3
-            \left(1+ ...\right)
-            \right)
-        \right).
-    \end{align}
-    \juliacode{julia_code/expX.jl}
-    Sampling (\ref{eq:exp int}) requires a finite amount of samples from $X_{j}$'s
-    with probability $1$.
+  $e^{\int x(s)ds}$ is a common expression encountered when studying ODEs.
+  In this example, we demonstrate how you can generate unbiased estimates of
+  $e^{E[X]}$ with simulations of $X$. The Taylor series of $e^{x}$ is:
+  \begin{align}
+    e^{E[X]} & = \sum_{n=0}^{\infty} \frac{E^{n}[X]}{n!}     \\
+             & = 1 + \frac{1}{1}E[X]\left(1+ \frac{1}{2}E[X]
+    \left(1+\frac{1}{3}E[X]\left(1+ ...\right)\right)\right). \label{taylor e}
+  \end{align}
+  Change the fractions of (\ref{taylor e}) to Bernoulli processes
+  and replace all $X$ with independent $X_j \cong X$.
+  \begin{align}
+    e^{E[X]} & = E
+    \left[1 + B\left(\frac{1}{1}\right)E[X_1]
+    \left(1+ B\left(\frac{1}{2}\right)E[X_2]
+    \left(1+B\left(\frac{1}{3}\right)E[X_3]
+    \left(1+ ...\right)
+    \right)
+    \right)
+    \right]                             \\
+             & \cong \label{eq:exp int}
+    1 + B\left(\frac{1}{1}\right)X_1
+    \left(1+ B\left(\frac{1}{2}\right)X_2
+    \left(1+B\left(\frac{1}{3}\right)X_3
+      \left(1+ ...\right)
+      \right)
+    \right).
+  \end{align}
+  \juliacode{julia_code/expX.jl}
+  Sampling (\ref{eq:exp int}) requires a finite amount of samples from $X_{j}$'s
+  with probability $1$.
 \end{example}
 
 \begin{related}[Example \ref{ex:exp int}]
-    NVIDIA has a great paper on optimizing Example \ref{ex:exp int}
-    \cite{kettunen_unbiased_2021}.
+  NVIDIA has a great paper on optimizing Example \ref{ex:exp int}
+  \cite{kettunen_unbiased_2021}.
 \end{related}
 
 \subsection{Recursion}
@@ -754,45 +754,45 @@ $Y_{1} \cong Y_{2} \cong y$.
 In this subsection, we discuss recursion-related techniques.
 
 \begin{technique}[coupled recursion]
-    The idea behind coupled recursion is sharing recursion calls of
-    multiple RRVEs for simulation. This does make them dependent.
+  The idea behind coupled recursion is sharing recursion calls of
+  multiple RRVEs for simulation. This does make them dependent.
 \end{technique}
 
 \begin{example}[coupled recursion] \label{ex:coupled recursion}
-    Consider calculating the
-    sensitivity of following ODE to a
-    parameter $a$:
-    \begin{align}
-        y_t             & =ay,y(0)=1 \Rightarrow \label{couple recu ex1} \\
-        \partial_{a}y_t & = y + a \partial_{a}y \label{couple recu ex2}
-    \end{align}
-    Turn (\ref{couple recu ex1}) and (\ref{couple recu ex2}) into RRVEs.
-    To emphasize that they are coupled and should
-    recurse together we write them in a matrix equation:
-    \begin{equation} \label{coupled mat}
-        \begin{bmatrix}
-            y(t) \\
-            \partial_{a}y(t)
-        \end{bmatrix} \cong
-        \begin{bmatrix}
-            Y(t) \\
-            \partial_{a}Y(t)
-        \end{bmatrix}=
-        X(t)=
-        \begin{bmatrix}
-            1 \\
-            0
-        \end{bmatrix}+
-        t \begin{bmatrix}
-            a & 0 \\
-            1 & a
-        \end{bmatrix}
-        X(Ut).
-    \end{equation}
-    \juliacode{julia_code/coupled_recursion.jl}
+  Consider calculating the
+  sensitivity of following ODE to a
+  parameter $a$:
+  \begin{align}
+    y_t             & =ay,y(0)=1 \Rightarrow \label{couple recu ex1} \\
+    \partial_{a}y_t & = y + a \partial_{a}y \label{couple recu ex2}
+  \end{align}
+  Turn (\ref{couple recu ex1}) and (\ref{couple recu ex2}) into RRVEs.
+  To emphasize that they are coupled and should
+  recurse together we write them in a matrix equation:
+  \begin{equation} \label{coupled mat}
+    \begin{bmatrix}
+      y(t) \\
+      \partial_{a}y(t)
+    \end{bmatrix} \cong
+    \begin{bmatrix}
+      Y(t) \\
+      \partial_{a}Y(t)
+    \end{bmatrix}=
+    X(t)=
+    \begin{bmatrix}
+      1 \\
+      0
+    \end{bmatrix}+
+    t \begin{bmatrix}
+      a & 0 \\
+      1 & a
+    \end{bmatrix}
+    X(Ut).
+  \end{equation}
+  \juliacode{julia_code/coupled_recursion.jl}
 
-    Observe how this eliminates the additive branching recursion
-    present in (\ref{couple recu ex2}).
+  Observe how this eliminates the additive branching recursion
+  present in (\ref{couple recu ex2}).
 
 \end{example}
 
@@ -802,16 +802,16 @@ In this subsection, we discuss recursion-related techniques.
 
 
 \begin{technique}[recursion in recursion]\label{tech:recu in recu}
-    Recursion in recursion is like proving an induction
-    step of an induction proof with induction. Recursion in recursion
-    uses an inner recursion in the outer recursion.
+  Recursion in recursion is like proving an induction
+  step of an induction proof with induction. Recursion in recursion
+  uses an inner recursion in the outer recursion.
 \end{technique}
 
 \begin{related}[recursion in recursion]
-    Beautiful examples of recursion in recursion are
-    the next flight variant of WoS in
-    \cite{sawhney_grid-free_2022} and epoch-based algorithms in optimization
-    \cite{gupta_convergence_2021}.
+  Beautiful examples of recursion in recursion are
+  the next flight variant of WoS in
+  \cite{sawhney_grid-free_2022} and epoch-based algorithms in optimization
+  \cite{gupta_convergence_2021}.
 \end{related}
 
 Most programming languages do support recursion, but it often comes with certain
@@ -820,12 +820,12 @@ There are multiple ways to implement recursion, we will discuss tail recursion a
 do an example using a stack.
 
 \begin{technique}[non-branching tail recursion]
-    Tail recursion involves reordering all operations
-    so that almost no operation needs to happen after
-    the recursion call. This allows us to return the
-    answer without retracing all steps when we reach
-    the last recursion call and it can achieve similar
-    speeds to a forward implementation.
+  Tail recursion involves reordering all operations
+  so that almost no operation needs to happen after
+  the recursion call. This allows us to return the
+  answer without retracing all steps when we reach
+  the last recursion call and it can achieve similar
+  speeds to a forward implementation.
 \end{technique}
 
 The non-branching recursion presented in the RRVEs can
@@ -842,12 +842,12 @@ of all operations ($(xy)z = x(yz)$) involved.
 % \end{pythonn}
 
 \begin{julia}[tail recursion on (\ref{coupled mat})] \label{jl:tail recursion couple}
-    We implemented (\ref{coupled mat}) using tail recursion this time. We
-    collect addition operations in a vector called $sol$, and multiplications
-    in a matrix named $W$. $W$ may also be referred to as accumulated weight
-    or throughput.
-    \vspace{0.3cm}
-    \juliacode{julia_code/tailrecu.jl}
+  We implemented (\ref{coupled mat}) using tail recursion this time. We
+  collect addition operations in a vector called $sol$, and multiplications
+  in a matrix named $W$. $W$ may also be referred to as accumulated weight
+  or throughput.
+  \vspace{0.3cm}
+  \juliacode{julia_code/tailrecu.jl}
 \end{julia}
 
 Tail recursion avoids intermediate values
@@ -859,10 +859,10 @@ worse with larger matrix multiplications. An alternative to tail recursion is im
 the recursion with a stack.
 
 \begin{related}[non-branching tail recursion]
-    Example \ref{ex:coupled recursion} is inspired by \cite{vicini_path_2021}.
-    \cite{vicini_path_2021} proposes an efficient unbiased backpropagation
-    algorithm for rendering exploiting properties of non-branching tail recursion.
-    To access intermediate values in tail recursion they use path replay.
+  Example \ref{ex:coupled recursion} is inspired by \cite{vicini_path_2021}.
+  \cite{vicini_path_2021} proposes an efficient unbiased backpropagation
+  algorithm for rendering exploiting properties of non-branching tail recursion.
+  To access intermediate values in tail recursion they use path replay.
 \end{related}
 
 % \begin{pythonn}[stack recursion on (\ref{coupled mat})] \label{py:stack recursion couple}
@@ -877,14 +877,14 @@ the recursion with a stack.
 % \end{pythonn}
 
 \begin{julia}[stack recursion on (\ref{coupled mat})] \label{jl:stack recursion couple}
-    We implement (\ref{coupled mat}) but this time with a stack.
-    We want to avoid matrix multiplication and only use matrix-vector multiplications.
-    To do this on (\ref{coupled mat}) we need to know $X(Ut)$ when
-    it doesn't get Russian rouletted away. If we sample $Ut$ we can recurse
-    on our reasoning until Russian roulette termination, so we need the path
-    of all the samples.
-    \vspace{0.3cm}
-    \juliacode{julia_code/stackrecu.jl}
+  We implement (\ref{coupled mat}) but this time with a stack.
+  We want to avoid matrix multiplication and only use matrix-vector multiplications.
+  To do this on (\ref{coupled mat}) we need to know $X(Ut)$ when
+  it doesn't get Russian rouletted away. If we sample $Ut$ we can recurse
+  on our reasoning until Russian roulette termination, so we need the path
+  of all the samples.
+  \vspace{0.3cm}
+  \juliacode{julia_code/stackrecu.jl}
 \end{julia}
 
 In stack recursion we need to store the sample path because we generate the
@@ -895,30 +895,32 @@ Poisson time processes don't have this problem because forward paths and backwar
 have the same distribution.
 
 \begin{definition}[main Poisson] \label{def:main poisson}
-    \begin{align}
-        y'                              & = A y + f \Leftrightarrow                                                                          \\
-        y'+\sigma y                     & = (A + \sigma I) y + f\Leftrightarrow                                                              \\
-        e^{-\sigma t} ( e^{\sigma t}y)' & = (A + \sigma I) y + f  \Leftrightarrow                                                            \\
-        y(t)                            & = e^{-\sigma t} y(0) + \int_{0}^{t} e^{(s-t) \sigma} \left(  (A + \sigma I ) y(s) +f(s)\right) ds.
-    \end{align}
-    With $\sigma>0$. Do following substitution: $e^{(s-t)\sigma} = \tau$ equivalent to importance sampling
-    the exponential term:
-    \begin{equation} \label{eq:poisson main}
-        y(t) = \int_{0}^{e^{-\sigma t}}  y(0) d\tau + \int_{e^{-\sigma t}}^{1} \left(  \frac{A}{\sigma} + I\right)  y(s) + \frac{f(s)}{\sigma} d\tau
-        .
-    \end{equation}
+  \begin{align}
+    y'                              & = A y + f \Leftrightarrow                                                                             \\
+    y'+\sigma y                     & = (A + \sigma I) y + f\Leftrightarrow                                                                 \\
+    e^{-\sigma t} ( e^{\sigma t}y)' & = (A + \sigma I) y + f  \Leftrightarrow                                                               \\
+    y(t)                            & = e^{-\sigma t} y(0) + \int_{0}^{t} e^{(s-t) \sigma} \left(  (A(s) + \sigma I ) y(s) +f(s)\right) ds.
+  \end{align}
+  With $\sigma>0$. Do following substitution: $e^{(s-t)\sigma} = \tau$ equivalent to importance sampling
+  the exponential term:
+  \begin{equation} \label{eq:poisson main}
+    y(t) = \int_{0}^{e^{-\sigma t}}  y(0) d\tau + \int_{e^{-\sigma t}}^{1} \left(  \frac{A(s)}{\sigma} + I\right)  y(s) + \frac{f(s)}{\sigma} d\tau
+    .
+  \end{equation}
 
-    \juliacode{julia_code/main_poisson.jl}
+  \juliacode{julia_code/main_poisson.jl}
 
-    (\ref{eq:poisson main}) can be turned into a RRVE by sampling $\tau \sim U$, no Russian roulette is needed for
-    termination because in the recursion the first integral get sampled with probability $1$. No recursion is used
-    for the implementation as we can sample the Poisson proces in the reverse order.
+  (\ref{eq:poisson main}) can be turned into a RRVE by sampling $\tau \sim U$, no Russian roulette is needed for
+  termination because in the recursion the first integral get sampled with probability $1$. No recursion is used
+  for the implementation as we can sample the Poisson proces in the reverse order.
 
 \end{definition}
 
 \begin{related}[main Poisson]
-    A very similar estimator is used to solve ODEs derived from the
-    telegrapher equations in \cite{acebron_monte_2016}.
+  A very similar estimator is used to solve ODEs derived from the
+  $1$-dimensional telegraph equations in \cite{acebron_monte_2016}.
+  Unlike \ref{jl:point estimator heat} the recursion proces can be reversed
+  because the paths consist of a Poisson proces and reflections.
 \end{related}
 
 \section{Ordinary Differential Equations}
@@ -934,96 +936,96 @@ to a specific problem, which are combined through integration to solve
 more general problems.
 
 \begin{related}[Green's function]
-    Our notion of the Green's function is similar to that presented
-    in \cite{hwang_simulationtabulation_2001}.
+  Our notion of the Green's function is similar to that presented
+  in \cite{hwang_simulationtabulation_2001}.
 \end{related}
 
 
 \begin{notation}[$H$]
-    We denote the Heaviside step function with:
-    \begin{equation}
-        H(x) = \begin{cases}
-            0 & \text{ if } x<0 \\
-            1 & \text{ else }
-        \end{cases}.
-    \end{equation}
+  We denote the Heaviside step function with:
+  \begin{equation}
+    H(x) = \begin{cases}
+      0 & \text{ if } x<0 \\
+      1 & \text{ else }
+    \end{cases}.
+  \end{equation}
 \end{notation}
 
 \begin{notation}[$\delta$]
-    We denote the Dirac delta function as $\delta(x)$.
+  We denote the Dirac delta function as $\delta(x)$.
 \end{notation}
 
 
 To clarify Green's functions, let's look at the following example.
 
 \begin{example}[$y_t=y$ average condition]
-    We will solve the equation:
+  We will solve the equation:
 
-    \begin{equation} \label{ydy int}
-        y_t = y,
-    \end{equation}
+  \begin{equation} \label{ydy int}
+    y_t = y,
+  \end{equation}
 
-    but this time with a different condition:
+  but this time with a different condition:
 
-    \begin{equation}
-        \int_{0}^{1} y(s) ds = e-1.
-    \end{equation}
+  \begin{equation}
+    \int_{0}^{1} y(s) ds = e-1.
+  \end{equation}
 
-    The solution to this equation remains the same: $y(t) = e^{t}$.
-    We define the corresponding source Green's function $G(t,x)$ for $y_t$
-    and this type of condition as follows:
+  The solution to this equation remains the same: $y(t) = e^{t}$.
+  We define the corresponding source Green's function $G(t,x)$ for $y_t$
+  and this type of condition as follows:
 
-    \begin{equation}
-        G_t = \delta(x-t), \quad \int_{0}^{1} G(s,x) ds = 0.
-    \end{equation}
+  \begin{equation}
+    G_t = \delta(x-t), \quad \int_{0}^{1} G(s,x) ds = 0.
+  \end{equation}
 
-    Solving this equation yields:
+  Solving this equation yields:
 
-    \begin{equation}
-        G(t,x) = H(t-x) + x - 1.
-    \end{equation}
+  \begin{equation}
+    G(t,x) = H(t-x) + x - 1.
+  \end{equation}
 
-    We define the corresponding boundary Green's function $G(t,x)$ for $y_t$
-    and this type of condition as follows:
+  We define the corresponding boundary Green's function $G(t,x)$ for $y_t$
+  and this type of condition as follows:
 
-    \begin{equation}
-        P_{t} = 0, \quad \int_{0}^{1} P(s) ds = e -1.
-    \end{equation}
+  \begin{equation}
+    P_{t} = 0, \quad \int_{0}^{1} P(s) ds = e -1.
+  \end{equation}
 
-    Solving this equation yields:
+  Solving this equation yields:
 
-    \begin{equation}
-        P(t) = e -1.
-    \end{equation}
+  \begin{equation}
+    P(t) = e -1.
+  \end{equation}
 
-    The Green's functions are constructed such that
-    we can form the following integral equation for (\ref{ydy int}):
+  The Green's functions are constructed such that
+  we can form the following integral equation for (\ref{ydy int}):
 
-    \begin{equation} \label{int ydy int}
-        y(t) = P(t) + \int_{0}^{1} G(t,s) y(s) ds.
-    \end{equation}
+  \begin{equation} \label{int ydy int}
+    y(t) = P(t) + \int_{0}^{1} G(t,s) y(s) ds.
+  \end{equation}
 
-    Converting (\ref{int ydy int}) into an RRVE
-    using RMC, we obtain:
+  Converting (\ref{int ydy int}) into an RRVE
+  using RMC, we obtain:
 
-    \begin{equation}\label{RRVE ydy int}
-        Y(t) = e - 1 + 2B\left(\frac{1}{2}\right)Y(S)(H(t-S)+S-1),
-    \end{equation}
+  \begin{equation}\label{RRVE ydy int}
+    Y(t) = e - 1 + 2B\left(\frac{1}{2}\right)Y(S)(H(t-S)+S-1),
+  \end{equation}
 
-    where $S \sim U$. We plot realizations of
-    (\ref{RRVE ydy int}) in Figure \ref{fig:ydy int}.
+  where $S \sim U$. We plot realizations of
+  (\ref{RRVE ydy int}) in Figure \ref{fig:ydy int}.
 
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{plots/ydy int.png}
-        \caption{Recursive calls $(t,Y(t))$ of (\ref{RRVE ydy int}) when
-            calling $Y(0.5)$ $300$ times. Points accumulate on
-            the Green's line due to the Russian roulette,
-            and at  $t=0.5$ because it is the starting
-            value of the simulation.
-        }
-        \label{fig:ydy int}
-    \end{figure}
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plots/ydy int.png}
+    \caption{Recursive calls $(t,Y(t))$ of (\ref{RRVE ydy int}) when
+      calling $Y(0.5)$ $300$ times. Points accumulate on
+      the Green's line due to the Russian roulette,
+      and at  $t=0.5$ because it is the starting
+      value of the simulation.
+    }
+    \label{fig:ydy int}
+  \end{figure}
 
 \end{example}
 
@@ -1031,11 +1033,11 @@ To clarify Green's functions, let's look at the following example.
 equation of the second kind.
 
 \begin{definition}[Fredholm equation of the second kind]
-    A Fredholm equation of the second kind for $\varphi$  is of the following form:
-    \begin{equation}
-        \varphi(t)=f(t)+\lambda \int_a^b K(t, s) \varphi(s) ds.
-    \end{equation}
-    Here, $K(t, s)$ represents a kernel, and $f(t)$ is a given function.
+  A Fredholm equation of the second kind for $\varphi$  is of the following form:
+  \begin{equation}
+    \varphi(t)=f(t)+\lambda \int_a^b K(t, s) \varphi(s) ds.
+  \end{equation}
+  Here, $K(t, s)$ represents a kernel, and $f(t)$ is a given function.
 \end{definition}
 
 If both $K$ and $f$ satisfy certain regularity conditions, then for sufficiently
@@ -1043,45 +1045,45 @@ small $\lambda$, it is relatively straightforward to establish the existence
 and uniqueness of solutions using a fixed-point argument.
 
 \begin{example}[Dirichlet $y_{tt}=y$] \label{main dirichlet}
-    We transform the following ODE into Fredholm integral equation of
-    the second kind for testing:
-    \begin{equation} \label{eq:main dirichlet}
-        y_{tt}=y, \quad y(b_{0}),y(b_{1}).
-    \end{equation}
-    The Green's functions corresponding to $y_{tt}$ and Dirichlet conditions are:
+  We transform the following ODE into Fredholm integral equation of
+  the second kind for testing:
+  \begin{equation} \label{eq:main dirichlet}
+    y_{tt}=y, \quad y(b_{0}),y(b_{1}).
+  \end{equation}
+  The Green's functions corresponding to $y_{tt}$ and Dirichlet conditions are:
 
-    \begin{align}
-        P(t|x) & = \begin{cases}
-                       \frac{b_{1}-t}{b_{1}-b_{0}} & \text{if } x = b_{0} \\
-                       \frac{t-b_{0}}{b_{1}-b_{0}} & \text{if } x = b_{1}
-                   \end{cases},       \\
-        G(t,s) & = \begin{cases}
-                       -\frac{(b_{1}-t)(s-b_{0})}{b_{1}-b_{0}} & \text{if } s<t \\
-                       -\frac{(b_{1}-s)(t-b_{0})}{b_{1}-b_{0}} & \text{if } t<s
-                   \end{cases}.
-    \end{align}
-    Directly from these Green's functions, we obtain the following integral equation and RRVE:
-    \begin{align} \label{inteq:main dirichlet}
-        y(t) & = P(t|b_{0}) y(b_{0}) + P(t|b_{1}) y(b_{1}) +
-        \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds,                  \\
-        Y(t) & = P(t|b_{0}) y(b_{0}) + P(t|b_{1}) y(b_{1})
-        + l B\left(\frac{1}{l} \right)(b_{1}-b_{0}) G(t,S)y(S) , \label{RRVE:main dirichlet}
-    \end{align}
-    with the Russian roulette rate $l \in \mathbb{R}$  and
-    $S \sim \text{Uniform}(b_{1},b_{0})$. In Figure \ref{fig:mainD explosion}
-    we test convergence of (\ref{RRVE:main dirichlet}).
+  \begin{align}
+    P(t|x) & = \begin{cases}
+                 \frac{b_{1}-t}{b_{1}-b_{0}} & \text{if } x = b_{0} \\
+                 \frac{t-b_{0}}{b_{1}-b_{0}} & \text{if } x = b_{1}
+               \end{cases},       \\
+    G(t,s) & = \begin{cases}
+                 -\frac{(b_{1}-t)(s-b_{0})}{b_{1}-b_{0}} & \text{if } s<t \\
+                 -\frac{(b_{1}-s)(t-b_{0})}{b_{1}-b_{0}} & \text{if } t<s
+               \end{cases}.
+  \end{align}
+  Directly from these Green's functions, we obtain the following integral equation and RRVE:
+  \begin{align} \label{inteq:main dirichlet}
+    y(t) & = P(t|b_{0}) y(b_{0}) + P(t|b_{1}) y(b_{1}) +
+    \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds,                  \\
+    Y(t) & = P(t|b_{0}) y(b_{0}) + P(t|b_{1}) y(b_{1})
+    + l B\left(\frac{1}{l} \right)(b_{1}-b_{0}) G(t,S)y(S) , \label{RRVE:main dirichlet}
+  \end{align}
+  with the Russian roulette rate $l \in \mathbb{R}$  and
+  $S \sim \text{Uniform}(b_{1},b_{0})$. In Figure \ref{fig:mainD explosion}
+  we test convergence of (\ref{RRVE:main dirichlet}).
 \end{example}
 
 \begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.8\textwidth]{plots/mainD explosion.png}
-    \caption{The logarithmic percentage error of $Y(0)$ for
-    (\ref{RRVE:main dirichlet}), with $l=1.2$ and initial conditions
-    $y(-k)=e^{-k}$ and $y(k)=e^{k}$, displays an exponential
-    increase until approximately $k=1.5$, beyond which additional
-    simulations fail to reduce the error, indicating that the variance
-    doesn't exist.}
-    \label{fig:mainD explosion}
+  \centering
+  \includegraphics[width=0.8\textwidth]{plots/mainD explosion.png}
+  \caption{The logarithmic percentage error of $Y(0)$ for
+  (\ref{RRVE:main dirichlet}), with $l=1.2$ and initial conditions
+  $y(-k)=e^{-k}$ and $y(k)=e^{k}$, displays an exponential
+  increase until approximately $k=1.5$, beyond which additional
+  simulations fail to reduce the error, indicating that the variance
+  doesn't exist.}
+  \label{fig:mainD explosion}
 \end{figure}
 
 Coupled splitting is one of the ideas we tested on Example \ref{main dirichlet}.
@@ -1089,60 +1091,60 @@ Coupled splitting removes the additive branching of splitting by coupling (reusi
 samples.
 
 \begin{example}[coupled splitting on Example \ref{main dirichlet}] \label{ex:coupled splitting}
-    In addition to normal splitting (see definition \ref{def:splitting}),
-    we can also split the domain in (\ref{inteq:main dirichlet})
-    as follows:
+  In addition to normal splitting (see definition \ref{def:splitting}),
+  we can also split the domain in (\ref{inteq:main dirichlet})
+  as follows:
 
-    \begin{align}\label{inteq:coupled splitting}
-        y(t) & = P(t|b_{0}) y(b_{0}) + P(t|b_{1}) y(b_{1}) +
-        \frac{1}{2} \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds +
-        \frac{1}{2} \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds,                                             \\
-        y(t) & = P(t|b_{0}) y(b_{0}) + P(t|b_{1}) y(b_{1}) + \label{inteq:coupled domain splitting}
-        \int_{b_{0}}^{\frac{b_{1}+b_{0}}{2}} G(t,s)y(s) ds +
-        \int_{\frac{b_{1}+b_{0}}{2}}^{b_{1}} G(t,s)y(s) ds.
-    \end{align}
+  \begin{align}\label{inteq:coupled splitting}
+    y(t) & = P(t|b_{0}) y(b_{0}) + P(t|b_{1}) y(b_{1}) +
+    \frac{1}{2} \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds +
+    \frac{1}{2} \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds,                                             \\
+    y(t) & = P(t|b_{0}) y(b_{0}) + P(t|b_{1}) y(b_{1}) + \label{inteq:coupled domain splitting}
+    \int_{b_{0}}^{\frac{b_{1}+b_{0}}{2}} G(t,s)y(s) ds +
+    \int_{\frac{b_{1}+b_{0}}{2}}^{b_{1}} G(t,s)y(s) ds.
+  \end{align}
 
-    By coupling, we can eliminate the additive branching recursion
-    in the RRVEs corresponding to (\ref{inteq:coupled splitting})
-    and (\ref{inteq:coupled domain splitting}).
-    This results in the following RRVE:
+  By coupling, we can eliminate the additive branching recursion
+  in the RRVEs corresponding to (\ref{inteq:coupled splitting})
+  and (\ref{inteq:coupled domain splitting}).
+  This results in the following RRVE:
 
-    \begin{equation} \label{RRVE:coupled splitting}
-        X(t_{1},t_{2})=
-        \begin{bmatrix}
-            P(t_{1}|b_{0}) & P(t_{1}|b_{1}) \\
-            P(t_{2}|b_{0}) & P(t_{2}|b_{1})
-        \end{bmatrix}
-        \begin{bmatrix}
-            y(b_{0}) \\
-            y(b_{1})
-        \end{bmatrix}
-        +
-        W
-        \begin{bmatrix}
-            G(t_{1},S_{1}) & G(t_{1},S_{2}) \\
-            G(t_{2},S_{1}) & G(t_{2},S_{2})
-        \end{bmatrix}
-        X(S_{1},S_{2}),
-    \end{equation}
-    \juliacode{julia_code/coupled_splitting.jl}
-    with $W$ some weighting matrix,
-    $S_{1}$ and $S_{2}$ can be chosen
-    in various ways. (\ref{RRVE:coupled splitting}) is unbiased in the following way:
-    $X(t_{1},t_{2}) \cong [y(t_{1}) \quad y(t_{2})]^{T}$.
+  \begin{equation} \label{RRVE:coupled splitting}
+    X(t_{1},t_{2})=
+    \begin{bmatrix}
+      P(t_{1}|b_{0}) & P(t_{1}|b_{1}) \\
+      P(t_{2}|b_{0}) & P(t_{2}|b_{1})
+    \end{bmatrix}
+    \begin{bmatrix}
+      y(b_{0}) \\
+      y(b_{1})
+    \end{bmatrix}
+    +
+    W
+    \begin{bmatrix}
+      G(t_{1},S_{1}) & G(t_{1},S_{2}) \\
+      G(t_{2},S_{1}) & G(t_{2},S_{2})
+    \end{bmatrix}
+    X(S_{1},S_{2}),
+  \end{equation}
+  \juliacode{julia_code/coupled_splitting.jl}
+  with $W$ some weighting matrix,
+  $S_{1}$ and $S_{2}$ can be chosen
+  in various ways. (\ref{RRVE:coupled splitting}) is unbiased in the following way:
+  $X(t_{1},t_{2}) \cong [y(t_{1}) \quad y(t_{2})]^{T}$.
 
 \end{example}
 
 \begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.8\textwidth]{plots/coupled split.png}
-    \caption{Recursive calls of (\ref{RRVE:coupled splitting}) when
-    calling $X(0)$ once. We chose $X$ to have $20$ points and
-    colored each call. The $S_{j}$ are coupled such that
-    they are equally spaced.
-    The initial conditions for this call are $y(-1)=e^{-1}$ and $y(1)=e^{1}$,
-    with Russian roulette rate $l=1.2$. }
-    \label{fig:coupled splitting}
+  \centering
+  \includegraphics[width=0.8\textwidth]{plots/coupled split.png}
+  \caption{Recursive calls of (\ref{RRVE:coupled splitting}) when
+  calling $X(0)$ once. We chose $X$ to have $20$ points and
+  colored each call. The $S_{j}$ are coupled such that
+  they are equally spaced.
+  The initial conditions for this call are $y(-1)=e^{-1}$ and $y(1)=e^{1}$,
+  with Russian roulette rate $l=1.2$. }
+  \label{fig:coupled splitting}
 \end{figure}
 
 % \begin{pythonn}[implementation of (\ref{RRVE:coupled splitting})] \label{py:coupled splitting}
@@ -1153,12 +1155,12 @@ samples.
 % \end{pythonn}
 
 \begin{related}[coupled splitting]
-    Coupled splitting is partly inspired by the approach
-    of \cite{sabelfeld_sparsified_2009}, which reduces
-    variance by using larger submatrices in unbiased sparsification
-    of matrices. The idea
-    of reusing samples for WoS is discussed in both
-    \cite{miller_boundary_2023} and \cite{bakbouk_mean_2023}.
+  Coupled splitting is partly inspired by the approach
+  of \cite{sabelfeld_sparsified_2009}, which reduces
+  variance by using larger submatrices in unbiased sparsification
+  of matrices. The idea
+  of reusing samples for WoS is discussed in both
+  \cite{miller_boundary_2023} and \cite{bakbouk_mean_2023}.
 \end{related}
 
 Figure \ref{fig:coupled splitting}
@@ -1172,14 +1174,14 @@ approaching the bottleneck. Alternatively when reaching
 the bottleneck it is possible to rely on splitting to convergence.
 
 \begin{related}[convergence coupled splitting]
-    See \cite{gupta_convergence_2021} for a discussion on the convergence
-    of recursive stochastic algorithms.
+  See \cite{gupta_convergence_2021} for a discussion on the convergence
+  of recursive stochastic algorithms.
 \end{related}
 
 
 \begin{related}[IBC integral equations]
-    Optimal IBC is known for integral equations see \cite{heinrich_monte_1998}
-    for the solution at $1$ point and the global solution.
+  Optimal IBC is known for integral equations see \cite{heinrich_monte_1998}
+  for the solution at $1$ point and the global solution.
 \end{related}
 
 \subsection{Initial Value Problems}
@@ -1190,47 +1192,47 @@ this behavior.
 
 
 \begin{example}[RRMC $y_t=y$] \label{ex:RRMC IVP}
-    We demonstrate RRMC for IVPs with
+  We demonstrate RRMC for IVPs with
 
-    \begin{equation}
-        y_t = y, \quad y(0) = 1.
-    \end{equation}
+  \begin{equation}
+    y_t = y, \quad y(0) = 1.
+  \end{equation}
 
-    Imagine we have a time-stepping scheme $(t_{n}), \forall n: t_{n-1} < t_{n}$
-    then the following integral equations hold:
+  Imagine we have a time-stepping scheme $(t_{n}), \forall n: t_{n-1} < t_{n}$
+  then the following integral equations hold:
 
-    \begin{equation}
-        y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , \quad t>t_{n}.
-    \end{equation}
+  \begin{equation}
+    y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , \quad t>t_{n}.
+  \end{equation}
 
-    Turn these in the following class of RRVEs:
+  Turn these in the following class of RRVEs:
 
-    \begin{equation}
-        y(t) \cong Y_{j}(t) = y(t_{j}) + (t-t_{j})Y_{j}((t-t_{j})U+t_{j}), \quad t>t_{j}.
-    \end{equation}
+  \begin{equation}
+    y(t) \cong Y_{j}(t) = y(t_{j}) + (t-t_{j})Y_{j}((t-t_{j})U+t_{j}), \quad t>t_{j}.
+  \end{equation}
 
-    A problem with these RRVEs is that we do not know $y(t_{j})$.
-    Instead, we can replace it with an unbiased estimate $y_{j}$
-    which we keep fixed in the inner recursion:
-    \begin{align}
-        \label{eq:RRMC IVP inner}
-        y(t) \cong Y_{j}(t)  & = y_{j} + (t-t_{j})Y_{j}((t-t_{j})U+t_{j}), \quad t>t_{j} \\
-        y(t_{j}) \cong y_{j} & = \begin{cases}
-                                     Y_{j-1}(t_{j}) & \text{ if } j \neq 0 \\
-                                     y(t_{0})       & \text{ if } j = 0
-                                 \end{cases}.
-        \label{eq:RRMC IVP outer}
-    \end{align}
-    \juliacode{julia_code/RRMC_IVP.jl}
-    We refer to (\ref{eq:RRMC IVP inner}) as the inner recursion and
-    (\ref{eq:RRMC IVP outer}) as the outer recursion of the recursion in
-    recursion.
-    The measured RMSE for estimating $y(t)$ is of the order
-    $O\left(h^{1.5} \right)$, where $h$ represents
-    the step size. For the implementation we used a scaled version
-    of the time process from Example \ref{ex: russian roulette}
-    for the inner recursion, such that the average number of total inner recursion calls
-    is $e n$, where $n$ represents the total number of outer recursion calls.
+  A problem with these RRVEs is that we do not know $y(t_{j})$.
+  Instead, we can replace it with an unbiased estimate $y_{j}$
+  which we keep fixed in the inner recursion:
+  \begin{align}
+    \label{eq:RRMC IVP inner}
+    y(t) \cong Y_{j}(t)  & = y_{j} + (t-t_{j})Y_{j}((t-t_{j})U+t_{j}), \quad t>t_{j} \\
+    y(t_{j}) \cong y_{j} & = \begin{cases}
+                               Y_{j-1}(t_{j}) & \text{ if } j \neq 0 \\
+                               y(t_{0})       & \text{ if } j = 0
+                             \end{cases}.
+    \label{eq:RRMC IVP outer}
+  \end{align}
+  \juliacode{julia_code/RRMC_IVP.jl}
+  We refer to (\ref{eq:RRMC IVP inner}) as the inner recursion and
+  (\ref{eq:RRMC IVP outer}) as the outer recursion of the recursion in
+  recursion.
+  The measured RMSE for estimating $y(t)$ is of the order
+  $O\left(h^{1.5} \right)$, where $h$ represents
+  the step size. For the implementation we used a scaled version
+  of the time process from Example \ref{ex: russian roulette}
+  for the inner recursion, such that the average number of total inner recursion calls
+  is $e n$, where $n$ represents the total number of outer recursion calls.
 \end{example}
 
 % \begin{pythonn}[implementation of Example \ref{ex:RRMC IVP}] \label{py:RRMC IVP}
@@ -1247,68 +1249,68 @@ this behavior.
 
 
 \begin{conjecture}[local RMSE RMC]
-    Consider a general linear IVP:
-    \begin{equation}
-        y_{t}(t)= A(t)y(t)+g(t), y(t_{0}),
-    \end{equation}
-    with $A$ a matrix and $g$ a vector function, each
-    once differentiable with the corresponding RRVE:
-    \begin{equation}
-        y(t) \cong Y(t) = y(t_{0}) + h B \left( \frac{t-t_{0}}{h}\right)
-        A(S) Y(S) + g(S),
-    \end{equation}
-    where $S \sim \text{Uniform}(t_{0},t)$. Then, the following relation holds:
-    \begin{equation}
-        E[||y(t_{1})-Y(t_{1})||^{2}] = O(h^{2}),
-    \end{equation}
-    with $t_{1} = t_{0} + h$.
+  Consider a general linear IVP:
+  \begin{equation}
+    y_{t}(t)= A(t)y(t)+g(t), y(t_{0}),
+  \end{equation}
+  with $A$ a matrix and $g$ a vector function, each
+  once differentiable with the corresponding RRVE:
+  \begin{equation}
+    y(t) \cong Y(t) = y(t_{0}) + h B \left( \frac{t-t_{0}}{h}\right)
+    A(S) Y(S) + g(S),
+  \end{equation}
+  where $S \sim \text{Uniform}(t_{0},t)$. Then, the following relation holds:
+  \begin{equation}
+    E[||y(t_{1})-Y(t_{1})||^{2}] = O(h^{2}),
+  \end{equation}
+  with $t_{1} = t_{0} + h$.
 \end{conjecture}
 
 
 To achieve a higher order of convergence RRMC can be combined with control variates.
 \begin{example}[CV RRMC $y_t=y$]\label{ex:CV RRMC IVP}
-    Let us control variate Example \ref{ex:RRMC IVP}.
+  Let us control variate Example \ref{ex:RRMC IVP}.
 
-    \begin{equation}
-        y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , \quad t>t_{n}.
-    \end{equation}
+  \begin{equation}
+    y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , \quad t>t_{n}.
+  \end{equation}
 
-    We build a control variate with a lower-order approximation
-    of the integrand:
+  We build a control variate with a lower-order approximation
+  of the integrand:
 
-    \begin{align}
-        y(s) & = y(t_{n}) + (s-t_{n})y_t(t_{n}) + O((s-t_{n})^{2})      \\
-             & \approx y(t_{n}) + (s-t_{n})f(y(t_{n}),t_{n})            \\
-             & \approx y(t_{n}) +
-        (s-t_{n})\left(\frac{y(t_{n})-y(t_{n-1})}{t_{n}-t_{n-1}}\right) \\
-             & \approx y(t_{n})(1+s-t_{n}). \label{eq:CVCV RRMC}
-    \end{align}
+  \begin{align}
+    y(s) & = y(t_{n}) + (s-t_{n})y_t(t_{n}) + O((s-t_{n})^{2})      \\
+         & \approx y(t_{n}) + (s-t_{n})f(y(t_{n}),t_{n})            \\
+         & \approx y(t_{n}) +
+    (s-t_{n})\left(\frac{y(t_{n})-y(t_{n-1})}{t_{n}-t_{n-1}}\right) \\
+         & \approx y(t_{n})(1+s-t_{n}). \label{eq:CVCV RRMC}
+  \end{align}
 
-    Using (\ref{eq:CVCV RRMC}) as a control variate for the integral:
+  Using (\ref{eq:CVCV RRMC}) as a control variate for the integral:
 
-    \begin{align}
-        y(t) & = y(t_{n}) + \int_{t_{n}}^{t}y(s)ds                                          \\
-             & = y(t_{n}) + \int_{t_{n}}^{t}y(s)-y(t_{n})(1+s-t_{n}) +y(t_{n})(1+s-t_{n})ds \\
-             & = y(t_{n})\left(1 + (1-t_{n})(t-t_{n})+\frac{t^{2}-t_{n}^{2}}{2}\right)
-        + \int_{t_{n}}^{t}y(s)-y(t_{n})(1+s-t_{n})ds. \label{eq: int CV RRMC}
-    \end{align}
+  \begin{align}
+    y(t) & = y(t_{n}) + \int_{t_{n}}^{t}y(s)ds                                          \\
+         & = y(t_{n}) + \int_{t_{n}}^{t}y(s)-y(t_{n})(1+s-t_{n}) +y(t_{n})(1+s-t_{n})ds \\
+         & = y(t_{n})\left(1 + (1-t_{n})(t-t_{n})+\frac{t^{2}-t_{n}^{2}}{2}\right)
+    + \int_{t_{n}}^{t}y(s)-y(t_{n})(1+s-t_{n})ds. \label{eq: int CV RRMC}
+  \end{align}
 
-    Figure \ref{fig:CV RRMC IVP} displays the error
-    of realizations of an RRVE constructed from (\ref{eq: int CV RRMC})
-    for various step sizes.
+  Figure \ref{fig:CV RRMC IVP} displays the error
+  of realizations of an RRVE constructed from (\ref{eq: int CV RRMC})
+  for various step sizes.
 
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{plots/CV RRMC IVP.png}
-        \caption{Log-log plot of the error for Example
-            \ref{ex:CV RRMC IVP} at $Y(10)$.}
-        \label{fig:CV RRMC IVP}
-    \end{figure}
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plots/CV RRMC IVP.png}
+    \caption{Log-log plot of the error for Example
+      \ref{ex:CV RRMC IVP} at $Y(10)$.}
+    \label{fig:CV RRMC IVP}
+  \end{figure}
 \end{example}
 
 \begin{related}[CV RRMC]
-    \cite{daun_randomized_2011} similarly uses control variates to achieve
-    a higher order of convergence.
+  \cite{daun_randomized_2011} similarly uses control variates to achieve
+  a higher order of convergence.
 \end{related}
 
 Similar to explicit solvers, RRMC performs poorly on stiff problems.
@@ -1428,13 +1430,13 @@ and discuss how recursive first-passage sampling fits into the picture.
 
 
 \begin{lemma}[self-affinity Brownian motion] \label{lem:self affine}
-    Brownian motion is a self-affine random process, which implies
-    that any subpath can be translated and scaled in such a way
-    that its distribution matches that of the entire path.
+  Brownian motion is a self-affine random process, which implies
+  that any subpath can be translated and scaled in such a way
+  that its distribution matches that of the entire path.
 
-    \begin{equation}
-        \forall c \in \mathbb{R}^{+}_{0}: \frac{W_{ct}}{\sqrt{c}} \sim W_{t}.
-    \end{equation}
+  \begin{equation}
+    \forall c \in \mathbb{R}^{+}_{0}: \frac{W_{ct}}{\sqrt{c}} \sim W_{t}.
+  \end{equation}
 \end{lemma}
 
 
@@ -1457,24 +1459,24 @@ Brownian motion.
 % is defined for parabola but reverse in time.
 
 \begin{definition}[1D heat equation Dirichlet] \label{def:heat equation square}
-    We define the 1D heat equation for $u(x,t)$ with $ (x,t) \in \Omega = [0,1]^2$
-    with Dirichlet boundary conditions the following way:
-    \begin{align}
-        \frac{\partial u}{\partial t} & = \frac{\partial^{2} u}{\partial x^{2}}  \Leftrightarrow   \\
-        u_t(x,t)                      & = u_{xx}(x,t), \quad \forall (x,t) \in \Omega = [0,1]^2  .
-    \end{align}
-    Given $\left\{u(x,0),u(1,t),u(0,t) | \forall x,t \in [0,1]  \right\} $.
+  We define the 1D heat equation for $u(x,t)$ with $ (x,t) \in \Omega = [0,1]^2$
+  with Dirichlet boundary conditions the following way:
+  \begin{align}
+    \frac{\partial u}{\partial t} & = \frac{\partial^{2} u}{\partial x^{2}}  \Leftrightarrow   \\
+    u_t(x,t)                      & = u_{xx}(x,t), \quad \forall (x,t) \in \Omega = [0,1]^2  .
+  \end{align}
+  Given $\left\{u(x,0),u(1,t),u(0,t) | \forall x,t \in [0,1]  \right\} $.
 \end{definition}
 
 \begin{definition}[semi-discretization 1D heat equation Dirichlet] \label{def:discrete heat equation square}
-    We define the semi-discretization 1D heat equation for $\tilde{u}$ as space discretized heat equation
-    using the central difference scheme:
+  We define the semi-discretization 1D heat equation for $\tilde{u}$ as space discretized heat equation
+  using the central difference scheme:
 
-    \begin{equation}
-        \tilde{u}_t(j \Delta x,t)  = \frac{\tilde{u}((j+1) \Delta x, t)-2\tilde{u}(j \Delta x, t)+\tilde{u}((j-1) \Delta x, t)}{\Delta x^{2}}
-    \end{equation}
-    $\forall (j,t) \in \{0, 1, \ldots, N\} \times [0,1]$. \\
-    Given $\left\{\tilde{u}(j \Delta x,0),\tilde{u}(1,t),\tilde{u}(0,t) | \forall j \in \{0, 1, \ldots, N\}, \forall t \in  [0,1]  \right\} $.
+  \begin{equation}
+    \tilde{u}_t(j \Delta x,t)  = \frac{\tilde{u}((j+1) \Delta x, t)-2\tilde{u}(j \Delta x, t)+\tilde{u}((j-1) \Delta x, t)}{\Delta x^{2}}
+  \end{equation}
+  $\forall (j,t) \in \{0, 1, \ldots, N\} \times [0,1]$. \\
+  Given $\left\{\tilde{u}(j \Delta x,0),\tilde{u}(1,t),\tilde{u}(0,t) | \forall j \in \{0, 1, \ldots, N\}, \forall t \in  [0,1]  \right\} $.
 \end{definition}
 
 
@@ -1510,39 +1512,42 @@ using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and looking
 % \end{align}
 
 \begin{equation}
-    \tilde{u}(j \Delta x,t) = \int_{0}^{e^{-\frac{2t}{\Delta x^{2}}}}  \tilde{u}(j \Delta x,0) d\tau+
-    \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau. \label{eq:int semi heat}
+  \tilde{u}(j \Delta x,t) = \int_{0}^{e^{-\frac{2t}{\Delta x^{2}}}}  \tilde{u}(j \Delta x,0) d\tau+
+  \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau. \label{eq:int semi heat}
 \end{equation}
 
 
 
 \begin{julia}[implementation of estimator of (\ref{eq:int semi heat})]\label{jl:point estimator heat}
 
-    (\ref{eq:int semi heat}) can be turned into a estimator $Y(j \Delta x,t,\Delta x ) \cong  \tilde{u}(j \Delta x,t)$
-    by sampling $\tau \sim U$ (and transforming everything back), treating the $2$ integrals as $1$,
-    sampling $1$ of the $\tilde{u}$ of the second integral to avoid branching recursion and
-    recursing when $\tilde{u}$ isn't known. Note that we can't reverse the order of the Poisson process
-    because of termination on the boundary but tail recursion
-    is efficient because sampling $1$ term avoids matrix multiplications completely.
+  (\ref{eq:int semi heat}) can be turned into a estimator $Y(j \Delta x,t,\Delta x ) \cong  \tilde{u}(j \Delta x,t)$
+  by sampling $\tau \sim U$,
+  sampling $1$ of the $\tilde{u}$ of the second integral to avoid branching recursion and
+  recursing when $\tilde{u}$ is unknown.
 
-    \juliacode{julia_code/point_estimator_heat_tail.jl}
+  \juliacode{julia_code/point_estimator_heat_tail.jl}
 
-    The point estimator is just the boundary condition
-    for the first passage point from the time space domain for a Poisson time proces and a random walk in space.
-    In this implementation as  $\Delta x \rightarrow 0$  the cost of calculating the first passage time grows
-    $\approx O(\Delta x ^{-2})$ and the process converges to Brownian motion. Note that the estimator needs
-    only $1$ function call from the boundary conditions.
+  The point estimator is just the boundary condition
+  for the first passage point from the time space domain for a Poisson time proces and a random walk in space.
+  In this implementation as  $\Delta x \rightarrow 0$  the cost of calculating the first passage time grows
+  $\approx O(\Delta x ^{-2})$ and the process converges to Brownian motion. Note that the estimator needs
+  only $1$ function call from the boundary conditions.
 \end{julia}
 
+\begin{example}[\ref{def:discrete heat equation square} + source + coefficients]
 
-A similar derivation can be done for
-\begin{equation}
+  A similar derivation can be done for Example \ref{def:discrete heat equation square}
+  but with a source and coefficients:
+
+  \begin{equation}
     u_{t} = u_{xx} + a(x,t)u + f(x,t)
     .
-\end{equation}
-Again using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}} -a_{0}$ and looking at $1$ point we obtain:
+  \end{equation}
 
-\begin{equation}
+  Again by using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}} -a_{0}$
+  and looking at $1$ point we obtain:
+
+  \begin{equation}
     u =
     \int_{0}^{e^{-t \sigma }} u_{0} d\tau  + \int_{e^{-t \sigma }}^{1}
     \sigma^{-1}
@@ -1551,23 +1556,27 @@ Again using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}} -a_{0}
     \right)
     d\tau
     .
-\end{equation}
-A typical choice for $a_{0} $ is $\min (a(x,s))$. As $\Delta x \rightarrow 0$ the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ term is
-the main contribution to the second integral therefore we sample it with $(1 - a_{0} \frac{\Delta x^2}{2})$ probability and
-the rest with $a_{0} \frac{\Delta x^2}{2}$ probability. In total for $1$ sample, the $f(x,s)$ and the $a(x,s)u$ term only
-has to be sampled some times and this does not scale with $\Delta x$.
+  \end{equation}
+  A typical choice for $a_{0} $ is $\min (a(x,s))$. As $\Delta x \rightarrow 0$ the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ term is
+  the main contribution to the second integral therefore we sample it with $(1 - a_{0} \frac{\Delta x^2}{2})$ probability and
+  the rest with $a_{0} \frac{\Delta x^2}{2}$ probability. In total for $1$ sample, the $f(x,s)$ and the $a(x,s)u$ term only
+  has to be sampled a few times and does not scale with $\Delta x$.
+
+\end{example}
 
 \begin{julia}
-    Because of the high chance of sampling the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ it efficient
-    to sample until we don't sample it. This is geometrically distributed.
-    \vspace{0.3cm}
-    \juliacode{julia_code/pest_heat_varcoef.jl}
+  Because of the high chance of sampling the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ it efficient
+  to sample until we don't sample it. This is geometrically distributed.
+  \vspace{0.3cm}
+  \juliacode{julia_code/pest_heat_varcoef.jl}
+
+  As $\Delta x \rightarrow 0$ the bottleneck is sampling the proces that moves through space and time similar
+  to first passage sampling.
+  This proces doesn't depend directly on $a(x,t)$ and $f(x,t)$, therefore we can optimize it
+  independent of it and even partly precompute it.
+
 \end{julia}
 
-As $\Delta x \rightarrow 0$ the bottleneck is sampling the proces that moves through space and time similar
-to first passage sampling.
-This proces doesn't depend directly on $a(x,t)$ and $f(x,t)$, therefore we can optimize it
-independent of it and even partly precompute it.
 
 % \begin{lemma}[Brownian motion and the heat equation] \label{lem:BM HE}
 %     For problem (\ref{def:heat equation}) if $ |\psi|$ is bounded
@@ -1633,13 +1642,13 @@ independent of it and even partly precompute it.
 
 % % maybe with the source
 
-\begin{related}
-    % (\ref{lem:BM HE}) is a subcase of the Feynman-Kac formula.
-    % For a proof and an in-depth discussion of the Feynman-Kac formula
-    % see . \\
-    The Feynman-Kac formula is related to this. See \cite{oksendal_stochastic_2003}
-    for a reference.
-\end{related}
+% \begin{related}
+%   % (\ref{lem:BM HE}) is a subcase of the Feynman-Kac formula.
+%   % For a proof and an in-depth discussion of the Feynman-Kac formula
+%   % see . \\
+%   The Feynman-Kac formula is related to this. See \cite{oksendal_stochastic_2003}
+%   for a reference.
+% \end{related}
 
 
 % \begin{theorem}[Feynman-Kac formula (wikipedia)] \label{thrm:feymankac}
@@ -1667,51 +1676,51 @@ independent of it and even partly precompute it.
 In this subsection we discuss techniques to accelerate first passage sampling.
 
 \begin{definition}[first passage time] \label{def:first passage time}
-    Define the first passage time for a process $X_{t}$ for a set of valid states
-    $V$ as
-    \begin{equation}
-        \text{FPt}(X_{t},V)=\inf \{t>0| (X_{t},t) \notin V \}
-        .
-    \end{equation}
-    Note that the first passage time is a RV itself.
+  Define the first passage time for a process $X_{t}$ for a set of valid states
+  $V$ as
+  \begin{equation}
+    \text{FPt}(X_{t},V)=\inf \{t>0| (X_{t},t) \notin V \}
+    .
+  \end{equation}
+  Note that the first passage time is a RV itself.
 \end{definition}
 
 \begin{definition}[first passage] \label{def:first passage}
-    Define the first passage for a process $X_{t}$ for a set of valid states
-    $V$ as
-    \begin{equation}
-        \text{FP}(X_{t},V)=(X_{\tau},\tau), \tau = \text{FPt}(X_{t},V)
-        .
-    \end{equation}
+  Define the first passage for a process $X_{t}$ for a set of valid states
+  $V$ as
+  \begin{equation}
+    \text{FP}(X_{t},V)=(X_{\tau},\tau), \tau = \text{FPt}(X_{t},V)
+    .
+  \end{equation}
 \end{definition}
 
 \begin{lemma} \label{lem: FP order}
-    When a process has more valid states the first passage time gets larger i.e.
-    \begin{equation}
-        V_{1} \subset V_{2} \Rightarrow
-        \text{FPt}(X_{t}(\omega),V_{1}) \le  \text{FPt}(X_{t}(\omega),V_{2}) .
-    \end{equation}
-    The $\omega$ is to indicate we mean the same realization of $X_{t}$.
+  When a process has more valid states the first passage time gets larger i.e.
+  \begin{equation}
+    V_{1} \subset V_{2} \Rightarrow
+    \text{FPt}(X_{t}(\omega),V_{1}) \le  \text{FPt}(X_{t}(\omega),V_{2}) .
+  \end{equation}
+  The $\omega$ is to indicate we mean the same realization of $X_{t}$.
 \end{lemma}
 
 \begin{theorem}[Green's functions and first passage distribution]
-    The the density of first passages of Code \ref{jl:point estimator heat} is  the
-    corresponding Dirichlet boundary Green's function for the semi-discretized heat equation.
+  The the density of first passages of Code \ref{jl:point estimator heat} is  the
+  corresponding Dirichlet boundary Green's function for the semi-discretized heat equation.
 \end{theorem}
 
 % notation for the Green's function is bad
 \begin{proof}
-    Follows directly from the definition.
-    Let $P(x,t|x_{0},t_{0})$ denote the boundary Green's
-    function for the semi-discretized heat equation and $X_{t}$
-    the corresponding space time proces.
-    \begin{align}
-        P(x,t|x_{0},t_{0}) & = E[Y(x_0,t_0)]                                         \\
-                           & = E[\tilde{u}(X_{\tau},\tau) | X_{t_0} = x_0 ]          \\
-                           & = E[\delta_{((X_{\tau},\tau) = (x,t))}| X_{t_0} = x_0 ] \\
-                           & = P((X_{\tau},\tau) = (x,t)| X_{t_0} = x_0 )
-        .
-    \end{align}
+  Follows directly from the definition.
+  Let $P(x,t|x_{0},t_{0})$ denote the boundary Green's
+  function for the semi-discretized heat equation and $X_{t}$
+  the corresponding space time proces.
+  \begin{align}
+    P(x,t|x_{0},t_{0}) & = E[Y(x_0,t_0)]                                         \\
+                       & = E[\tilde{u}(X_{\tau},\tau) | X_{t_0} = x_0 ]          \\
+                       & = E[\delta_{((X_{\tau},\tau) = (x,t))}| X_{t_0} = x_0 ] \\
+                       & = P((X_{\tau},\tau) = (x,t)| X_{t_0} = x_0 )
+    .
+  \end{align}
 \end{proof}
 
 
@@ -1719,84 +1728,85 @@ Another way to obtain an unbiased estimator for the semi-discretized heat equati
 of the boundary Green's boundary function. Because of:
 
 \begin{align}
-    \tilde{u}(x_{0},t_{0}) & = \int_{\partial \Omega} \tilde{u}(x,t) P(x,t|x_{0},t_{0}) d(x,t)                    \\
-                           & = \int_{\partial \Omega} \tilde{u}(x,t)  dP((X_{\tau},\tau) = (x,t)| X_{t_0} = x_0 )
-    .
+  \tilde{u}(x_{0},t_{0}) & = \int_{\partial \Omega} \tilde{u}(x,t) P(x,t|x_{0},t_{0}) d(x,t)                    \\
+                         & = \int_{\partial \Omega} \tilde{u}(x,t)  dP((X_{\tau},\tau) = (x,t)| X_{t_0} = x_0 )
+  .
 \end{align}
 
 
 Obtaining unbiased estimator for the boundary Green's function is not trivial.
 
 \begin{lemma}[law of total probability (not sure)]
-    Let $P_{1}$ be the boundary Green's function for a contained domain $\Omega_{1}$ within the semi-discretized heat problem
-    then:
-    \begin{equation}
-        P(x,t|x_{0},t_{0})= \int_{\partial \Omega_{1}} P_{1}(x,t|x_{1},t_{1}) P(x_{1},t_{1}|x_{0},t_{0}) d(x_{1},t_{1})
-        .
-    \end{equation}
+  Let $P_{1}$ be the boundary Green's function for a contained domain $\Omega_{1}$ within the semi-discretized heat problem
+  then:
+  \begin{equation}
+    P(x,t|x_{0},t_{0})= \int_{\partial \Omega_{1}} P_{1}(x,t|x_{1},t_{1}) P(x_{1},t_{1}|x_{0},t_{0}) d(x_{1},t_{1})
+    .
+  \end{equation}
 \end{lemma}
 
-Given a family of ''elementary'' boundary Green's functions for the semi-discretized heat problem we can construct
-an unbiased estimator for the boundary Green's function by recursively sampling the law of total probability. \\
 
-\begin{related}
-    For a reference on Green's functions in this context see \cite{qi_bidirectional_2022}.
+\begin{related}[recursively estimating Green's functions]
+  In \cite{qi_bidirectional_2022} unbiased estimators for the boundary Green's function are constructed
+  by recursively sampling known Green's functions.
 \end{related}
 
-Similar to RMC for boundary Green's function we can recursively sample first passages.
+Similar to RMC for boundary Green's function we recursively sample first passages.
 
 \begin{technique}[recursive first passage sampling]
-    Recursive first passage sampling involves sampling an initial,
-    simpler first passage, the base that includes fewer valid states. Using
-    this sampled first passage as a starting point, we
-    then perform the same sampling process until the sampled
-    first passage is almost invalid.
+  Recursive first passage sampling involves sampling an initial,
+  simpler first passage, the base that includes fewer valid states. Using
+  this sampled first passage as a starting point, we
+  then perform the same sampling process until the sampled
+  first passage is almost invalid.
 \end{technique}
 
 \begin{example}[Euler first passage sampling] \label{ex:euler first passage sampling}
-    In this example, we approximately sample the first passage of Brownian motion
-    for a parabolic barrier by simulating Brownian motion with the Euler scheme. We plotted
-    this in Figure \ref{fig:Euler first passage para}. The accuracy of the sampled first passage
-    are $O(\Delta t)$ and the cost to sample is $O(\Delta t ^{-1})$.
+  In this example, we approximately sample the first passage of Brownian motion
+  for a parabolic barrier by simulating Brownian motion with the Euler scheme. We plotted
+  this in Figure \ref{fig:Euler first passage para}. The accuracy of the sampled first passage
+  are $O(\Delta t)$ and the cost to sample is $O(\Delta t ^{-1})$.
 
-    \juliacode{julia_code/sample_euler_triangle.jl}
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{plots/Euler first passage para.png}
-        \caption{ $50$ realizations of Euler first passage sampling with step size $0.001$.}
-        \label{fig:Euler first passage para}
-    \end{figure}
+  \juliacode{julia_code/sample_euler_triangle.jl}
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plots/Euler first passage para.png}
+    \caption{ $50$ realizations of Euler first passage sampling with step size $0.001$.}
+    \label{fig:Euler first passage para}
+  \end{figure}
 \end{example}
 
 
 \begin{example}[recursive first passage sampling] \label{ex:recursive first passage sampling}
-    In this example, we sample the first passage of Brownian motion from a parabolic barrier
-    with recursive first passage sampling.
-    For the simpler first passage sampler, we scale and translate
-    samples from a triangular barrier so its
-    valid states are contained in the parabola generated
-    by the Euler scheme. The precomputed samples are created
-    by (\ref{ex:euler first passage sampling}).
-    Assuming that the error of the base sampler is insignificant.
-    The accuracy of the sampled first passage
-    are $O(\varepsilon)$ and the cost to sample is $O(\ln \left(\varepsilon^{-1}\right))$.
+  In this example, we sample the first passage of Brownian motion from a parabolic barrier
+  with recursive first passage sampling.
+  For the simpler first passage sampler, we  exploit the self-affinity of Brownian motion
+  (\ref{lem:self affine})
+  by scaling and translating
+  samples from a triangular barrier so its
+  valid states are contained in the parabola generated
+  by the Euler scheme. The precomputed samples are created
+  by (\ref{ex:euler first passage sampling}).
+  Assuming that the error of the base sampler is insignificant.
+  The accuracy of the sampled first passage
+  are $O(\varepsilon)$ and the cost to sample is $O(\ln \left(\varepsilon^{-1}\right))$.
 
-    \juliacode{julia_code/sample_recu_para.jl}
-    The maximum scaling of the triangular barrier that fits
-    in the parabola is derived through (\ref{lem:self affine})
-    and using the fact that a parabola domain is convex. To dampen barrier
-    overstepping of (\ref{ex:euler first passage sampling}) we use a smaller scaling
-    than the maximum.
+  \juliacode{julia_code/sample_recu_para.jl}
+  The maximum scaling of the triangular barrier that fits
+  in the parabola is derived through the fact that a parabola domain is convex.
+  To dampen barrier
+  overstepping of (\ref{ex:euler first passage sampling}) we use a smaller scaling
+  than the maximum.
 
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=1\textwidth]{plots/recursive first passage para.png}
-        \caption{ $50000$ of realizations of recursive first passage sampling produced
-            by (\ref{ex:recursive first passage sampling}). The precomputed sample of $5000$ first
-            passages of a triangular barrier uses the Euler scheme with
-            step size $0.001$.}
-        \label{fig:recursive first passage para}
-    \end{figure}
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\textwidth]{plots/recursive first passage para.png}
+    \caption{ $50000$ of realizations of recursive first passage sampling produced
+      by (\ref{ex:recursive first passage sampling}). The precomputed sample of $5000$ first
+      passages of a triangular barrier uses the Euler scheme with
+      step size $0.001$.}
+    \label{fig:recursive first passage para}
+  \end{figure}
 
 \end{example}
 
@@ -1824,15 +1834,15 @@ Similar to RMC for boundary Green's function we can recursively sample first pas
 % \end{pythonn}
 
 \begin{related}[recursive first passage sampling]
-    The original walk on spheres is a recursive first passage algorithm.
-    Recursive first passage sampling for
-    Brownian motion is discussed in \cite{herrmann_first-passage_2016}
-    and by transformation also first passage problems for the
-    Ornstein-Uhlenbeck process.
-    % To add jumps you can use \cite{herrmann_exact_2021}.
-    An alternative to resampling from an Euler scheme is to use tabulated
-    inverse cumulative probability functions,
-    as demonstrated in \cite{hwang_simulationtabulation_2001}.
+  The original walk on spheres is a recursive first passage algorithm.
+  Recursive first passage sampling for
+  Brownian motion is discussed in \cite{herrmann_first-passage_2016}
+  and by transformation also first passage problems for the
+  Ornstein-Uhlenbeck process.
+  % To add jumps you can use \cite{herrmann_exact_2021}.
+  An more efficient alternative to resampling from an Euler scheme is to use tabulated
+  inverse cumulative probability functions,
+  as demonstrated in \cite{hwang_simulationtabulation_2001}.
 \end{related}
 
 % For recursive first passage sampling for high dimensional Brownian motion
@@ -1855,28 +1865,31 @@ Similar to RMC for boundary Green's function we can recursively sample first pas
 
 
 \begin{technique}[Brownian motion path stitching]
-    Instead of sampling the first passages you can also sample
-    whole paths to the first passage. Similar to before we need to be
-    able to generate paths for a simple first passage problem and "stitch"
-    these paths together. An advantage over normally generating paths
-    is that a path can be represented by its subpaths and their scalings
-    requiring less memory than a fully stored path. This can be useful
-    in case you need to look back to a small part of the path.
-    The only downsides are that the time steps are inhomogeneous
-    and it requires storing paths for the simpler first passage problem.
+  Sampling approximate Brownian motion paths also can be
+  framed as a first passage problem. Instead of sampling
+  first passage points we sample first passage paths.
+  This requires a simple first passage paths sampler and the paths
+  sampled this way are "stitched" together.
 \end{technique}
 
 \begin{example}[path stitching parabola]
-    This is the same as example (\ref{ex:recursive first passage sampling}) but now we have
-    to keep track of the whole resampled Euler scheme generated paths.
+  Example \ref{ex:recursive first passage sampling} but
+  resampling full Euler scheme generated paths.
+  The advantages over generating paths directly from
+  the Euler scheme are that computations for all small steps from the
+  base sampler are avoided and the full path
+  can be represented by its subpaths and their scalings
+  requiring less memory than a fully stored path.
+  The only downsides are correlation between paths and
+  inhomogeneous time steps.
 
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{plots/path stitching para.png}
-        \caption{ $10$ paths build with path stitching build out of
-            precomputed Euler scheme generated paths with step size $0.01$.}
-        \label{fig:path stitching para}
-    \end{figure}
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plots/path stitching para.png}
+    \caption{ $10$ paths build with path stitching build out of
+      resampled Euler scheme generated paths with step size $0.01$.}
+    \label{fig:path stitching para}
+  \end{figure}
 \end{example}
 
 % For plotting the path we needed to accesses to all of its points.  
@@ -1888,33 +1901,33 @@ Similar to RMC for boundary Green's function we can recursively sample first pas
 
 
 \begin{related}[path stitching]
-    Path stitching appears frequently in rendering and also in \cite{das_sarma_fast_2015}
-    and \cite{ji_reusing_2012}.
+  Path stitching appears frequently in rendering and also in \cite{das_sarma_fast_2015}
+  and \cite{ji_reusing_2012}.
 \end{related}
 
-\subsection{Limitations and Future Work}
+% \subsection{Limitations and Future Work}
 
-It would be interesting to extend proof technique of (\ref{lem:BM HE}) to the full
-Feynman-Kac formula. Just adding a source term $f$ in the Feynman-Kac formula adds
-an integral of the source term over the recursion path.
-In equation (\ref{eq:discrete iso heat equation})
-it would add $\frac{\Delta t \Delta x^{2}}{2 \Delta t + \Delta x ^{2}} f(x,t)$
-term. This term can either be kept or Russian rouletted
-to prevent infinite source evaluations in the limit.
-This roughly corresponds to estimating the integral by
-MC integration also requires knowing a finite amount of
-intermediate points of the recursion path
-sampled randomly. These can possibly be obtained from
-the intermediate first passages of recursive first passage sampling or with a smart
-application of path stitching. \\
+% It would be interesting to extend proof technique of (\ref{lem:BM HE}) to the full
+% Feynman-Kac formula. Just adding a source term $f$ in the Feynman-Kac formula adds
+% an integral of the source term over the recursion path.
+% In equation (\ref{eq:discrete iso heat equation})
+% it would add $\frac{\Delta t \Delta x^{2}}{2 \Delta t + \Delta x ^{2}} f(x,t)$
+% term. This term can either be kept or Russian rouletted
+% to prevent infinite source evaluations in the limit.
+% This roughly corresponds to estimating the integral by
+% MC integration also requires knowing a finite amount of
+% intermediate points of the recursion path
+% sampled randomly. These can possibly be obtained from
+% the intermediate first passages of recursive first passage sampling or with a smart
+% application of path stitching. \\
 
 
-Recursive first passage sampling for Brownian motion can be extended to geometric
-Brownian motion by transforming the space. However, this transformation breaks
-the symmetries required for the average used in the example (\ref{ex:recu FP average}).
-An unsatisfying way to fix this is to approximate the base sampler at different points in
-space and at different scales. Just accelerating a classic Euler scheme at critical places
-with a base sampler can reduce precomputation requirements.
+% Recursive first passage sampling for Brownian motion can be extended to geometric
+% Brownian motion by transforming the space. However, this transformation breaks
+% the symmetries required for the average used in the example (\ref{ex:recu FP average}).
+% An unsatisfying way to fix this is to approximate the base sampler at different points in
+% space and at different scales. Just accelerating a classic Euler scheme at critical places
+% with a base sampler can reduce precomputation requirements.
 
 
 \section{Limitations and Future Work}
@@ -1931,35 +1944,35 @@ ODEs. For example, when integrating a high-dimensional parametric ODE problem.
 The following example is a toy problem to showcase this.
 
 \begin{example} \label{ex:random ode}
-    Consider the following parametric IVP:
-    \begin{equation}\label{eq:random ode}
-        y_t = ay, \quad y(0)=1,
-    \end{equation}
-    with $a$ a parameter. The solution to this problem is given by
-    $y(t,a) = e^{ta}$. Imagine we have a belief about $a$ quantized
-    in the following way $a\sim U$. If we want
-    to estimate $E[y(t, U)]$ or in a more general case
-    $E[f(y(t, U))]$ with $f$ analytic directly
-    we need samples of $y(t,U)$. If we don't have a solution for the parametric IVP
-    we can't sample $y(t,U)$ instead, we use unbiased estimates ($Y(t,u)$) of samples ($y(t,u)$)
-    of $y(t, U)$ in the following
-    way using the total law of expectation:
+  Consider the following parametric IVP:
+  \begin{equation}\label{eq:random ode}
+    y_t = ay, \quad y(0)=1,
+  \end{equation}
+  with $a$ a parameter. The solution to this problem is given by
+  $y(t,a) = e^{ta}$. Imagine we have a belief about $a$ quantized
+  in the following way $a\sim U$. If we want
+  to estimate $E[y(t, U)]$ or in a more general case
+  $E[f(y(t, U))]$ with $f$ analytic directly
+  we need samples of $y(t,U)$. If we don't have a solution for the parametric IVP
+  we can't sample $y(t,U)$ instead, we use unbiased estimates ($Y(t,u)$) of samples ($y(t,u)$)
+  of $y(t, U)$ in the following
+  way using the total law of expectation:
 
-    \begin{align}
-        E[f(y(t,U))] & = E[f(y(t,u)) \mid U=u]     \\
-                     & = E[f(E[Y(t,u)]) \mid U=u].
-    \end{align}
+  \begin{align}
+    E[f(y(t,U))] & = E[f(y(t,u)) \mid U=u]     \\
+                 & = E[f(E[Y(t,u)]) \mid U=u].
+  \end{align}
 
-    To estimate $E[f(E[Y(t,u)]) \mid U =u]$, we use the approach outlined in
-    Example \ref{ex:exp int}. The first two moments of $y(t, U)$ are:
-    \begin{align}
-        E[y(t,U)]      & = \frac{e^t}{t} - \frac{1}{t},      \\
-        E[y^{2}(t, U)] & = \frac{e^{2t}}{2t} - \frac{1}{2t}.
-    \end{align}
+  To estimate $E[f(E[Y(t,u)]) \mid U =u]$, we use the approach outlined in
+  Example \ref{ex:exp int}. The first two moments of $y(t, U)$ are:
+  \begin{align}
+    E[y(t,U)]      & = \frac{e^t}{t} - \frac{1}{t},      \\
+    E[y^{2}(t, U)] & = \frac{e^{2t}}{2t} - \frac{1}{2t}.
+  \end{align}
 \end{example}
 
 \begin{pythonn}[implementation of Example \ref{ex:random ode}]
-    \pythoncode{python code/random_ODE.py}
+  \pythoncode{python code/random_ODE.py}
 \end{pythonn}
 
 \vspace{0.5cm}
@@ -1969,12 +1982,12 @@ has little control over the distribution of recursion calls $(t,Y(t))$
 in time see Figure \ref{fig:russian roulette}.
 
 \begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.8\textwidth]{plots/time proces.png}
-    \caption{This histogram depicts how the points
-        on Figure \ref{fig:russian roulette} are distributed over time
-        excluding $t=1$.}
-    \label{fig:time proces}
+  \centering
+  \includegraphics[width=0.8\textwidth]{plots/time proces.png}
+  \caption{This histogram depicts how the points
+    on Figure \ref{fig:russian roulette} are distributed over time
+    excluding $t=1$.}
+  \label{fig:time proces}
 \end{figure}
 
 Instead of that, a Poisson point process can be used.
@@ -2038,7 +2051,7 @@ increases logarithmically with the size of the splitting.
 
 \newpage
 \begin{abstract}
-    \input{dutch_abstract.tex}
+  \input{dutch_abstract.tex}
 \end{abstract}
 
 \printbibliography
