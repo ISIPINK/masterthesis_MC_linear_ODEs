@@ -1595,6 +1595,7 @@ to a few points of the time space proces and this amount does not scale with $\D
 
 
 
+
 % \begin{lemma}[Brownian motion and the heat equation] \label{lem:BM HE}
 %     For problem (\ref{def:heat equation}) if $ |\psi|$ is bounded
 %     then there holds:
@@ -1768,7 +1769,7 @@ Obtaining unbiased estimator for the boundary Green's function is not trivial.
   by recursively sampling known Green's functions.
 \end{related}
 
-Similar to RMC for boundary Green's function we recursively sample first passages.
+Similar to recursively  sampling simpler Green's function we recursively sample first passages.
 
 \begin{technique}[recursive first passage sampling]
   Recursive first passage sampling involves sampling an initial,
@@ -1803,7 +1804,7 @@ Similar to RMC for boundary Green's function we recursively sample first passage
   samples from a triangular barrier so its
   valid states are contained in the parabola generated
   by the Euler scheme. The precomputed samples are created
-  by (\ref{ex:euler first passage sampling}).
+  by \ref{ex:euler first passage sampling}.
   Assuming that the error of the base sampler is insignificant.
   The accuracy of the sampled first passage
   are $O(\varepsilon)$ and the cost to sample is $O(\ln \left(\varepsilon^{-1}\right))$.
@@ -1812,7 +1813,7 @@ Similar to RMC for boundary Green's function we recursively sample first passage
   The maximum scaling of the triangular barrier that fits
   in the parabola is derived through the fact that a parabola domain is convex.
   To dampen barrier
-  overstepping of (\ref{ex:euler first passage sampling}) we use a smaller scaling
+  overstepping of \ref{ex:euler first passage sampling} we use a smaller scaling
   than the maximum.
 
   \begin{figure}[h!]
