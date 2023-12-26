@@ -53,8 +53,8 @@ end
 a0 = 1
 x = 0.5
 t = 1
-nsim = 10^4
 Δx = 0.05
+nsim = 10^4
 
 println("error = $(yvar(x, t, Δx, nsim,a0) - u(x, t))")
 
@@ -65,3 +65,68 @@ Profile.clear()
 
 
 pprof()
+
+
+struct hop
+    sourcepoints::AbstractArray
+    steps::Int64
+    finished::Bool
+end
+
+function YvarPath(x, t, dx, a0)
+    siginv = 1 / (2 / dx^2 - a0)
+    g = Geometric(a0 * dx^2 / 2)
+    ee = Exponential(siginv)
+    sourcejump = rand(g)
+    source_points = [(x, t, sourcejump)]
+    while true
+        t -= rand(ee)
+        t <= 0 && return (source_points, (x, t, sourcejump))
+
+        if sourcejump != 0
+            x += rand(Bool) ? dx : -dx
+            sourcejump -= 1
+            return x <= 0 ? (source_points, (x, t, sourcejump)) :
+                   x >= 1 ? (source_points, (x, t, sourcejump)) : continue
+
+        else
+            sourcejump = rand(g)
+            push!(source_points, (x, t, sourcejump))
+        end
+    end
+end
+
+using Plots
+
+xx = repeat([0.5], 2 * 10^1)
+x = 0.5
+t = 0.15
+Δx = 0.001
+a0 = 30
+
+tpaths = YvarPath.(xx, t, Δx, a0)
+tpaths[1]
+p = plot()
+
+colors = [:red, :green, :blue, :yellow, :purple, :cyan, :magenta, :orange, :pink, :teal, :violet, :lime, :gold, :silver, :maroon, :navy]
+
+for (i, tpath) in enumerate(tpaths)
+    xxpath1 = [point[1] for point in tpath[1]]
+    yypath1 = [point[2] for point in tpath[1]]
+
+    push!(xxpath1, tpath[2][1])
+    push!(yypath1, tpath[2][2])
+
+    plot!(p, yypath1, xxpath1, color=colors[i%length(colors)+1], label="")
+    plot!(p, yypath1, xxpath1, seriestype=:scatter, color=colors[i%length(colors)+1], label="")
+end
+
+display(p)
+
+xxend = [tpath[2][1] for tpath in tpaths]
+yyend = [tpath[2][2] for tpath in tpaths]
+
+plot(xxend, yyend,
+    seriestype=:scatter, xlims=(-0.1, 1.1), ylims=(-0.1, 1.1))
+
+

@@ -1409,11 +1409,8 @@ is more viable.
 %     function.
 % \end{related}
 
-\section{Brownian Motion}
+% \section{Brownian Motion}
 
-Current RMC algorithms for PDEs are related to Brownian motion. In this section,
-we explore the relationship between the heat equation and Brownian motion,
-and discuss how recursive first-passage sampling fits into the picture.
 
 % \begin{definition}[Brownian motion]
 %     Define Brownian motion $W_{t}$ as the limit/logical generalization
@@ -1429,20 +1426,18 @@ and discuss how recursive first-passage sampling fits into the picture.
 % \end{definition}
 
 
-\begin{lemma}[self-affinity Brownian motion] \label{lem:self affine}
-  Brownian motion is a self-affine random process, which implies
-  that any subpath can be translated and scaled in such a way
-  that its distribution matches that of the entire path.
+% \begin{lemma}[self-affinity Brownian motion] \label{lem:self affine}
+%   Brownian motion is a self-affine random process, which implies
+%   that any subpath can be translated and scaled in such a way
+%   that its distribution matches that of the entire path.
 
-  \begin{equation}
-    \forall c \in \mathbb{R}^{+}_{0}: \frac{W_{ct}}{\sqrt{c}} \sim W_{t}.
-  \end{equation}
-\end{lemma}
+% \end{lemma}
 
 
-\subsection{Heat Equation}
-In this subsection, we introduce the relation between the heat equation and
-Brownian motion.
+\section{Heat Equation}
+
+In this section we discuss how to solve ODEs derived from the semi-discretized heat equation
+with Dirichlet boundary conditions in $1$ point and acceleration with first-passage sampling.
 
 % \begin{definition}[$1$D heat equation Dirichlet general domain] \label{def:heat equation}
 %     We define the $1$D heat equation for $u$ on connected domain $\Omega$
@@ -1484,7 +1479,7 @@ Brownian motion.
 It well-known that the solution to the semi-discretization 1D heat equation converges to the solution of the 1D heat equation with
 corresponding boundary conditions as $\Delta x \rightarrow 0$. \\
 We want a point estimator for the solution to the semi-discretization 1D heat equation. We obtain this by
-using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and looking at $1$ point.
+using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and at the interior point $j$ this is:
 
 % \begin{align}
 %     \tilde{u}_t(j \Delta x,t)                                                 & = \frac{\tilde{u}((j+1) \Delta x, t)-2\tilde{u}(j \Delta x, t)+\tilde{u}((j-1) \Delta x, t)}{\Delta x^{2}} \\
@@ -1527,14 +1522,14 @@ using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and looking
 
   \juliacode{julia_code/point_estimator_heat_tail.jl}
 
-  The point estimator is just the boundary condition
+  $Y(j \Delta x,t,\Delta x )$ is just the boundary condition
   for the first passage point from the time space domain for a Poisson time proces and a random walk in space.
   In this implementation as  $\Delta x \rightarrow 0$  the cost of calculating the first passage time grows
   $\approx O(\Delta x ^{-2})$ and the process converges to Brownian motion. Note that the estimator needs
   only $1$ function call from the boundary conditions.
 \end{julia}
 
-\begin{example}[\ref{def:discrete heat equation square} + source + coefficients]
+\begin{example}[\ref{def:discrete heat equation square} + source + coefficients] \label{ex:semi heat source}
 
   A similar derivation can be done for Example \ref{def:discrete heat equation square}
   but with a source and coefficients:
@@ -1545,7 +1540,7 @@ using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and looking
   \end{equation}
 
   Again by using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}} -a_{0}$
-  and looking at $1$ point we obtain:
+  and looking at an interior point we obtain:
 
   \begin{equation}
     u =
@@ -1559,23 +1554,45 @@ using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and looking
   \end{equation}
   A typical choice for $a_{0} $ is $\min (a(x,s))$. As $\Delta x \rightarrow 0$ the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ term is
   the main contribution to the second integral therefore we sample it with $(1 - a_{0} \frac{\Delta x^2}{2})$ probability and
-  the rest with $a_{0} \frac{\Delta x^2}{2}$ probability. In total for $1$ sample, the $f(x,s)$ and the $a(x,s)u$ term only
+  the rest with $a_{0} \frac{\Delta x^2}{2}$ probability. In total for $1$ fully recursed sample,
+  the $f(x,s)$ and the $a(x,s)u$ term only
   has to be sampled a few times and does not scale with $\Delta x$.
 
 \end{example}
 
-\begin{julia}
+\begin{julia}[implementation of estimator of Example \ref{ex:semi heat source}]\label{jl:point estimator heat source}
   Because of the high chance of sampling the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ it efficient
   to sample until we don't sample it. This is geometrically distributed.
-  \vspace{0.3cm}
+
   \juliacode{julia_code/pest_heat_varcoef.jl}
-
-  As $\Delta x \rightarrow 0$ the bottleneck is sampling the proces that moves through space and time similar
-  to first passage sampling.
-  This proces doesn't depend directly on $a(x,t)$ and $f(x,t)$, therefore we can optimize it
-  independent of it and even partly precompute it.
-
 \end{julia}
+
+Computing the estimator requires knowing more then the first passage point
+unlike Example \ref{def:discrete heat equation square} but this is limited
+to a few points of the time space proces and this amount does not scale with $\Delta x$.
+
+
+\begin{technique}[presampling the proces of \ref{jl:point estimator heat source}]
+  As $\Delta x \rightarrow 0$ the bottleneck is sampling the proces that moves through space and time.
+  This proces is independent of the boundary conditions, $a(x,t)$ and $f(x,t)$. So it is possible to
+  precompute samples of the proces and reuse them for different boundary conditions, $a(x,t)$ and $f(x,t)$.
+  This makes the solutions correlated. To compute the estimator we need to know where we sampled the
+  source term, how many steps we took in between and where termination happens.
+
+  \juliacode{julia_code/path_pest_heat_varcoef.jl}
+
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{./julia_plots/paths_pest_heat_varcoef.pdf}
+    \caption{$20$ samples of YvarPath$(x=0.5,t=0.15,dx=\{0.1,0.001\},a_{0}=30)$. The intermediate
+    points in the path are where the source term need to be sampled. Note that the amount of
+    intermediate points does not differ much between $\Delta x = 0.1$ and $\Delta x = 0.001$.
+    Points with $t<0$ do not cause any bias, the method is unbiased for the semi-discretized heat equation. }
+    \label{fig:presampled paths pest heat var}
+  \end{figure}
+
+\end{technique}
+
 
 
 % \begin{lemma}[Brownian motion and the heat equation] \label{lem:BM HE}
@@ -1781,7 +1798,7 @@ Similar to RMC for boundary Green's function we recursively sample first passage
   In this example, we sample the first passage of Brownian motion from a parabolic barrier
   with recursive first passage sampling.
   For the simpler first passage sampler, we  exploit the self-affinity of Brownian motion
-  (\ref{lem:self affine})
+  ($\frac{W_{ct}}{\sqrt{c}} \sim W_{t}$)
   by scaling and translating
   samples from a triangular barrier so its
   valid states are contained in the parabola generated
