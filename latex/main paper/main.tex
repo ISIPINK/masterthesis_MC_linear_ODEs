@@ -820,6 +820,7 @@ A way to avoid recursion is to chose the time proces such that sampling in rever
 Poisson time processes have the same distribution forward paths and backward paths.
 
 \begin{definition}[main Poisson] \label{def:main poisson}
+  Consider the following IVP:
   \begin{align}
     y'                              & = A y + f \Leftrightarrow                                                                             \\
     y'+\sigma y                     & = (A + \sigma I) y + f\Leftrightarrow                                                                 \\
@@ -832,9 +833,7 @@ Poisson time processes have the same distribution forward paths and backward pat
     y(t) = \int_{0}^{e^{-\sigma t}}  y(0) d\tau + \int_{e^{-\sigma t}}^{1} \left(  \frac{A(s)}{\sigma} + I\right)  y(s) + \frac{f(s)}{\sigma} d\tau
     .
   \end{equation}
-
-
-
+  Sampling $\tau$ uniformly is equivalent to sampling a Poisson proces.
 \end{definition}
 
 \begin{julia}[implementation of \ref{def:main poisson}]
@@ -894,7 +893,8 @@ of all operations ($(xy)z = x(yz)$) involved.
 Tail recursion loses the intermediate values
 of the recursive calls and
 may increase computational costs because of the reordering of operations.
-Matrix multiplication are very sensitive to reordering operations.
+The computational cost of matrix multiplications are very sensitive
+to reordering operations.
 
 \begin{related}[non-branching tail recursion]
   % Example \ref{ex:coupled recursion} is inspired by \cite{vicini_path_2021}.
