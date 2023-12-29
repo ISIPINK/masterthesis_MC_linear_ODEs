@@ -816,83 +816,8 @@ In this subsection, we discuss recursion-related techniques.
 
 Most programming languages do support recursion, but it often comes with certain
 limitations such as maximum recursion depth and potential performance issues.
-There are multiple ways to implement recursion, we will discuss tail recursion and
-do an example using a stack.
-
-\begin{technique}[non-branching tail recursion]
-  Tail recursion involves reordering all operations
-  so that almost no operation needs to happen after
-  the recursion call. This allows us to return the
-  answer without retracing all steps when we reach
-  the last recursion call and it can achieve similar
-  speeds to a forward implementation.
-\end{technique}
-
-The non-branching recursion presented in the RRVEs can
-be implemented using tail recursion thanks to the associativity
-of all operations ($(xy)z = x(yz)$) involved.
-
-% \begin{pythonn}[tail recursion on (\ref{coupled mat})] \label{py:tail recursion couple}
-%     We implemented (\ref{coupled mat}) using tail recursion this time. We
-%     collect addition operations in a vector called $sol$, and multiplications
-%     in a matrix named $W$. $W$ may also be referred to as accumulated weight
-%     or throughput.
-%     \vspace{0.3cm}
-%     \pythoncode{python code/tailrecu.py}
-% \end{pythonn}
-
-\begin{julia}[tail recursion on (\ref{coupled mat})] \label{jl:tail recursion couple}
-  We implemented (\ref{coupled mat}) using tail recursion this time. We
-  collect addition operations in a vector called $sol$, and multiplications
-  in a matrix named $W$. $W$ may also be referred to as accumulated weight
-  or throughput.
-  \vspace{0.3cm}
-  \juliacode{julia_code/tailrecu.jl}
-\end{julia}
-
-Tail recursion avoids intermediate values
-of the recursive calls which may be useful and
-can increase computational costs because of the ordering of operations.
-In the example shown in Code \ref{jl:tail recursion couple}, it would be more efficient
-to avoid matrix-matrix multiplication. This efficiency concern becomes
-worse with larger matrix multiplications. An alternative to tail recursion is implementing
-the recursion with a stack.
-
-\begin{related}[non-branching tail recursion]
-  Example \ref{ex:coupled recursion} is inspired by \cite{vicini_path_2021}.
-  \cite{vicini_path_2021} proposes an efficient unbiased backpropagation
-  algorithm for rendering exploiting properties of non-branching tail recursion.
-  To access intermediate values in tail recursion they use path replay.
-\end{related}
-
-% \begin{pythonn}[stack recursion on (\ref{coupled mat})] \label{py:stack recursion couple}
-%     We implement (\ref{coupled mat}) but this time with a stack.
-%     We want to avoid matrix multiplication and only use matrix-vector multiplications.
-%     To do this on (\ref{coupled mat}) we need to know $X(Ut)$ when
-%     it doesn't get Russian rouletted away. If we sample $Ut$ we can recurse
-%     on our reasoning until Russian roulette termination, so we need the path
-%     of all the samples.
-%     \vspace{0.3cm}
-%     \pythoncode{python code/stackrecu.py}
-% \end{pythonn}
-
-\begin{julia}[stack recursion on (\ref{coupled mat})] \label{jl:stack recursion couple}
-  We implement (\ref{coupled mat}) but this time with a stack.
-  We want to avoid matrix multiplication and only use matrix-vector multiplications.
-  To do this on (\ref{coupled mat}) we need to know $X(Ut)$ when
-  it doesn't get Russian rouletted away. If we sample $Ut$ we can recurse
-  on our reasoning until Russian roulette termination, so we need the path
-  of all the samples.
-  \vspace{0.3cm}
-  \juliacode{julia_code/stackrecu.jl}
-\end{julia}
-
-In stack recursion we need to store the sample path because we generate the
-sample path in reverse order then we need it. Reverse number generators exists
-but because of Russian roulette there is no starting point without going through
-a forward (it is still confusing what is forward and backwards ...) pass of the path.
-Poisson time processes don't have this problem because forward paths and backward paths
-have the same distribution.
+A way to avoid recursion is to chose the time proces such that sampling in reverse order is possible.
+Poisson time processes have the same distribution forward paths and backward paths.
 
 \begin{definition}[main Poisson] \label{def:main poisson}
   \begin{align}
@@ -908,20 +833,118 @@ have the same distribution.
     .
   \end{equation}
 
-  \juliacode{julia_code/main_poisson.jl}
 
+
+\end{definition}
+
+\begin{julia}[implementation of \ref{def:main poisson}]
   (\ref{eq:poisson main}) can be turned into a RRVE by sampling $\tau \sim U$, no Russian roulette is needed for
   termination because in the recursion the first integral get sampled with probability $1$. No recursion is used
   for the implementation as we can sample the Poisson proces in the reverse order.
 
-\end{definition}
+  \juliacode{julia_code/main_poisson.jl}
+\end{julia}
 
 \begin{related}[main Poisson]
   A very similar estimator is used to solve ODEs derived from the
   $1$-dimensional telegraph equations in \cite{acebron_monte_2016}.
-  Unlike \ref{jl:point estimator heat} the recursion proces can be reversed
+  Unlike \ref{jl:point estimator heat} the recursion proces they use can be reversed
   because the paths consist of a Poisson proces and reflections.
 \end{related}
+
+A common technique encountered in rendering is non-branching tail recursion.
+
+\begin{technique}[non-branching tail recursion]
+  Tail recursion involves reordering all operations
+  so that almost no operation needs to happen after
+  the recursion call. This allows us to return the
+  answer without retracing all steps when we reach
+  the last recursion call.
+\end{technique}
+
+The non-branching recursion presented in the RRVEs can
+be implemented using tail recursion due to the associativity
+of all operations ($(xy)z = x(yz)$) involved.
+
+% \begin{pythonn}[tail recursion on (\ref{coupled mat})] \label{py:tail recursion couple}
+%     We implemented (\ref{coupled mat}) using tail recursion this time. We
+%     collect addition operations in a vector called $sol$, and multiplications
+%     in a matrix named $W$. $W$ may also be referred to as accumulated weight
+%     or throughput.
+%     \vspace{0.3cm}
+%     \pythoncode{python code/tailrecu.py}
+% \end{pythonn}
+
+% \begin{julia}[tail recursion on (\ref{coupled mat})] \label{jl:tail recursion couple}
+%   We implemented (\ref{coupled mat}) using tail recursion this time. We
+%   collect addition operations in a vector called $sol$, and multiplications
+%   in a matrix named $W$. $W$ may also be referred to as accumulated weight
+%   or throughput.
+%   \vspace{0.3cm}
+%   \juliacode{julia_code/tailrecu.jl}
+% \end{julia}
+
+\begin{julia}[tail recursion for \ref{def:main poisson}]
+  We collect the sum in the variable sol and the matrix multiplications in W.
+  Notice that the computation is going backwards in time.
+
+  \juliacode{julia_code/tail_poisson.jl}
+\end{julia}
+
+Tail recursion loses the intermediate values
+of the recursive calls and
+may increase computational costs because of the reordering of operations.
+Matrix multiplication are very sensitive to reordering operations.
+
+\begin{related}[non-branching tail recursion]
+  % Example \ref{ex:coupled recursion} is inspired by \cite{vicini_path_2021}.
+  \cite{vicini_path_2021} proposes an efficient unbiased backpropagation
+  algorithm for rendering exploiting properties of non-branching tail recursion
+  by inverting local Jacobian matrices which is only feasible for small matrices.
+  To access intermediate values in tail recursion they use path replay.
+\end{related}
+
+% \begin{pythonn}[stack recursion on (\ref{coupled mat})] \label{py:stack recursion couple}
+%     We implement (\ref{coupled mat}) but this time with a stack.
+%     We want to avoid matrix multiplication and only use matrix-vector multiplications.
+%     To do this on (\ref{coupled mat}) we need to know $X(Ut)$ when
+%     it doesn't get Russian rouletted away. If we sample $Ut$ we can recurse
+%     on our reasoning until Russian roulette termination, so we need the path
+%     of all the samples.
+%     \vspace{0.3cm}
+%     \pythoncode{python code/stackrecu.py}
+% \end{pythonn}
+
+% \begin{julia}[stack recursion on (\ref{coupled mat})] \label{jl:stack recursion couple}
+%   We implement (\ref{coupled mat}) but this time with a stack.
+%   We want to avoid matrix multiplication and only use matrix-vector multiplications.
+%   To do this on (\ref{coupled mat}) we need to know $X(Ut)$ when
+%   it doesn't get Russian rouletted away. If we sample $Ut$ we can recurse
+%   on our reasoning until Russian roulette termination, so we need the path
+%   of all the samples.
+%   \vspace{0.3cm}
+%   \juliacode{julia_code/stackrecu.jl}
+% \end{julia}
+
+% In stack recursion we need to store the sample path because we generate the
+% sample path in reverse order then we need it. Reverse number generators exists
+% but because of Russian roulette there is no starting point without going through
+% a forward (it is still confusing what is forward and backwards ...) pass of the path.
+
+The expensive matrix multiplications disappear when solving for $v^{T}y(t)$.
+
+\begin{julia}[adjoint tail recursion for \ref{def:main poisson}]
+  We collect the sum in the variable sol and instead of matrix multiplications in W
+  matrix-vector multiplications in $v$.
+
+  \juliacode{julia_code/adjoint_poisson.jl}
+\end{julia}
+
+\begin{related}[adjoint tail recursion]
+  The adjoint tail recursion is inspired by existing adjoint MC methods for
+  linear systems, for a reference see \cite{benzi_analysis_2017} for example.
+\end{related}
+
 
 \section{Ordinary Differential Equations}
 
@@ -1584,8 +1607,8 @@ to a few points of the time space proces and this amount does not scale with $\D
   \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{./julia_plots/paths_pest_heat_varcoef.pdf}
-    \caption{$20$ samples of YvarPath$(x=0.5,t=0.15,dx=\{0.1,0.001\},a_{0}=30)$. The intermediate
-    points in the path are where the source term need to be sampled. Note that the amount of
+    \caption{$20$ samples of YvarPath$(x=0.5,t=0.15,dx=\{0.1,0.001\},a_{0}=30)$. The source term needs to be sampled
+    at the intermediate points. Note that the amount of
     intermediate points does not differ much between $\Delta x = 0.1$ and $\Delta x = 0.001$.
     Points with $t<0$ do not cause any bias, the method is unbiased for the semi-discretized heat equation. }
     \label{fig:presampled paths pest heat var}
