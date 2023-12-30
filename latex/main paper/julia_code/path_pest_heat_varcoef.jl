@@ -1,8 +1,7 @@
 using Distributions
-function YvarPath(x, t, dx, a0)
-    siginv = 1 / (2 / dx^2 - a0)
-    geom = Geometric(a0 * dx^2 / 2)
-    expon = Exponential(siginv)
+function YvarPath(x, t, dx, a0, am)
+    (siginv = 1 / (2 / dx^2 + a0); p_source = am / (am + 2 / dx^2))
+    (geom = Geometric(p_source); expon = Exponential(siginv))
     sterm_counter = rand(geom)
     spoints = [(x, t, sterm_counter)] #maybe other data struct
     while true
@@ -14,7 +13,7 @@ function YvarPath(x, t, dx, a0)
             return x - eps() <= 0 ? (spoints, (x, t, sterm_counter)) :
                    x + eps() >= 1 ? (spoints, (x, t, sterm_counter)) :
                    continue
-        else
+        else # this is only done O(am tstart) times in an estimator
             sterm_counter = rand(geom)
             push!(spoints, (x, t, sterm_counter))
         end
