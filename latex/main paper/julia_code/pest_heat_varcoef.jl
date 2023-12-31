@@ -14,7 +14,7 @@ function Yvar(x, t, dx, a0, am, u_bound::Function, f::Function, a::Function)
             sterm_counter -= 1
             return x - eps() <= 0 ? w * u_bound(0, t) + sol :
                    x + eps() >= 1 ? w * u_bound(1, t) + sol : continue
-        else # this is only done O(am tstart) times in an estimator
+        else # this is only done O(am tavg) times in an estimator
             sterm_counter = rand(geom)
             sol += w * f(x, t) * siginv / p_source
             w *= (a(x, t) + a0) * siginv / p_source

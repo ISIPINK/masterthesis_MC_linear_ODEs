@@ -1,6 +1,7 @@
 using Distributions
 using Dates
 using Plots
+using Random
 
 using BenchmarkTools
 using Profile
@@ -29,6 +30,42 @@ function Yvar(x, t, dx, a0, am, u_bound::Function, f::Function, a::Function)
     end
 end
 
+function genPath(x, t, dx, a0, am)
+    (siginv = 1 / (2 / dx^2 + a0); p_source = am / (am + 2 / dx^2))
+    (geom = Geometric(p_source); expon = Exponential(siginv))
+    sterm_counter = rand(geom)
+    spoints = [(x, t, sterm_counter)] #maybe other data struct
+    while true
+        t -= rand(expon)
+        t <= eps() && return (spoints, (x, t, sterm_counter))
+        if sterm_counter != 0
+            x += rand(Bool) ? dx : -dx
+            sterm_counter -= 1
+            return x - eps() <= 0 ? (spoints, (x, t, sterm_counter)) :
+                   x + eps() >= 1 ? (spoints, (x, t, sterm_counter)) :
+                   continue
+        else # this is only done O(am tstart) times in an estimator
+            sterm_counter = rand(geom)
+            push!(spoints, (x, t, sterm_counter))
+        end
+    end
+end
+
+function YvarPath(x, t, dx, a0, am, u_bound::Function, f::Function, a::Function)
+    spoints, exit = genPath(x, t, dx, a0, am)
+    (siginv = 1 / (2 / dx^2 + a0); p_source = am / (am + 2 / dx^2))
+    w_multiplier = 2 * siginv / (dx^2 * (1 - p_source))
+    (sol = 0; w = w_multiplier^spoints[1][3])
+    for (x, t, sterm_counter) in spoints[2:end]
+        sol += w * f(x, t) * siginv / p_source
+        w *= (a(x, t) + a0) * siginv / p_source
+        w *= w_multiplier^sterm_counter
+    end
+    (x, t, sterm_counter) = exit # small w can produce NaNs
+    w /= sterm_counter > 0 && abs(w) > eps() ? w_multiplier^sterm_counter : 1
+    t >= eps() ? sol + w * u_bound(x, t) : sol + w * u_bound(x, 0)
+end
+
 
 # following should holdl: ut = uxx + au +f  
 function u(x, t)
@@ -48,6 +85,7 @@ function a(x, t)
 end
 
 yvar(x, t, Δx, nsim, a0, am) = sum(Yvar(x, t, Δx, a0, am, u, f, a) for _ in 1:nsim) / nsim
+yvarpath(x, t, Δx, nsim, a0, am) = sum(YvarPath(x, t, Δx, a0, am, u, f, a) for _ in 1:nsim) / nsim
 
 a0 = 10.0
 am = 10.0
@@ -56,77 +94,16 @@ t = 1.0
 Δx = 0.01
 nsim = 10^4
 
+Random.seed!(4499)
 println("error = $(yvar(x, t, Δx, nsim,a0,am) - u(x, t))")
+Random.seed!(4499)
+println("error = $(yvarpath(x, t, Δx, nsim,a0,am) - u(x, t))")
 
-@benchmark yvar(x, t, Δx, nsim, a0)
+@benchmark yvar(x, t, Δx, nsim, a0, am)
+@benchmark yvarpath(x, t, Δx, nsim, a0, am)
 
 Profile.clear()
-@profile yvar(x, t, Δx, nsim, a0)
+@profile yvar(x, t, Δx, nsim, a0, am)
 
 
 pprof()
-
-
-struct hop
-    sourcepoints::AbstractArray
-    steps::Int64
-    finished::Bool
-end
-
-function YvarPath(x, t, dx, a0)
-    siginv = 1 / (2 / dx^2 + a0)
-    g = Geometric(1 - 2 * siginv / dx^2)
-    ee = Exponential(siginv)
-    sourcejump = rand(g)
-    source_points = [(x, t, sourcejump)]
-    while true
-        t -= rand(ee)
-        t <= 0 && return (source_points, (x, t, sourcejump))
-
-        if sourcejump != 0
-            x += rand(Bool) ? dx : -dx
-            sourcejump -= 1
-            return x <= 0 ? (source_points, (x, t, sourcejump)) :
-                   x >= 1 ? (source_points, (x, t, sourcejump)) : continue
-
-        else
-            sourcejump = rand(g)
-            push!(source_points, (x, t, sourcejump))
-        end
-    end
-end
-
-using Plots
-
-xx = repeat([0.5], 2 * 10^1)
-x = 0.5
-t = 0.15
-Δx = 0.001
-a0 = 30
-
-tpaths = YvarPath.(xx, t, Δx, a0)
-tpaths[1]
-p = plot()
-
-colors = [:red, :green, :blue, :yellow, :purple, :cyan, :magenta, :orange, :pink, :teal, :violet, :lime, :gold, :silver, :maroon, :navy]
-
-for (i, tpath) in enumerate(tpaths)
-    xxpath1 = [point[1] for point in tpath[1]]
-    yypath1 = [point[2] for point in tpath[1]]
-
-    push!(xxpath1, tpath[2][1])
-    push!(yypath1, tpath[2][2])
-
-    plot!(p, yypath1, xxpath1, color=colors[i%length(colors)+1], label="")
-    plot!(p, yypath1, xxpath1, seriestype=:scatter, color=colors[i%length(colors)+1], label="")
-end
-
-display(p)
-
-xxend = [tpath[2][1] for tpath in tpaths]
-yyend = [tpath[2][2] for tpath in tpaths]
-
-plot(xxend, yyend,
-    seriestype=:scatter, xlims=(-0.1, 1.1), ylims=(-0.1, 1.1))
-
-

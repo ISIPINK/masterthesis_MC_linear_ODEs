@@ -1606,11 +1606,12 @@ to a few points of the time space proces and this amount does not scale with $\D
   precompute samples of the proces and reuse them for different boundary conditions, $a(x,t)$ and $f(x,t)$.
   Reusing paths makes the solutions correlated. To compute the estimator we need to know where we sampled the
   source term to update $sol$ and $w$, how many steps we took in between to update $w$ for the
-  multiplications in not source points and where termination happens.
+  multiplications in not source points (line 13 of \ref{jl:point estimator heat source})
+  and where termination happens.
 
-  \juliacode{julia_code/path_pest_heat_varcoef.jl}
+  \juliacode{julia_code/genpath_pest_heat_varcoef.jl}
 
-  As $\Delta \rightarrow 0$ $YvarPath$ converges, the dependence on $a_{0}$ dissapears and $a_{m}$ becomes the
+  As $\Delta \rightarrow 0$ $genPath$ converges, the dependence on $a_{0}$ dissapears and $a_{m}$ becomes the
   Poisson rate for sampling the source term. This makes it possible to use presampled paths for smaller $\tilde{a}_{m}$'s
   by rejecting source points with probability $\frac{\tilde{a}_{m}}{a_{m}}$. So for the heat equation
   presampled paths only depend on geometry and the starting point.
@@ -1618,7 +1619,7 @@ to a few points of the time space proces and this amount does not scale with $\D
   \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{./julia_plots/paths_pest_heat_varcoef.pdf}
-    \caption{$20$ samples of YvarPath$(x=0.5,t=0.15,dx=\{0.1,0.001\},a_{0}=30)$. The source term needs to be sampled
+    \caption{$20$ samples of genPath$(x=0.5,t=0.15,dx=\{0.1,0.001\},a_{0}=30)$. The source term needs to be sampled
     at the intermediate points. Note that the amount of
     intermediate points does not differ much between $\Delta x = 0.1$ and $\Delta x = 0.001$.
     Points with $t<0$ do not cause any bias, the method is unbiased for the semi-discretized heat equation. }
@@ -1626,6 +1627,10 @@ to a few points of the time space proces and this amount does not scale with $\D
   \end{figure}
 
 \end{technique}
+
+\begin{julia}[\ref{jl:point estimator heat source} using precomputed paths]\label{jl:path point estimator heat source}
+  \juliacode{julia_code/path_pest_heat_varcoef.jl}
+\end{julia}
 
 
 

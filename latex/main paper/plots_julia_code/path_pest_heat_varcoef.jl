@@ -4,7 +4,7 @@ using Plots
 using Plots.PlotMeasures
 
 
-function YvarPath(x, t, dx, a0, am)
+function genPath(x, t, dx, a0, am)
     (siginv = 1 / (2 / dx^2 + a0); p_source = am / (am + 2 / dx^2))
     (geom = Geometric(p_source); expon = Exponential(siginv))
     sterm_counter = rand(geom)
@@ -26,7 +26,7 @@ function YvarPath(x, t, dx, a0, am)
 end
 
 function generate_plot(xx, t, Δx, a0, am, plot_title)
-    tpaths = YvarPath.(xx, t, Δx, a0, am)
+    tpaths = genPath.(xx, t, Δx, a0, am)
     colors = [:red, :green, :blue, :purple, :cyan, :magenta, :orange, :pink, :teal, :violet, :lime, :gold, :silver, :maroon, :navy]
     markers = [:circle, :square, :diamond, :cross, :xcross, :utriangle, :dtriangle, :rtriangle, :ltriangle, :pentagon, :hexagon, :heptagon, :octagon, :star4, :star5, :star6, :star7, :star8]
 
@@ -49,7 +49,8 @@ end
 
 Random.seed!(4181)
 
-xx = repeat([0.5], 2 * 10^1)
+amount_samples = 20
+xx = repeat([0.5], amount_samples)
 x = 0.5
 t = 0.15
 a0 = 0
