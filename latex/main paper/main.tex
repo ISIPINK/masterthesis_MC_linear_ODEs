@@ -1590,7 +1590,7 @@ using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and at the 
 
 \begin{julia}[implementation of estimator of Example \ref{ex:semi heat source}]\label{jl:point estimator heat source}
   Because of the high chance of sampling the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ it efficient
-  to sample until we don't sample it. This is geometrically distributed.
+  to sample until we do not sample it. This is geometrically distributed.
 
   \juliacode{julia_code/pest_heat_varcoef.jl}
 \end{julia}
@@ -1600,7 +1600,7 @@ unlike Example \ref{def:discrete heat equation square} but this is limited
 to a few points of the time space proces and this amount does not scale with $\Delta x$.
 
 
-\begin{technique}[presampling the proces of \ref{jl:point estimator heat source}]
+\begin{technique}[presampling the proces of \ref{jl:point estimator heat source}] \label{tech:presampling heat}
   As $\Delta x \rightarrow 0$ the bottleneck is sampling the proces that moves through space and time.
   This proces is independent of the boundary conditions, $a(x,t)$ and $f(x,t)$. So it is possible to
   precompute samples of the proces and reuse them for different boundary conditions, $a(x,t)$ and $f(x,t)$.
@@ -1619,7 +1619,7 @@ to a few points of the time space proces and this amount does not scale with $\D
   \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{./julia_plots/paths_pest_heat_varcoef.pdf}
-    \caption{$20$ samples of genPath$(x=0.5,t=0.15,dx=\{0.1,0.001\},a_{0}=30)$. The source term needs to be sampled
+    \caption{$20$ samples of genPath$(x=0.5,t=0.15,dx=\{0.1,0.001\},a_{0}=0,a_{m} = 30)$. The source term needs to be sampled
     at the intermediate points. Note that the amount of
     intermediate points does not differ much between $\Delta x = 0.1$ and $\Delta x = 0.001$.
     Points with $t<0$ do not cause any bias, the method is unbiased for the semi-discretized heat equation. }
@@ -1629,6 +1629,12 @@ to a few points of the time space proces and this amount does not scale with $\D
 \end{technique}
 
 \begin{julia}[\ref{jl:point estimator heat source} using precomputed paths]\label{jl:path point estimator heat source}
+  We implement \ref{jl:point estimator heat source} with a precomputed path from \ref{tech:presampling heat} using tail
+  recursion. Because we know the path beforehand a forward implementation is straightforward. Note that $(x,t)$ is
+  never explicitly used only for figuring out how we exited the domain. The whole calculation is linear in
+  $a,f$ evaluated in the source points and $u_\text{bound}$ evaluated in the exit points so there are various
+  ways to optimize it for example using unbiased estimates instead of exact evaluations.
+
   \juliacode{julia_code/path_pest_heat_varcoef.jl}
 \end{julia}
 
