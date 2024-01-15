@@ -101,21 +101,32 @@ end
 
 yvar(x, t, Δx, nsim, a0, am) = sum(Yvar(x, t, Δx, a0, am, u, f, a) for _ in 1:nsim) / nsim
 yvarpath(x, t, Δx, nsim, a0, am) = sum(YvarPath(x, t, Δx, a0, am, u, f, a) for _ in 1:nsim) / nsim
+yvarpathmemo(x, t, Δx, nsim, a0, am, paths) = sum(YvarPathMemo(x, t, Δx, a0, am, u, f, a, path) for path in paths) / nsim
 
 a0 = 10.0
 am = 10.0
 x = 0.5
 t = 1.0
 Δx = 0.01
-nsim = 10^4
+nsim = 10^5
 
 Random.seed!(4499)
 println("error = $(yvar(x, t, Δx, nsim,a0,am) - u(x, t))")
 Random.seed!(4499)
 println("error = $(yvarpath(x, t, Δx, nsim,a0,am) - u(x, t))")
+Random.seed!(4499)
+xx = [x for _ in 1:nsim]
+paths = genPath.(xx, t, Δx, a0, am);
+println("error = $(yvarpathmemo(x, t, Δx, nsim,a0,am,paths) - u(x, t))")
 
+Random.seed!(4499)
 @benchmark yvar(x, t, Δx, nsim, a0, am)
+Random.seed!(4499)
 @benchmark yvarpath(x, t, Δx, nsim, a0, am)
+Random.seed!(4499)
+@benchmark paths = genPath.(xx, t, Δx, a0, am)
+
+@benchmark yvarpathmemo(x, t, Δx, nsim, a0, am, paths)
 
 path = genPath(x, t, Δx, a0, am)
 @benchmark Yvar(x, t, Δx, a0, am, u, f, a)
@@ -124,6 +135,23 @@ path = genPath(x, t, Δx, a0, am)
 
 Profile.clear()
 @profile yvar(x, t, Δx, nsim, a0, am)
-
-
 pprof()
+
+Profile.clear()
+@profile yvarpath(x, t, Δx, nsim, a0, am)
+pprof()
+
+Profile.clear()
+@profile yvar(x, t, Δx, nsim, a0, am)
+Random.seed!(4499)
+xx = [x for _ in 1:nsim]
+@profile genPath.(xx, t, Δx, a0, am)
+pprof()
+
+Profile.clear()
+Random.seed!(4499)
+xx = [x for _ in 1:nsim]
+paths = genPath.(xx, t, Δx, a0, am)
+@profile yvarpathmemo(x, t, Δx, nsim, a0, am, paths)
+pprof()
+# we think we allocating to much
