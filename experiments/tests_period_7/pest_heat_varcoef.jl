@@ -96,6 +96,21 @@ function YvarPathMemoExp(x, t, dx, a0, am, u_bound::Function, f::Function, a::Fu
     t >= eps() ? sol + w * u_bound(x, t) : sol + w * u_bound(x, 0)
 end
 
+function YvarPathMemoLog(x, t, dx, a0, am, u_bound::Function, f::Function, a::Function, path)
+    spoints, exit = path
+    (siginv = 1 / (2 / dx^2 + a0); p_source = am / (am + 2 / dx^2))
+    lw_multiplier = log(2 * siginv / (dx^2 * (1 - p_source)))
+    (sol = 0; lw = spoints[1][3] * lw_multiplier)
+    for (x, t, sterm_counter) in spoints[2:end]
+        sol += exp(lw) * f(x, t) * siginv / p_source
+        lw += log((a(x, t) + a0) * siginv / p_source)
+        lw += sterm_counter * lw_multiplier
+    end
+    (x, t, sterm_counter) = exit
+    lw -= sterm_counter * lw_multiplier
+    t >= eps() ? sol + exp(lw) * u_bound(x, t) : sol + exp(lw) * u_bound(x, 0)
+end
+
 
 # following should holdl: ut = uxx + au +f  
 function u(x, t)
@@ -118,14 +133,16 @@ yvar(x, t, Δx, nsim, a0, am) = sum(Yvar(x, t, Δx, a0, am, u, f, a) for _ in 1:
 yvarpath(x, t, Δx, nsim, a0, am) = sum(YvarPath(x, t, Δx, a0, am, u, f, a) for _ in 1:nsim) / nsim
 yvarpathmemo(x, t, Δx, nsim, a0, am, paths) = sum(YvarPathMemo(x, t, Δx, a0, am, u, f, a, path) for path in paths) / nsim
 yvarpathmemoexp(x, t, Δx, nsim, a0, am, paths) = sum(YvarPathMemoExp(x, t, Δx, a0, am, u, f, a, path) for path in paths) / nsim
+yvarpathmemolog(x, t, Δx, nsim, a0, am, paths) = sum(YvarPathMemoLog(x, t, Δx, a0, am, u, f, a, path) for path in paths) / nsim
+
 
 # am = 100 , nsim = 10^6 -> memory estimate = 400 MiB linear scaling in nsim, am has weird scaling for large Δx
-a0 = 0.0
-am = 10.0
+a0 = 1.0
+am = 10
 x = 0.5
 t = 1.0
 Δx = 0.01
-nsim = 10^5
+nsim = 10^4
 
 Random.seed!(4499)
 println("error = $(yvar(x, t, Δx, nsim,a0,am) - u(x, t))")
@@ -137,6 +154,7 @@ paths = genPath.(xx, t, Δx, a0, am);
 println(Base.summarysize(paths) / 1024^2, " megabytes")
 println("error = $(yvarpathmemo(x, t, Δx, nsim,a0,am,paths) - u(x, t))")
 println("error = $(yvarpathmemoexp(x, t, Δx, nsim,a0,am,paths) - u(x, t))")
+println("error = $(yvarpathmemolog(x, t, Δx, nsim,a0,am,paths) - u(x, t))")
 
 Random.seed!(4499)
 @benchmark yvar(x, t, Δx, nsim, a0, am)
@@ -147,6 +165,7 @@ Random.seed!(4499)
 
 @benchmark yvarpathmemo(x, t, Δx, nsim, a0, am, paths)
 @benchmark yvarpathmemoexp(x, t, Δx, nsim, a0, am, paths)
+@benchmark yvarpathmemolog(x, t, Δx, nsim, a0, am, paths)
 
 path = genPath(x, t, Δx, a0, am)
 @benchmark Yvar(x, t, Δx, a0, am, u, f, a)
@@ -177,9 +196,11 @@ pprof()
 # we think we allocating to much
 
 Random.seed!(4499)
+nsim = 10^6
 xx = [x for _ in 1:nsim]
 paths = genPath.(xx, t, Δx, a0, am)
 Profile.clear()
+@profile yvarpathmemolog(x, t, Δx, nsim, a0, am, paths)
 @profile yvarpathmemoexp(x, t, Δx, nsim, a0, am, paths)
 @profile yvarpathmemo(x, t, Δx, nsim, a0, am, paths)
 pprof()
