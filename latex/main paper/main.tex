@@ -892,7 +892,7 @@ The expensive matrix multiplications disappear when solving for $v^{T}y(t)$.
   \juliacode{julia_code/adjoint_poisson.jl}
 
   We are interested in methods that can keep $v$ sparse.
-  Specifically when $v_{j} = \delta_{jn}$ we obtain an estimator for $(y(t))_{n}$.
+  When $v_{j} = \delta_{jn}$ we obtain an estimator for $(y(t))_{n}$.
 \end{julia}
 % \begin{related}[adjoint tail recursion]
 %   The adjoint tail recursion is inspired by existing adjoint MC methods for
