@@ -249,8 +249,7 @@ specifically, a linear Volterra integral equation of the second type.
   The subscripts are used to clarify independence
   between uniforms. However,
   when there is no risk of confusion,
-  we simply use $U$.
-
+  we simply use $U.$
 \end{notation}
 
 By estimating the recursive integral in (\ref{Integral ydy})
@@ -285,8 +284,8 @@ Equation (RRVE).
   family of random variables in terms of itself.
 \end{definition}
 
-If one were to try to simulate $Y$ with (\ref{recursive RV}),
-it would recurse indefinitely (every $Y$ needs to sample another $Y$).
+Simulation of $Y$ with (\ref{recursive RV}),
+would recurse indefinitely (every $Y$ needs to sample another $Y$).
 To stop the recursion, approximate
 $Y(t) \approx 1$ near $t = 0$ introducing minimal bias.
 Later, we will discuss Russian roulette; see Definition \ref{Russian roulette},
