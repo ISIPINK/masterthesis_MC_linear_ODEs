@@ -143,7 +143,7 @@ estimate an integral.
   with the Best Linear Unbiased Estimators (BLUEs), MC Integration
   in that case, can be summarized in the following formula:
   \begin{equation}\label{eq:BLUE}
-    \int_{\Omega} f(s)ds \approx \frac{1}{n} \sum_{j=1}^{n}f(U_{j}),
+    \int_{0}^1 f(s)ds \approx \frac{1}{n} \sum_{j=1}^{n}f(U_{j}),
   \end{equation}
   \juliacode{julia_code/uniform_MC.jl}
   where $n$ is the amount of samples used and $U_{j}$ i.i.d. $\text{Uniform}(0,1)$.
@@ -201,11 +201,10 @@ variance and average simulation time is not even close to optimal see
 Theorem \ref{thrm:order trap}. \\
 When it comes to comparing better trade-offs,
 Information-Based Complexity (IBC) is often employed.
-It's worth mentioning that IBC primarily serves as a
+IBC primarily serves as a
 qualitative measure and does not necessarily imply the
-practicality of an algorithm. While we will not delve into a
-rigorous definition of IBC here, it plays a vital role in
-assessing the efficiency of algorithms.
+practicality of an algorithm. We will not delve into a
+rigorous definition of IBC.
 
 \begin{definition}[Information-Based Complexity]
   IBC is a way to describe asymptotically (for increasing accuracy/function calls)
