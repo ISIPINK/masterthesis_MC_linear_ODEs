@@ -136,23 +136,23 @@ MC integration is any method that involves random sampling to
 estimate an integral.
 \begin{definition}[Uniform Monte Carlo Integration]
   We define uniform MC integration of
-  $f:\mathbb{R}^{n} \rightarrow \mathbb{R}^{m}$
-  over $\Omega \subset \mathbb{R}^{n}$ as
-  an estimation of the expected value of $f(S)$, with
-  $S \sim \text{Uniform}(\Omega)$. Combined
+  $f:\mathbb{R} \rightarrow \mathbb{R}$
+  over $[0,1]$ as
+  an estimation of the expected value of $f(U)$, with
+  $U \sim \text{Uniform}(0,1)$. Combined
   with the Best Linear Unbiased Estimators (BLUEs), MC Integration
   in that case, can be summarized in the following formula:
   \begin{equation}\label{eq:BLUE}
-    \int_{\Omega} f(s)ds \approx \frac{1}{n} \sum_{j=1}^{n}f(S_{j}),
+    \int_{\Omega} f(s)ds \approx \frac{1}{n} \sum_{j=1}^{n}f(U_{j}),
   \end{equation}
   \juliacode{julia_code/uniform_MC.jl}
-  where $n$ is the amount of samples used and $S_{j}$ i.i.d. $\text{Uniform}(\Omega)$.
+  where $n$ is the amount of samples used and $U_{j}$ i.i.d. $\text{Uniform}(0,1)$.
 \end{definition}
 
 Because estimators are random variables (RVs), the cost and error are also random
 variables. In most cases, obtaining these RVs is difficult to impossible.
 Directly comparing estimators based on these RVs can be challenging;
-there is no Pareto front. Instead, comparisons can be made
+there is no simple Pareto front. Instead, comparisons can be made
 using statistics. \\
 
 Accuracy comparisons between estimators
@@ -165,11 +165,10 @@ are typically conducted with (root-)mean-square error (RMSE).
 \end{definition}
 
 Even comparisons based on RMSE can be counterintuitive; consider Stein's paradox,
-for example. We will almost always limit ourselves to $1$-dimensional
+for example. We limit ourselves to simple cases such as $1$-dimensional
 unbiased estimators, making MSE equivalent to variance.
-Estimating variance is simple and can be used to calculate
-confidence intervals using Chebyshev's inequality or an
-approximate normal distribution argument.\\
+Estimating variance is most cases possible and can be used to calculate
+confidence intervals using Chebyshev's inequality.\\
 
 Average floating point operations or time per simulation are common cost statistics.
 It may also be useful to consider \enquote*{at risk}  (analogous to \enquote*{value at risk})
@@ -197,7 +196,7 @@ the definition of MC efficiency for comparing estimators.
   For a reference see \cite{veach_robust_1997} page 45.
 \end{related}
 
-For smooth $1$ dimensional integration, the linear trade-off between
+For smooth $1$-dimensional integration, the linear trade-off between
 variance and average simulation time is not even close to optimal see
 Theorem \ref{thrm:order trap}. \\
 When it comes to comparing better trade-offs,
