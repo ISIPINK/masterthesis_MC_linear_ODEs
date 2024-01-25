@@ -96,19 +96,19 @@ function YvarPathMemoExp(x, t, dx, a0, am, u_bound::Function, f::Function, a::Fu
     t >= eps() ? sol + w * u_bound(x, t) : sol + w * u_bound(x, 0)
 end
 
-function YvarPathMemoLog(x, t, dx, a0, am, u_bound::Function, f::Function, a::Function, path)
+function YvarPathMemoLog(path, dx, a0, am, u_bound::Function, f::Function, a::Function)
     spoints, exit = path
     (siginv = 1 / (2 / dx^2 + a0); p_source = am / (am + 2 / dx^2))
-    lw_multiplier = log(2 * siginv / (dx^2 * (1 - p_source)))
-    (sol = 0; lw = spoints[1][3] * lw_multiplier)
+    logw_multiplier = log(2 * siginv / (dx^2 * (1 - p_source)))
+    (sol = 0; logw = spoints[1][3] * logw_multiplier)
     for (x, t, sterm_counter) in spoints[2:end]
-        sol += exp(lw) * f(x, t) * siginv / p_source
-        lw += log((a(x, t) + a0) * siginv / p_source)
-        lw += sterm_counter * lw_multiplier
+        sol += exp(logw) * f(x, t) * siginv / p_source
+        logw += log((a(x, t) + a0) * siginv / p_source)
+        logw += sterm_counter * logw_multiplier
     end
     (x, t, sterm_counter) = exit
-    lw -= sterm_counter * lw_multiplier
-    t >= eps() ? sol + exp(lw) * u_bound(x, t) : sol + exp(lw) * u_bound(x, 0)
+    logw -= sterm_counter * logw_multiplier
+    sol + exp(logw) * u_bound(x, t >= eps() ? t : 0)
 end
 
 
@@ -133,7 +133,7 @@ yvar(x, t, Δx, nsim, a0, am) = sum(Yvar(x, t, Δx, a0, am, u, f, a) for _ in 1:
 yvarpath(x, t, Δx, nsim, a0, am) = sum(YvarPath(x, t, Δx, a0, am, u, f, a) for _ in 1:nsim) / nsim
 yvarpathmemo(x, t, Δx, nsim, a0, am, paths) = sum(YvarPathMemo(x, t, Δx, a0, am, u, f, a, path) for path in paths) / nsim
 yvarpathmemoexp(x, t, Δx, nsim, a0, am, paths) = sum(YvarPathMemoExp(x, t, Δx, a0, am, u, f, a, path) for path in paths) / nsim
-yvarpathmemolog(x, t, Δx, nsim, a0, am, paths) = sum(YvarPathMemoLog(x, t, Δx, a0, am, u, f, a, path) for path in paths) / nsim
+yvarpathmemolog(x, t, Δx, nsim, a0, am, paths) = sum(YvarPathMemoLog(path, Δx, a0, am, u, f, a) for path in paths) / nsim
 
 
 # am = 100 , nsim = 10^6 -> memory estimate = 400 MiB linear scaling in nsim, am has weird scaling for large Δx

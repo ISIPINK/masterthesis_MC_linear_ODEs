@@ -768,7 +768,7 @@ In this subsection, we discuss recursion-related techniques.
 
 Most programming languages do support recursion, but it often comes with certain
 limitations such as maximum recursion depth and potential performance issues.
-A way to avoid recursion is to chose the time proces such that sampling in reverse order is possible.
+A way to avoid recursion is to chose the time process such that sampling in reverse order is possible.
 Poisson time processes have the same distribution forward paths and backward paths.
 
 \begin{definition}[main Poisson] \label{def:main poisson}
@@ -791,7 +791,7 @@ Poisson time processes have the same distribution forward paths and backward pat
 \begin{julia}[implementation of \ref{def:main poisson}]
   (\ref{eq:poisson main}) can be turned into a RRVE by sampling $\tau \sim U$, no Russian roulette is needed for
   termination because in the recursion the first integral get sampled with probability $1$. No recursion is used
-  for the implementation as we can sample the Poisson proces in the reverse order.
+  for the implementation as we can sample the Poisson process in the reverse order.
 
   \juliacode{julia_code/main_poisson.jl}
 \end{julia}
@@ -799,8 +799,8 @@ Poisson time processes have the same distribution forward paths and backward pat
 \begin{related}[main Poisson]
   A very similar estimator is used to solve ODEs derived from the
   $1$-dimensional telegraph equations in \cite{acebron_monte_2016}.
-  Unlike \ref{jl:point estimator heat} the recursion proces they use can be reversed
-  because the paths consist of a Poisson proces and reflections.
+  Unlike \ref{jl:point estimator heat} the recursion process they use can be reversed
+  because the paths consist of a Poisson process and reflections.
 \end{related}
 
 Tail recursion is commonly used in rendering to accelerate non-branching recursion.
@@ -1414,7 +1414,8 @@ is more viable.
 \section{Heat Equation}
 
 In this section we discuss how to solve ODEs derived from the semi-discretized heat equation
-with Dirichlet boundary conditions in $1$ point and acceleration with first-passage sampling.
+with Dirichlet boundary conditions in $1$ point and acceleration with recursive first-passage sampling
+combined with presampled path stitching.
 
 % \begin{definition}[$1$D heat equation Dirichlet general domain] \label{def:heat equation}
 %     We define the $1$D heat equation for $u$ on connected domain $\Omega$
@@ -1494,13 +1495,13 @@ using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and at the 
 
   (\ref{eq:int semi heat}) can be turned into a estimator $Y(j \Delta x,t,\Delta x ) \cong  \tilde{u}(j \Delta x,t)$
   by sampling $\tau \sim U$,
-  sampling $1$ of the $\tilde{u}$ of the second integral to avoid branching recursion and
+  sampling one of the $\tilde{u}$ of the second integral to avoid branching recursion and
   recursing when $\tilde{u}$ is unknown.
 
   \juliacode{julia_code/point_estimator_heat_tail.jl}
 
   $Y(j \Delta x,t,\Delta x )$ is just the boundary condition
-  for the first passage point from the time space domain for a Poisson time proces and a random walk in space.
+  for the first passage point from the time space domain for a Poisson time process and a random walk in space.
   In this implementation as  $\Delta x \rightarrow 0$  the cost of calculating the first passage time grows
   $\approx O(\Delta x ^{-2})$ and the process converges to Brownian motion. Note that the estimator needs
   only $1$ function call from the boundary conditions.
@@ -1508,7 +1509,7 @@ using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and at the 
 
 \begin{example}[\ref{def:discrete heat equation square} + source + coefficients] \label{ex:semi heat source}
 
-  A similar derivation can be done for Example \ref{def:discrete heat equation square}
+  A similar derivation can be found for Example \ref{def:discrete heat equation square}
   but with a source and coefficients:
 
   \begin{equation}
@@ -1531,32 +1532,33 @@ using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and at the 
   \end{equation}
   To remove branching recursion we sample one of the $u$'s, we base the sampling
   probability based on the magnitude of coefficients, let $a_m$ be roughly the magnitude of
-  $(a(x,s)+ a_{0})$ and $f$. We chose to sample the $(a(x,s)+ a_{0})u$ term and $f$
+  $(a(x,s)+ a_{0})$. We chose to sample the $(a(x,s)+ a_{0})u$ term and $f$
   with probability $p_{\text{source}} = \frac{a_m}{a_m + \frac{2}{\Delta x^{2}}}$.
   As $\Delta x \rightarrow 0$ the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ term is
   the main contribution to the second integral therefore
   being sampled almost always.
   In total for $1$ fully recursed sample,
   the $f(x,s)$ and the $(a(x,s)+ a_{0})u$ term only
-  is sampled a few times and this does not scale with $\Delta x$.
+  is sampled a few times and this does not scale with $\Delta x$. We
+  sampled $f$ together with $(a(x,s)+ a_{0})u$ for simplicity.
 \end{example}
 
 \begin{julia}[implementation of estimator of Example \ref{ex:semi heat source}]\label{jl:point estimator heat source}
   Because of the high chance of sampling the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ it is efficient
-  to sample the interarrival until sampling it which is geometrically distributed.
+  to sample the interarrival until not sampling it which is geometrically distributed.
 
   \juliacode{julia_code/pest_heat_varcoef.jl}
 \end{julia}
 
 Computing the estimator requires knowing more then the first passage point
 unlike Example \ref{def:discrete heat equation square} but this is limited
-to a few points of the time space proces and this amount does not scale with $\Delta x$.
+to a few points of the time space process and this amount does not scale with $\Delta x$.
 
 
-\begin{technique}[presampling the proces of \ref{jl:point estimator heat source}] \label{tech:presampling heat}
-  As $\Delta x \rightarrow 0$ the bottleneck is sampling the proces that moves through space and time.
-  This proces is independent of the boundary conditions, $a(x,t)$ and $f(x,t)$. So it is possible to
-  precompute samples of the proces and reuse them for different boundary conditions, $a(x,t)$ and $f(x,t)$.
+\begin{technique}[presampling the process of \ref{jl:point estimator heat source}] \label{tech:presampling heat}
+  As $\Delta x \rightarrow 0$ the bottleneck is sampling the process that moves through space and time.
+  This process is independent of the boundary conditions, $a(x,t)$ and $f(x,t)$. So it is possible to
+  precompute samples of the process and reuse them for different boundary conditions, $a(x,t)$ and $f(x,t)$.
   Reusing paths makes the solutions correlated. To compute the estimator we need to know where we sampled the
   source term to update $sol$ and $w$, how many steps we took in between to update $w$ for the
   multiplications in not source points (line 13 of \ref{jl:point estimator heat source})
