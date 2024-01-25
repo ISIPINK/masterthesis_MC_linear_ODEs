@@ -1720,11 +1720,11 @@ first passage sample complicated geometries.
     V_{1} \subset V_{2} \Rightarrow
     \text{FPt}(X_{t}(\omega),V_{1}) \le  \text{FPt}(X_{t}(\omega),V_{2}) .
   \end{equation}
-  The $\omega$ is to indicate we mean the same realization of $X_{t}$.
+  The $\omega$ is to indicate the same realization of $X_{t}$.
 \end{lemma}
 
 \begin{theorem}[Green's functions and first passage distribution]
-  The the density of first passages of Code \ref{jl:point estimator heat} is  the
+  The density of first passages of Code \ref{jl:point estimator heat} is the
   corresponding Dirichlet boundary Green's function for the semi-discretized heat equation.
 \end{theorem}
 
@@ -1752,19 +1752,6 @@ of the boundary Green's boundary function. Because of:
                          & = \int_{\partial \Omega} \tilde{u}(x,t)  dP((X_{\tau},\tau) = (x,t)| X_{t_0} = x_0 )
   .
 \end{align}
-
-
-Obtaining unbiased estimator for the boundary Green's function is not trivial.
-
-\begin{lemma}[law of total probability (not sure)]
-  Let $P_{1}$ be the boundary Green's function for a contained domain $\Omega_{1}$ within the semi-discretized heat problem
-  then:
-  \begin{equation}
-    P(x,t|x_{0},t_{0})= \int_{\partial \Omega_{1}} P_{1}(x,t|x_{1},t_{1}) P(x_{1},t_{1}|x_{0},t_{0}) d(x_{1},t_{1})
-    .
-  \end{equation}
-\end{lemma}
-
 
 \begin{related}[recursively estimating Green's functions]
   In \cite{qi_bidirectional_2022} unbiased estimators for the boundary Green's function are constructed
