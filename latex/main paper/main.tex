@@ -892,7 +892,7 @@ The expensive matrix multiplications disappear when solving for $v^{T}y(t)$.
   \juliacode{julia_code/adjoint_poisson.jl}
 
   We are interested in methods that can keep $v$ sparse.
-  When $v_{j} = \delta_{jn}$ we obtain an estimator for $(y(t))_{n}$.
+  When $(v)_{j} = \delta_{jn}$ we obtain an estimator for $(y(t))_{n}$.
 \end{julia}
 % \begin{related}[adjoint tail recursion]
 %   The adjoint tail recursion is inspired by existing adjoint MC methods for
@@ -933,16 +933,16 @@ more general problems.
 \end{notation}
 
 
-To clarify Green's functions, let's look at the following example.
+To clarify Green's functions, let us look at the following example.
 
 \begin{example}[$y_t=y$ average condition]
-  We will solve the equation:
+  Consider equation:
 
   \begin{equation} \label{ydy int}
     y_t = y,
   \end{equation}
 
-  but this time with a different condition:
+  with following condition making the solution unique:
 
   \begin{equation}
     \int_{0}^{1} y(s) ds = e-1.
@@ -975,8 +975,9 @@ To clarify Green's functions, let's look at the following example.
     P(t) = e -1.
   \end{equation}
 
-  The Green's functions are constructed such that
-  we can form the following integral equation for (\ref{ydy int}):
+  The Green's functions are constructed
+  to form the following integral equation
+  for (\ref{ydy int}):
 
   \begin{equation} \label{int ydy int}
     y(t) = P(t) + \int_{0}^{1} G(t,s) y(s) ds.
@@ -986,7 +987,7 @@ To clarify Green's functions, let's look at the following example.
   using RMC, we obtain:
 
   \begin{equation}\label{RRVE ydy int}
-    Y(t) = e - 1 + 2B\left(\frac{1}{2}\right)Y(S)(H(t-S)+S-1),
+    y(t) \cong Y(t) = e - 1 + 2B\left(\frac{1}{2}\right)Y(S)(H(t-S)+S-1),
   \end{equation}
 
   where $S \sim U$. We plot realizations of
@@ -998,8 +999,7 @@ To clarify Green's functions, let's look at the following example.
     \caption{Recursive calls $(t,Y(t))$ of (\ref{RRVE ydy int}) when
       calling $Y(0.5)$ $300$ times. Points accumulate on
       the Green's line due to the Russian roulette,
-      and at  $t=0.5$ because it is the starting
-      value of the simulation.
+      and at  $t=0.5$ because of the first recursion call.
     }
     \label{fig:ydy int}
   \end{figure}
