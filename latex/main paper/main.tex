@@ -291,22 +291,6 @@ $Y(t) \approx 1$ near $t = 0$ introducing minimal bias.
 Later, we will discuss Russian roulette; see Definition \ref{Russian roulette},
 which can be used as an unbiased stopping mechanism.
 
-% \vspace*{0.2cm}
-
-% \begin{pythonn}[implementation of (\ref{recursive RV})] \label{python eps ydy}
-%     \pythoncode{python code/eps_ydy.py}
-%     To gain insight into the realizations of an RRVE, it can be helpful to plot
-%     all recursive calls $(t,Y(t))$, as shown in Figure \ref{fig:intro example}
-%     for this implementation.
-
-%     \begin{figure}[h!]
-%         \centering
-%         \includegraphics[width=0.8\textwidth]{plots/intro example.png}
-%         \caption{Recursive calls of Code \ref{python eps ydy}}
-%         \label{fig:intro example}
-%     \end{figure}
-% \end{pythonn}
-
 \subsection{Modifying Monte Carlo}
 
 In this subsection, we discuss techniques for modifying RRVEs
@@ -356,15 +340,16 @@ less computationally expensive approximation sometimes.
 \end{notation}
 
 \begin{example}[Russian roulette] \label{ex:simple russian roulette}
-  Let us consider the estimation of $E[Z]$, where $Z$ is defined as follows:
+  Consider the estimation of $E[Z]$, with $Z$:
 
   \begin{equation}
     Z = U + \frac{f(U)}{1000}.
   \end{equation}
 
-  Here, $f:\mathbb{R} \rightarrow [0,1]$ is an expensive function to compute.
-  Directly estimating $E[Z]$ would involve evaluating $f$ for each sample,
-  which can be computationally costly. To address this, we can modify $Z$ to:
+  Here, $f:\mathbb{R} \rightarrow [0,1]$ is expensive to compute.
+  Directly estimating $E[Z]$ would involve evaluating $f$ for each sample which
+  contributes little to the accuracy.
+  To address this, we can modify $Z$ to:
 
   \begin{equation}
     Z \cong U + B\left(\frac{1}{100}\right)\frac{f(U)}{10}.
@@ -373,7 +358,7 @@ less computationally expensive approximation sometimes.
   This requires calling $f$ on
   average once every $100$ samples. This significantly reduces the
   computational burden while increasing the variance slightly thereby increasing
-  the MC efficiency.\\
+  the overall MC efficiency.\\
 \end{example}
 
 \begin{related}[Example \ref{ex:simple russian roulette}]
@@ -406,26 +391,8 @@ less computationally expensive approximation sometimes.
 
 \end{example}
 
-% \vspace{0.2cm}
-
-% \begin{pythonn}[implementation of (\ref{eq:rr example})] \label{RRpython}
-%     \pythoncode{python code/RR_ydy.py}
-%     Interestingly, $\forall t \le 1:Y(t)$ is the number of recursion calls
-%     to sample $Y(t)$ such that the average number of recursion
-%     calls to sample $Y(t)$ equals $e^{t}$.
-%     \begin{figure}[h!]
-%         \centering
-%         \includegraphics[width=0.8\textwidth]{plots/russian roulette example.png}
-%         \caption{Recursive calls $(t,Y(t))$ of Code \ref{RRpython} }
-%         \label{fig:russian roulette}
-%     \end{figure}
-
-% \end{pythonn}
-
-Splitting is a technique that has almost the reverse effect of Russian roulette.
-Instead of reducing the number of simulations of an RV as Russian roulette does,
-we increase it by using more samples (i.e. splitting the sample) which
-reduces the variance.
+Splitting is a technique that increases samples of important terms, similar to how Russian roulette
+decreases the samples of unimportant terms.
 
 \begin{definition}[splitting] \label{def:splitting}
   Splitting $X$ refers to utilizing multiple $X_{j} \sim X$ (not necessarily independent) to
@@ -461,12 +428,6 @@ additive branching recursion in RRVEs (see Example \ref{ex:coupled splitting}).
   where $Y_{1}(t)$ and $Y_{2}(t)$ are i.i.d. with $Y(t)$.
 \end{example}
 
-% \vspace{0.2cm}
-
-% \begin{pythonn}[implementation of (\ref{eq:splitting})]
-%     \pythoncode{python code/SRR_ydy.py}
-% \end{pythonn}
-
 \begin{definition}[control variates] \label{CV}
   Define control variating $f(U)$ with $\tilde{f}$ an approximation of $f$ as:
 
@@ -498,11 +459,6 @@ additive branching recursion in RRVEs (see Example \ref{ex:coupled splitting}).
   of the control variate, doing so would have a negative impact
   on the Russian roulette implemented.
 \end{example}
-
-% \vspace*{0.2cm}
-% \begin{pythonn}[implementation of Example \ref{ex:CV}]
-%     \pythoncode{python code/CVRR_ydy.py}
-% \end{pythonn}
 
 \begin{related}[MC modification]
   For further reference on Russian roulette, splitting and control variates
@@ -554,7 +510,7 @@ enhanced with control variates based on the trapezoidal rule.
     \left(f(S) - f(x) - \frac{S - x}{\Delta x}
     \left(f(x+\Delta x) - f(x)\right) \right)\right)
   \end{equation}
-  We substitute $S = \Delta x U + x$ and then apply Taylor's theorem
+  We substitute $S = \Delta x U + x$ and apply Taylor's theorem
   finishing the proof:
 
   \begin{align}
@@ -574,7 +530,7 @@ enhanced with control variates based on the trapezoidal rule.
   \end{align}
   for some $Z_{1} \in [x,S], z_{2} \in [x,x+\Delta x]$. The variance term is bounded
   because the variance of a bounded RV is bounded.
-  Note that the proof doesn't rely on Russian roulette ($l=1$).
+  Note that the proof does not rely on Russian roulette ($l=1$).
 \end{proof}
 
 \begin{related}[proof of Lemma \ref{lem:rmse mctrap}]
@@ -799,16 +755,15 @@ In this subsection, we discuss recursion-related techniques.
 
 
 \begin{technique}[recursion in recursion]\label{tech:recu in recu}
+  Later we will use recursion in recursion which can get involved.
   Recursion in recursion is like proving an induction
-  step of an induction proof with induction. Recursion in recursion
-  uses an inner recursion in the outer recursion.
+  step of an induction proof with induction.
 \end{technique}
 
 \begin{related}[recursion in recursion]
-  Beautiful examples of recursion in recursion are
+  A beautiful example of recursion in recursion is
   the next flight variant of WoS in
-  \cite{sawhney_grid-free_2022} and epoch-based algorithms in optimization
-  \cite{gupta_convergence_2021}.
+  \cite{sawhney_grid-free_2022}.
 \end{related}
 
 Most programming languages do support recursion, but it often comes with certain
@@ -848,7 +803,7 @@ Poisson time processes have the same distribution forward paths and backward pat
   because the paths consist of a Poisson proces and reflections.
 \end{related}
 
-A common technique encountered in rendering is non-branching tail recursion.
+Tail recursion is commonly used in rendering to accelerate non-branching recursion.
 
 \begin{technique}[non-branching tail recursion]
   Tail recursion involves reordering all operations
@@ -935,8 +890,10 @@ The expensive matrix multiplications disappear when solving for $v^{T}y(t)$.
   matrix-vector multiplications in $v$.
 
   \juliacode{julia_code/adjoint_poisson.jl}
-\end{julia}
 
+  We are interested in methods that can keep $v$ sparse.
+  Specifically when $v_{j} = \delta_{jn}$ we obtain an estimator for $(y(t))_{n}$.
+\end{julia}
 % \begin{related}[adjoint tail recursion]
 %   The adjoint tail recursion is inspired by existing adjoint MC methods for
 %   linear systems, for a reference see \cite{benzi_analysis_2017} for example.
