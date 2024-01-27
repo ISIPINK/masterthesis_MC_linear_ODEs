@@ -66,7 +66,7 @@ function YvarPath(x, t, dx, a0, am, u_bound::Function, f::Function, a::Function)
     t >= eps() ? sol + w * u_bound(x, t) : sol + w * u_bound(x, 0)
 end
 
-function YvarPathMemo(x, t, dx, a0, am, u_bound::Function, f::Function, a::Function, path)
+function YvarPathMemo(path, dx, a0, am, u_bound, f, a)
     spoints, exit = path
     (siginv = 1 / (2 / dx^2 + a0); p_source = am / (am + 2 / dx^2))
     w_multiplier = 2 * siginv / (dx^2 * (1 - p_source))
@@ -81,7 +81,7 @@ function YvarPathMemo(x, t, dx, a0, am, u_bound::Function, f::Function, a::Funct
     t >= eps() ? sol + w * u_bound(x, t) : sol + w * u_bound(x, 0)
 end
 
-function YvarPathMemoExp(x, t, dx, a0, am, u_bound::Function, f::Function, a::Function, path)
+function YvarPathMemoExp(path, dx, a0, am, u_bound, f, a)
     spoints, exit = path
     (siginv = 1 / (2 / dx^2 + a0); p_source = am / (am + 2 / dx^2))
     lw_multiplier = log(2 * siginv / (dx^2 * (1 - p_source)))
@@ -131,8 +131,8 @@ end
 
 yvar(x, t, Δx, nsim, a0, am) = sum(Yvar(x, t, Δx, a0, am, u, f, a) for _ in 1:nsim) / nsim
 yvarpath(x, t, Δx, nsim, a0, am) = sum(YvarPath(x, t, Δx, a0, am, u, f, a) for _ in 1:nsim) / nsim
-yvarpathmemo(x, t, Δx, nsim, a0, am, paths) = sum(YvarPathMemo(x, t, Δx, a0, am, u, f, a, path) for path in paths) / nsim
-yvarpathmemoexp(x, t, Δx, nsim, a0, am, paths) = sum(YvarPathMemoExp(x, t, Δx, a0, am, u, f, a, path) for path in paths) / nsim
+yvarpathmemo(x, t, Δx, nsim, a0, am, paths) = sum(YvarPathMemo(path, Δx, a0, am, u, f, a) for path in paths) / nsim
+yvarpathmemoexp(x, t, Δx, nsim, a0, am, paths) = sum(YvarPathMemoExp(path, Δx, a0, am, u, f, a) for path in paths) / nsim
 yvarpathmemolog(x, t, Δx, nsim, a0, am, paths) = sum(YvarPathMemoLog(path, Δx, a0, am, u, f, a) for path in paths) / nsim
 
 
