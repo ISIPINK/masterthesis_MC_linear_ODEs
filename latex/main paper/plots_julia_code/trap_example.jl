@@ -27,9 +27,9 @@ mc_trapezium_error = abs.(MCtrapezium.(f, nn, 100) .- sol)
 yticks = 10.0 .^ range(-16, 0, step=2) # adjust the range and step as needed
 p = plot(nn, trapezium_error .+ eps(), label="OG trap", xscale=:log10, yscale=:log10, legendfontsize=12, yticks=yticks, xlabel="n", ylabel="Error", bottom_margin=2mm)
 plot!(p, nn, mc_trapezium_error .+ eps(), label="MC trap", xscale=:log10, yscale=:log10)
-plot!(p, nn, nn .^ -2 .+ eps(), label="\$n^{-2}\$", xscale=:log10, yscale=:log10, linestyle=:dash)
-plot!(p, nn, nn .^ -2.5 .+ eps(), label="\$n^{-2.5}\$", xscale=:log10, yscale=:log10, linestyle=:dash)
-plot!(p, nn, nn .^ -3 .+ eps(), label="\$n^{-3}\$", xscale=:log10, yscale=:log10, linestyle=:dash)
+plot!(p, nn, nn .^ -2 .+ eps(), label="\$O(n^{-2})\$", xscale=:log10, yscale=:log10, linestyle=:dash)
+plot!(p, nn, nn .^ -2.5 .+ eps(), label="\$O(n^{-2.5})\$", xscale=:log10, yscale=:log10, linestyle=:dash)
+plot!(p, nn, nn .^ -3 .+ eps(), label="\$O(n^{-3})\$", xscale=:log10, yscale=:log10, linestyle=:dash)
 
 display(p)
 savefig(p, "latex/main paper/julia_plots/trap_example.pdf")
