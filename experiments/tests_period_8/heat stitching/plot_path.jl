@@ -2,8 +2,9 @@ using BenchmarkTools
 using Profile
 using PProf
 using Plots
+using Revise
 
-include("path_generation.jl")
+includet("path_generation.jl")
 
 function plot_path!(p, path)
     xxpath1 = [point[1] for point in path[1]]
@@ -17,21 +18,23 @@ function plot_path!(p, path)
 end
 
 Random.seed!(4181)
-x = 0.0
-t = 1.0
 a0 = 0
-am = 30
+am = 10
+Δx = 0.001
+scales = [sqrt(2.0^(-j)) for j in 0:6]
+npaths = 20
+dpaths = genPathsScalesTriangle(scales, npaths, Δx, a0, am)
+scale = scales[3]
 
 p = plot()
-for _ in 1:20
-    path1 = genPath(x, t, 0.001, a0, am, in_triangle)
-    plot_path!(p, path1)
+for path in dpaths[scale]
+    plot_path!(p, path)
 end
 display(p)
 
 p = plot()
-path1 = genPath(x, t, 0.001, a0, am, (x, t) -> t >= 0.5)
-path2 = genPath(x, t, 0.001, a0, am, (x, t) -> t >= 0.5)
+path1 = genPath(Δx, a0, am, (x, t) -> t >= -0.5)
+path2 = genPath(Δx, a0, am, (x, t) -> t >= -0.5)
 plot_path!(p, path1)
 plot_path!(p, path2)
 path = stitch(path1, path2)

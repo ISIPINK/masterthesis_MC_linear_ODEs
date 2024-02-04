@@ -112,7 +112,7 @@ function YvarPathMemoLog(path, dx, a0, am, u_bound::Function, f::Function, a::Fu
 end
 
 
-# following should holdl: ut = uxx + au +f  
+# following should hold: ut = uxx + au +f  
 function u(x, t)
     # sleep(Microsecond(100))  #simulating expensive function call
     return (x * t)^2
