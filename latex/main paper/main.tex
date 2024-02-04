@@ -574,7 +574,7 @@ enhanced with control variates based on the trapezoidal rule.
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.8\textwidth]{plots/MCtrap.png}
+  \includegraphics[width=0.8\textwidth]{julia_plots/trap_example.pdf}
   \caption{Log-log plot of the error of (\ref{eq:cMCtrap}) for
   $\int_{0}^{1}e^{s}ds$ with $l=100$. At floating point accuracy,
   the convergence ceases.
@@ -769,23 +769,23 @@ In this subsection, we discuss recursion-related techniques.
 Most programming languages do support recursion, but it often comes with certain
 limitations such as maximum recursion depth and potential performance issues.
 A way to avoid recursion is to chose the time process such that sampling in reverse order is possible.
-Poisson time processes have the same distribution forward paths and backward paths.
+Poisson time processes have the same distribution for forward paths and for backward paths.
 
 \begin{definition}[main Poisson] \label{def:main poisson}
-  Consider the following IVP:
+  Consider the following IVP with $f \in \mathbb{R}^{n}, A(s) \in \mathbb{R}^{n \times n}$:
   \begin{align}
     y'                              & = A y + f \Leftrightarrow                                                                             \\
     y'+\sigma y                     & = (A + \sigma I) y + f\Leftrightarrow                                                                 \\
     e^{-\sigma t} ( e^{\sigma t}y)' & = (A + \sigma I) y + f  \Leftrightarrow                                                               \\
     y(t)                            & = e^{-\sigma t} y(0) + \int_{0}^{t} e^{(s-t) \sigma} \left(  (A(s) + \sigma I ) y(s) +f(s)\right) ds.
   \end{align}
-  With $\sigma>0$. Do following substitution: $e^{(s-t)\sigma} = \tau$ equivalent to importance sampling
+  With $\sigma>0 \in \mathbb{R}$ . Do following substitution: $e^{(s-t)\sigma} = \tau$ equivalent to importance sampling
   the exponential term:
   \begin{equation} \label{eq:poisson main}
     y(t) = \int_{0}^{e^{-\sigma t}}  y(0) d\tau + \int_{e^{-\sigma t}}^{1} \left(  \frac{A(s)}{\sigma} + I\right)  y(s) + \frac{f(s)}{\sigma} d\tau
     .
   \end{equation}
-  Sampling $\tau$ uniformly is equivalent to sampling a Poisson proces.
+  Sampling $\tau$ uniformly is equivalent to sampling a Poisson process.
 \end{definition}
 
 \begin{julia}[implementation of \ref{def:main poisson}]
@@ -845,7 +845,7 @@ of all operations ($(xy)z = x(yz)$) involved.
 Tail recursion loses the intermediate values
 of the recursive calls and
 may increase computational costs because of the reordering of operations.
-The computational cost of matrix multiplications are very sensitive
+The computational cost of matrix multiplications are sensitive
 to reordering operations.
 
 \begin{related}[non-branching tail recursion]
@@ -995,7 +995,7 @@ To clarify Green's functions, let us look at the following example.
 
   \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.8\textwidth]{plots/ydy int.png}
+    \includegraphics[width=0.8\textwidth]{plots/ydy_int.png}
     \caption{Recursive calls $(t,Y(t))$ of (\ref{RRVE ydy int}) when
       calling $Y(0.5)$ $300$ times. Points accumulate on
       the Green's line due to the Russian roulette,
@@ -1022,12 +1022,11 @@ small $\lambda$, it is relatively straightforward to establish the existence
 and uniqueness of solutions using a fixed-point argument.
 
 \begin{example}[Dirichlet $y_{tt}=y$] \label{main dirichlet}
-  We transform the following ODE into Fredholm integral equation of
-  the second kind for testing:
+  Consider following BVP:
   \begin{equation} \label{eq:main dirichlet}
-    y_{tt}=y, \quad y(b_{0}),y(b_{1}).
+    y_{tt}=y.
   \end{equation}
-  The Green's functions corresponding to $y_{tt}$ and Dirichlet conditions are:
+  With boundary conditions $y(b_{0}),y(b_{1})$. The Green's functions corresponding to $y_{tt}$ and Dirichlet conditions are:
 
   \begin{align}
     P(t|x) & = \begin{cases}
@@ -1047,15 +1046,26 @@ and uniqueness of solutions using a fixed-point argument.
     + l B\left(\frac{1}{l} \right)(b_{1}-b_{0}) G(t,S)y(S) , \label{RRVE:main dirichlet}
   \end{align}
   with the Russian roulette rate $l \in \mathbb{R}$  and
-  $S \sim \text{Uniform}(b_{1},b_{0})$. In Figure \ref{fig:mainD explosion}
+  $S \sim \text{Uniform}(b_{1},b_{0})$. In Figure \ref{fig:plots/main_dirichlet_viz.png} and \ref{fig:mainD explosion}
   we test convergence of (\ref{RRVE:main dirichlet}).
 \end{example}
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.8\textwidth]{plots/mainD explosion.png}
+  \includegraphics[width=\textwidth]{plots/main_dirichlet_viz.png}
+  \caption{Recursive calls $(t,Y(t))$ of (\ref{RRVE:main dirichlet}) when
+  calling $Y(0)$ $75$ times, with $l=1.2$ and boundary conditions
+  $y(-k)=e^{-k}$ and $y(k)=e^{k}$.
+  }
+  \label{fig:plots/main_dirichlet_viz.png}
+\end{figure}
+
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.8\textwidth]{plots/main_dirichlet_convergence.png}
   \caption{The logarithmic percentage error of $Y(0)$ for
-  (\ref{RRVE:main dirichlet}), with $l=1.2$ and initial conditions
+  (\ref{RRVE:main dirichlet}), with $l=1.2$ and boundary conditions
   $y(-k)=e^{-k}$ and $y(k)=e^{k}$, displays an exponential
   increase until approximately $k=1.5$, beyond which additional
   simulations fail to reduce the error, indicating that the variance
@@ -1063,7 +1073,10 @@ and uniqueness of solutions using a fixed-point argument.
   \label{fig:mainD explosion}
 \end{figure}
 
-Coupled splitting is one of the ideas we tested on Example \ref{main dirichlet}.
+
+
+
+We tested coupled splitting on Example \ref{main dirichlet}.
 Coupled splitting removes the additive branching of splitting by coupling (reusing)
 samples.
 
@@ -1114,7 +1127,7 @@ samples.
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.8\textwidth]{plots/coupled split.png}
+  \includegraphics[width=0.8\textwidth]{plots/coupled_split.png}
   \caption{Recursive calls of (\ref{RRVE:coupled splitting}) when
   calling $X(0)$ once. We chose $X$ to have $20$ points and
   colored each call. The $S_{j}$ are coupled such that
@@ -1135,8 +1148,8 @@ samples.
   Coupled splitting is partly inspired by the approach
   of \cite{sabelfeld_sparsified_2009}, which reduces
   variance by using larger submatrices in unbiased sparsification
-  of matrices. The idea
-  of reusing samples for WoS is discussed in both
+  of matrices.
+  Reusing samples for WoS is discussed in both
   \cite{miller_boundary_2023} and \cite{bakbouk_mean_2023}.
 \end{related}
 
