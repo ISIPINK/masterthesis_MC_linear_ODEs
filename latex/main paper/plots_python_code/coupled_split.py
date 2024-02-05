@@ -41,6 +41,7 @@ def soltest(t, y0, y1, b0, b1, nsim=10**0, q=20):
     plt.ylabel("Y(t)")
     plt.legend()
     plt.savefig("latex/main paper/plots/coupled_split.png", dpi=300)
+    # plt.show()
     return tmp
 
 

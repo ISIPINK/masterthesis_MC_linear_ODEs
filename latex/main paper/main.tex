@@ -1046,7 +1046,7 @@ and uniqueness of solutions using a fixed-point argument.
     + l B\left(\frac{1}{l} \right)(b_{1}-b_{0}) G(t,S)y(S) , \label{RRVE:main dirichlet}
   \end{align}
   with the Russian roulette rate $l \in \mathbb{R}$  and
-  $S \sim \text{Uniform}(b_{1},b_{0})$. In Figure \ref{fig:plots/main_dirichlet_viz.png} and \ref{fig:mainD explosion}
+  $S \sim \text{Uniform}(b_{0},b_{1})$. In Figure \ref{fig:plots/main_dirichlet_viz.png} and \ref{fig:mainD explosion}
   we test convergence of (\ref{RRVE:main dirichlet}).
 \end{example}
 
@@ -1085,18 +1085,25 @@ samples.
   we can also split the domain in (\ref{inteq:main dirichlet})
   as follows:
 
+  % y(t) & = P(t|b_{0}) y(b_{0}) + P(t|b_{1}) y(b_{1}) +
+  % \frac{1}{2} \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds +
+  % \frac{1}{2} \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds,                                             \\
+
   \begin{align}\label{inteq:coupled splitting}
-    y(t) & = P(t|b_{0}) y(b_{0}) + P(t|b_{1}) y(b_{1}) +
-    \frac{1}{2} \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds +
-    \frac{1}{2} \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds,                                             \\
-    y(t) & = P(t|b_{0}) y(b_{0}) + P(t|b_{1}) y(b_{1}) + \label{inteq:coupled domain splitting}
-    \int_{b_{0}}^{\frac{b_{1}+b_{0}}{2}} G(t,s)y(s) ds +
-    \int_{\frac{b_{1}+b_{0}}{2}}^{b_{1}} G(t,s)y(s) ds.
+    y(t_1) & = P(t_1|b_{0}) y(b_{0}) + P(t_1|b_{1}) y(b_{1})                \\
+           & + \int_{b_{0}}^{\frac{b_{0}+b_{1}}{2}} G(t_1,s_1)y(s_1) ds_1 +
+    \int_{\frac{b_{0}+b_{1}}{2}}^{b_{1}} G(t_1,s_2)y(s_2) ds_2              \\ \label{inteq:coupled domain splitting}
+    y(t_2) & = P(t_2|b_{0}) y(b_{0}) + P(t_2|b_{1}) y(b_{1})                \\
+           & + \int_{b_{0}}^{\frac{b_{0}+b_{1}}{2}} G(t_2,s_1)y(s_1) ds_1
+    +\int_{\frac{b_{0}+b_{1}}{2}}^{b_{1}} G(t_2,s_2)y(s_2) ds_2.
   \end{align}
 
   By coupling, we can eliminate the additive branching recursion
   in the RRVEs corresponding to (\ref{inteq:coupled splitting})
-  and (\ref{inteq:coupled domain splitting}).
+  and (\ref{inteq:coupled domain splitting}). In other words,
+  to estimate $y(t_1)$ and $y(t_2)$ we need to estimate $y(s_1)$ and $y(s_2)$
+  instead of doing it twice we reuse the same estimate.
+
   This results in the following RRVE:
 
   \begin{equation} \label{RRVE:coupled splitting}
@@ -1161,7 +1168,7 @@ of the stochastic approximation of the operator is reached
 (the approximate operator bottleneck). The approximation of the operator
 can be improved by increasing the coupled splitting amount when
 approaching the bottleneck. Alternatively when reaching
-the bottleneck it is possible to rely on splitting to convergence.
+the bottleneck it is possible to rely on splitting to converge.
 
 \begin{related}[convergence coupled splitting]
   See \cite{gupta_convergence_2021} for a discussion on the convergence
@@ -1467,7 +1474,7 @@ combined with presampled path stitching.
 
 
 % maybe we need to find a reference for this
-It well-known that the solution to the semi-discretization 1D heat equation converges to the solution of the 1D heat equation with
+It is well-known that the solution to the semi-discretization 1D heat equation converges to the solution of the 1D heat equation with
 corresponding boundary conditions as $\Delta x \rightarrow 0$. \\
 We want a point estimator for the solution to the semi-discretization 1D heat equation. We obtain this by
 using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and at the interior point $j$ this is:
@@ -1522,8 +1529,8 @@ using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and at the 
 
 \begin{example}[\ref{def:discrete heat equation square} + source + coefficients] \label{ex:semi heat source}
 
-  A similar derivation can be found for Example \ref{def:discrete heat equation square}
-  but with a source and coefficients:
+  Example \ref{def:discrete heat equation square}
+  can be extended with a source term and $0$-order coefficients:
 
   \begin{equation}
     u_{t} = u_{xx} + a(x,t)u + f(x,t)
@@ -1544,7 +1551,7 @@ using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and at the 
     .
   \end{equation}
   To remove branching recursion we sample one of the $u$'s, we base the sampling
-  probability based on the magnitude of coefficients, let $a_m$ be roughly the magnitude of
+  probability based on the magnitude of coefficients, let $a_m$ be approximately the magnitude of
   $(a(x,s)+ a_{0})$. We chose to sample the $(a(x,s)+ a_{0})u$ term and $f$
   with probability $p_{\text{source}} = \frac{a_m}{a_m + \frac{2}{\Delta x^{2}}}$.
   As $\Delta x \rightarrow 0$ the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ term is
@@ -1580,7 +1587,7 @@ to a few points of the time space process and this amount does not scale with $\
   \juliacode{julia_code/genpath_pest_heat_varcoef.jl}
 
   Paths for smaller $\tilde{a}_{m}$'s can be obtained by thinning the Bernoulli process,
-  by rejecting source points with probability $\frac{\tilde{a}_{m}}{a_{m}}$. As $\Delta \rightarrow 0$
+  by rejecting source points with probability $\frac{\tilde{a}_{m}}{a_{m}}$. As $\Delta x \rightarrow 0$
   $genPath$ converges, the dependence on $a_{0}$ also disappears. For the heat equation
   $genPath$ presampled paths only depend on geometry and the starting point.
 
@@ -1790,7 +1797,7 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
   \juliacode{julia_code/sample_euler_triangle.jl}
   \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.8\textwidth]{plots/Euler first passage para.png}
+    \includegraphics[width=0.8\textwidth]{plots/Euler_first_passage_para.png}
     \caption{ $50$ realizations of Euler first passage sampling with step size $0.001$.}
     \label{fig:Euler first passage para}
   \end{figure}
@@ -1810,17 +1817,20 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
   Assuming that the error of the base sampler is insignificant.
   The accuracy of the sampled first passage
   are $O(\varepsilon)$ and the cost to sample is $O(\ln \left(\varepsilon^{-1}\right))$.
+  Note that resampling with replacement produces dependent samples and introduces additional error.
+  For MC applications dependence is not an issue and when the additional error is significant resampling
+  without replacement can be used.
 
   \juliacode{julia_code/sample_recu_para.jl}
-  The maximum scaling of the triangular barrier that fits
-  in the parabola is derived through the fact that a parabola domain is convex.
+  When the domain is convex, the maximum scaling of the triangular barrier that fits
+  is easier to obtain.
   To dampen barrier
   overstepping of \ref{ex:euler first passage sampling} we use a smaller scaling
   than the maximum.
 
   \begin{figure}[h!]
     \centering
-    \includegraphics[width=1\textwidth]{plots/recursive first passage para.png}
+    \includegraphics[width=1\textwidth]{plots/recursive_first_passage_para.png}
     \caption{ $50000$ of realizations of recursive first passage sampling produced
       by (\ref{ex:recursive first passage sampling}). The precomputed sample of $5000$ first
       passages of a triangular barrier uses the Euler scheme with
@@ -1905,7 +1915,7 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
 
   \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.8\textwidth]{plots/path stitching para.png}
+    \includegraphics[width=0.8\textwidth]{plots/path_stitching_para.png}
     \caption{ $10$ paths build with path stitching build out of
       resampled Euler scheme generated paths with step size $0.01$.}
     \label{fig:path stitching para}
