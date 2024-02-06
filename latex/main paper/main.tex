@@ -296,18 +296,18 @@ which can be used as an unbiased stopping mechanism.
 In this subsection, we discuss techniques for modifying RRVEs
 in a way that preserves the expected value of the solution while
 acquiring more desirable properties. These techniques are only
-effective when applied smartly by using prior information
+effective when applied by using prior information
 about the problem or computational costs. \\
 
 We will frequently interchange RVs with the same expected values.
-This is why we introduce the following notation.
+Therefore introduce following notation:
 \begin{notation}[$\cong$]
   \[
     X \cong Y \iff E[X]=E[Y]
     .\]
 \end{notation}
 
-Russian roulette is an MC technique commonly employed in rendering algorithms.
+Russian roulette is a MC technique commonly employed in rendering algorithms.
 The concept behind Russian roulette is to replace an RV with a
 less computationally expensive approximation sometimes.
 
@@ -395,7 +395,7 @@ Splitting is a technique that increases samples of important terms, similar to h
 decreases the samples of unimportant terms.
 
 \begin{definition}[splitting] \label{def:splitting}
-  Splitting $X$ refers to utilizing multiple $X_{j} \sim X$ (not necessarily independent) to
+  Splitting $X$ refers to utilizing multiple $X_{j} \cong X$ (not necessarily independent) to
   reduce variance by taking their average:
   \begin{equation}
     X \cong \frac{1}{N} \sum_{j=1}^{N} X_{j}.
