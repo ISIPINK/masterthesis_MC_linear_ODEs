@@ -70,56 +70,30 @@ which introduces the Walk-on-Sphere (WoS) method for solving second-order
 elliptic PDEs with varying coefficients and Dirichlet boundary conditions.
 Their techniques have shown high accuracy even in the presence of geometrically
 complex boundary conditions. We were inspired to apply the underlying
-mechanics of these Monte Carlo (MC) techniques to ODEs to explore
+mechanics of these Monte Carlo (MC) techniques to IVPs to explore
 parallel in time and the possibility of extending their techniques
 to other types of PDEs. \\
 
 We made an interactive data map of the literature read
 mainly in the function of this thesis available at
-\url{https://huggingface.co/spaces/ISIPINK/zotero_map}.
-It may take 10 seconds to load. \\
+\url{https://huggingface.co/spaces/ISIPINK/zotero_map}.\\
 
-The latest paper that we found on an unbiased Initial Value Problem (IVP) solver is by
+Existing randomized algorithms for solving IVPs in general are either based
+on MC integration or randomizing parts of deterministic
+algorithms. Typically motivated by lower smoothness conditions where
+randomization adds significant
+convergence speed or solving ODEs where randomization
+aids in parallelization .\\
+
+\citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011}
+\cite{daun_randomized_2011} proposes a biased algorithm that has optimal Information-Based
+Complexity (IBC) for some smoothness classes. Similarly to us, their method uses control variates.\\
+
+
 \citeauthor{ermakov_monte_2021}'s \citeyear{ermakov_monte_2021}
-\cite{ermakov_monte_2021}.  They study an unbiased method for
+\cite{ermakov_monte_2021} proposes an unbiased method for
 a Cauchy problem for large systems of linear ODEs.
-Similarly to us, they base their solver on Volterra integral equations.\\
-
-Other literature is a bit further away.
-The most important fields we draw from are:
-
-\begin{itemize}
-  \item rendering and WoS/first passage literature
-        which contain many practical recursive
-        MC techniques,
-
-        % \item  stochastic gradient descent literature
-        %       that is connected through continuous gradient descent
-        %       see \cite{huang_hybrid_2017} for an introduction,
-
-  \item  Information-Based Complexity (IBC) literature, which was
-        unexpected to us, there are some interesting
-        biased algorithms applied on ODEs that achieve optimal
-        IBC rates for RMSE for some smoothness classes, similar to us
-        \citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011}
-        \cite{daun_randomized_2011} uses control variates
-        to achieve optimal IBC.
-\end{itemize}
-
-A recurrent theme in these fields is that optimal IBC
-algorithms and unbiased algorithms
-are of theoretical importance.
-
-\subsection{Contributions}
-
-A significant part of this thesis is dedicated to
-informally introducing Recursive Monte Carlo (RMC)
-and applying variance reduction techniques for ODEs. \\
-
-The key contribution is an unbiased MC method
-for linear IVPs see Example \ref{ex:CV RRMC IVP}
-by using recursion in recursion
-and variance reduction techniques.
+Similarly to us, their method is based on Volterra integral equations.\\
 
 \section{Background}
 
@@ -619,7 +593,7 @@ A bound on the error implies a bound on the RMSE, but not vice versa.
   Due to an argument like Stein's paradox,
   it is always possible to bias the composite MC trapezoidal
   rule to achieve lower RMSE.
-  The optimal IBC for the deterministic, random, and quantum cases are known
+  The optimal IBC for the deterministic, random, and quantum integration are known
   for some smoothness classes; see \cite{heinrich_optimal_2001} for details.
 \end{related}
 
