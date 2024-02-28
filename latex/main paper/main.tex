@@ -742,11 +742,12 @@ In this subsection, we discuss recursion-related techniques.
 
 Most programming languages do support recursion, but it often comes with certain
 limitations such as maximum recursion depth and potential performance issues.
-A way to avoid recursion is to chose the time process such that sampling in reverse order is possible.
-Poisson time processes have the same distribution for forward paths and for backward paths.
+Non-branching recursion can be avoided by directly traversing the computational path in the
+reverse order. Poisson time processes can be sampled in the reverse order
+because of equal forward paths and backward paths distributions.
 
 \begin{definition}[main Poisson] \label{def:main poisson}
-  Consider the following IVP with $f \in \mathbb{R}^{n}, A(s) \in \mathbb{R}^{n \times n}$:
+  Consider the following linear IVP with $\forall s>0 \in \mathbb{R}: f(s) \in \mathbb{R}^{n}, A(s) \in \mathbb{R}^{n \times n}$:
   \begin{align}
     y'                              & = A y + f \Leftrightarrow                                                                             \\
     y'+\sigma y                     & = (A + \sigma I) y + f\Leftrightarrow                                                                 \\
@@ -777,7 +778,7 @@ Poisson time processes have the same distribution for forward paths and for back
   because the paths consist of a Poisson process and reflections.
 \end{related}
 
-Tail recursion is commonly used in rendering to accelerate non-branching recursion.
+Tail recursion is commonly used in rendering to implement non-branching recursion.
 
 \begin{technique}[non-branching tail recursion]
   Tail recursion involves reordering all operations
