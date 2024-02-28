@@ -70,7 +70,7 @@ which introduces the Walk-on-Sphere (WoS) method for solving second-order
 elliptic PDEs with varying coefficients and Dirichlet boundary conditions.
 Their techniques have shown high accuracy even in the presence of geometrically
 complex boundary conditions. We were inspired to apply the underlying
-mechanics of these Monte Carlo (MC) techniques to IVPs to explore
+mechanics of these Monte Carlo (MC) techniques to Inital Value Problems (IVPs) to explore
 parallel in time and the possibility of extending their techniques
 to other types of PDEs. \\
 
@@ -86,7 +86,7 @@ convergence speed or solving ODEs where randomization
 aids in parallelization .\\
 
 \citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011}
-\cite{daun_randomized_2011} proposes a biased algorithm that has optimal Information-Based
+\cite{daun_randomized_2011} proposes a biased algorithm for IVPs that has optimal Information-Based
 Complexity (IBC) for some smoothness classes. Similarly to us, their method uses control variates.\\
 
 
@@ -539,13 +539,6 @@ enhanced with control variates based on the trapezoidal rule.
 
 \end{definition}
 
-% \begin{pythonn}[implementation of (\ref{eq:cMCtrap})]
-%     We implement (\ref{eq:cMCtrap}) for $\int_{0}^{1}e^{s}ds$.
-%     \vspace*{0.5cm}
-%     \pythoncode{python code/trap1.py}
-
-% \end{pythonn}
-
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.8\textwidth]{julia_plots/trap_example.pdf}
@@ -632,12 +625,6 @@ $Y_{1} \cong Y_{2} \cong y$.
   where $S_{1} \sim \text{Uniform}(1,t)$.
 \end{example}
 
-% \vspace*{0.2cm}
-% \begin{pythonn}[implementation of Example \ref{ex:nonlinear example}]\label{py:nonlinear example}
-%     \pythoncode{python code/dyy2.py}
-%     In this implementation $Y(t)$ only takes values $\{-1,0\}$.
-% \end{pythonn}
-
 \begin{example}[$e^{E[X]}$] \label{ex:exp int}
   $e^{\int x(s)ds}$ is a common expression encountered when studying ODEs.
   In this example, we demonstrate how you can generate unbiased estimates of
@@ -723,10 +710,6 @@ In this subsection, we discuss recursion-related techniques.
 
 \end{example}
 
-% \begin{pythonn} [implementation of (\ref{coupled mat})]
-%     \pythoncode{python code/coupled_mat.py}
-% \end{pythonn}
-
 
 \begin{technique}[recursion in recursion]\label{tech:recu in recu}
   Later we will use recursion in recursion which can get involved.
@@ -792,24 +775,6 @@ The non-branching recursion presented in the RRVEs can
 be implemented using tail recursion due to the associativity
 of all operations ($(xy)z = x(yz)$) involved.
 
-% \begin{pythonn}[tail recursion on (\ref{coupled mat})] \label{py:tail recursion couple}
-%     We implemented (\ref{coupled mat}) using tail recursion this time. We
-%     collect addition operations in a vector called $sol$, and multiplications
-%     in a matrix named $W$. $W$ may also be referred to as accumulated weight
-%     or throughput.
-%     \vspace{0.3cm}
-%     \pythoncode{python code/tailrecu.py}
-% \end{pythonn}
-
-% \begin{julia}[tail recursion on (\ref{coupled mat})] \label{jl:tail recursion couple}
-%   We implemented (\ref{coupled mat}) using tail recursion this time. We
-%   collect addition operations in a vector called $sol$, and multiplications
-%   in a matrix named $W$. $W$ may also be referred to as accumulated weight
-%   or throughput.
-%   \vspace{0.3cm}
-%   \juliacode{julia_code/tailrecu.jl}
-% \end{julia}
-
 \begin{julia}[tail recursion for \ref{def:main poisson}]
   We collect the sum in the variable sol and the matrix multiplications in W.
   Notice that the computation is going backwards in time.
@@ -831,32 +796,6 @@ to reordering operations.
   To access intermediate values in tail recursion they use path replay.
 \end{related}
 
-% \begin{pythonn}[stack recursion on (\ref{coupled mat})] \label{py:stack recursion couple}
-%     We implement (\ref{coupled mat}) but this time with a stack.
-%     We want to avoid matrix multiplication and only use matrix-vector multiplications.
-%     To do this on (\ref{coupled mat}) we need to know $X(Ut)$ when
-%     it doesn't get Russian rouletted away. If we sample $Ut$ we can recurse
-%     on our reasoning until Russian roulette termination, so we need the path
-%     of all the samples.
-%     \vspace{0.3cm}
-%     \pythoncode{python code/stackrecu.py}
-% \end{pythonn}
-
-% \begin{julia}[stack recursion on (\ref{coupled mat})] \label{jl:stack recursion couple}
-%   We implement (\ref{coupled mat}) but this time with a stack.
-%   We want to avoid matrix multiplication and only use matrix-vector multiplications.
-%   To do this on (\ref{coupled mat}) we need to know $X(Ut)$ when
-%   it doesn't get Russian rouletted away. If we sample $Ut$ we can recurse
-%   on our reasoning until Russian roulette termination, so we need the path
-%   of all the samples.
-%   \vspace{0.3cm}
-%   \juliacode{julia_code/stackrecu.jl}
-% \end{julia}
-
-% In stack recursion we need to store the sample path because we generate the
-% sample path in reverse order then we need it. Reverse number generators exists
-% but because of Russian roulette there is no starting point without going through
-% a forward (it is still confusing what is forward and backwards ...) pass of the path.
 
 The expensive matrix multiplications disappear when solving for $v^{T}y(t)$.
 
@@ -869,11 +808,6 @@ The expensive matrix multiplications disappear when solving for $v^{T}y(t)$.
   We are interested in methods that can keep $v$ sparse.
   When $(v)_{j} = \delta_{jn}$ we obtain an estimator for $(y(t))_{n}$.
 \end{julia}
-% \begin{related}[adjoint tail recursion]
-%   The adjoint tail recursion is inspired by existing adjoint MC methods for
-%   linear systems, for a reference see \cite{benzi_analysis_2017} for example.
-% \end{related}
-
 
 \section{Ordinary Differential Equations}
 
@@ -1060,10 +994,6 @@ samples.
   we can also split the domain in (\ref{inteq:main dirichlet})
   as follows:
 
-  % y(t) & = P(t|b_{0}) y(b_{0}) + P(t|b_{1}) y(b_{1}) +
-  % \frac{1}{2} \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds +
-  % \frac{1}{2} \int_{b_{0}}^{b_{1}} G(t,s)y(s) ds,                                             \\
-
   \begin{align}\label{inteq:coupled splitting}
     y(t_1) & = P(t_1|b_{0}) y(b_{0}) + P(t_1|b_{1}) y(b_{1})                \\
            & + \int_{b_{0}}^{\frac{b_{0}+b_{1}}{2}} G(t_1,s_1)y(s_1) ds_1 +
@@ -1118,13 +1048,6 @@ samples.
   with Russian roulette rate $l=1.2$. }
   \label{fig:coupled splitting}
 \end{figure}
-
-% \begin{pythonn}[implementation of (\ref{RRVE:coupled splitting})] \label{py:coupled splitting}
-%     We implemented (\ref{RRVE:coupled splitting}) with recursion. In this case,
-%     a forward implementation is more efficient. \\
-%     \pythoncode{python code/coupled_splitting.py}
-
-% \end{pythonn}
 
 \begin{related}[coupled splitting]
   Coupled splitting is partly inspired by the approach
@@ -1206,18 +1129,6 @@ this behavior.
   for the inner recursion, such that the average number of total inner recursion calls
   is $e n$, where $n$ represents the total number of outer recursion calls.
 \end{example}
-
-% \begin{pythonn}[implementation of Example \ref{ex:RRMC IVP}] \label{py:RRMC IVP}
-%     \pythoncode{python code/RRMC_IVP.py}
-
-%     \begin{figure}[h!]
-%         \centering
-%         \includegraphics[width=0.8\textwidth]{plots/RRMC IVP.png}
-%         \caption{Recursive calls of (\ref{eq:RRMC IVP outer})
-%             when calling $Y_{\text{out}}(3,h)$ $30$ times for different $h$.  }
-%         \label{fig:RRMC IVP}
-%     \end{figure}
-% \end{pythonn}
 
 
 \begin{conjecture}[local RMSE RMC]
@@ -1381,50 +1292,12 @@ is more viable.
 %     function.
 % \end{related}
 
-% \section{Brownian Motion}
-
-
-% \begin{definition}[Brownian motion]
-%     Define Brownian motion $W_{t}$ as the limit/logical generalization
-%     when $n \rightarrow \infty$ of the following discrete process is defined as:
-%     \begin{equation}
-%         \begin{cases}
-%             X_{t}^{n} = X_{t-\frac{1}{n}}^{n} + Z_{n} \\
-%             X^{n}_{0}=0
-%         \end{cases}.
-%     \end{equation}
-%     With $Z_{n}\sim N(0,\frac{1}{n})$ i.i.d . From this definition it is easily seen that
-%     $W_{t} \sim N(0,t)$.
-% \end{definition}
-
-
-% \begin{lemma}[self-affinity Brownian motion] \label{lem:self affine}
-%   Brownian motion is a self-affine random process, which implies
-%   that any subpath can be translated and scaled in such a way
-%   that its distribution matches that of the entire path.
-
-% \end{lemma}
-
 
 \section{Heat Equation}
 
 In this section we discuss how to solve ODEs derived from the semi-discretized heat equation
 with Dirichlet boundary conditions in $1$ point and acceleration with recursive first-passage sampling
 combined with presampled path stitching.
-
-% \begin{definition}[$1$D heat equation Dirichlet general domain] \label{def:heat equation}
-%     We define the $1$D heat equation for $u$ on connected domain $\Omega$
-%     with  Dirichlet boundary conditions the following way:
-%     \begin{equation}
-%         \frac{\partial u}{\partial t} = \frac{\partial^{2} u}{\partial x ^{2}}.
-%     \end{equation}
-%     Given $u(x,t)=\psi(x,t) ,\forall (x,t) \in \partial \Omega: t<\sup \{
-%         t| (x,t) \in \Omega\}$ .
-% \end{definition}
-
-% % maybe should improve this 
-% Figure \ref{fig:Euler first passage para} shows how the Dirichlet condition
-% is defined for parabola but reverse in time.
 
 \begin{definition}[1D heat equation Dirichlet] \label{def:heat equation square}
   We define the 1D heat equation for $u(x,t)$ with $ (x,t) \in \Omega = [0,1]^2$
@@ -1454,37 +1327,11 @@ corresponding boundary conditions as $\Delta x \rightarrow 0$. \\
 We want a point estimator for the solution to the semi-discretization 1D heat equation. We obtain this by
 using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and at the interior point $j$ this is:
 
-% \begin{align}
-%     \tilde{u}_t(j \Delta x,t)                                                 & = \frac{\tilde{u}((j+1) \Delta x, t)-2\tilde{u}(j \Delta x, t)+\tilde{u}((j-1) \Delta x, t)}{\Delta x^{2}} \\
-%     \tilde{u}_t(j \Delta x,t) + \frac{2}{\Delta x^{2}}\tilde{u}(j \Delta x,t) & = \frac{\tilde{u}((j+1) \Delta x, t)+\tilde{u}((j-1) \Delta x, t)}{\Delta x^{2}}
-% \end{align}
-
-% Explantation of this standard ODE step.
-
-% \begin{align}
-%     \tilde{u}(j \Delta x,t) = e^{-\frac{2}{\Delta x^{2}} t} \left[\tilde{u}(j \Delta x,0)
-%     + \frac{1}{\Delta x^{2}} \int_{0}^{t} e^{\frac{2}{\Delta x^{2}} s}
-%     (\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s))ds  \right].
-% \end{align}
-
-% Instead of directly uniformly sampling this integral we first do following substitution
-% $\tau = e^{\frac{2}{\Delta x^{2}}(s-t)}, d\tau =\frac{2}{\Delta x^{2}}  e^{\frac{2}{\Delta x^{2}}(s-t)}ds $
-% which reduces variance. Note that it is equivalent to importance sampling
-% the exponential term.
-
-% \begin{align}
-%     \tilde{u}(j \Delta x,t) & = e^{-\frac{2}{\Delta x^{2}} t} \tilde{u}(j \Delta x,0)
-%     + \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau \nonumber \\
-%                             & = \int_{0}^{e^{-\frac{2t}{\Delta x^{2}}}}  \tilde{u}(j \Delta x,0) d\tau+
-%     \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau. \label{eq:int semi heat}
-% \end{align}
 
 \begin{equation}
   \tilde{u}(j \Delta x,t) = \int_{0}^{e^{-\frac{2t}{\Delta x^{2}}}}  \tilde{u}(j \Delta x,0) d\tau+
   \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau. \label{eq:int semi heat}
 \end{equation}
-
-
 
 \begin{julia}[implementation of estimator of (\ref{eq:int semi heat})]\label{jl:point estimator heat}
 
@@ -1588,101 +1435,6 @@ to a few points of the time space process and this amount does not scale with $\
   \juliacode{julia_code/path_pest_heat_varcoef.jl}
 \end{julia}
 
-
-
-
-% \begin{lemma}[Brownian motion and the heat equation] \label{lem:BM HE}
-%     For problem (\ref{def:heat equation}) if $ |\psi|$ is bounded
-%     then there holds:
-
-%     \begin{equation}
-%         u(x,t)=E[\psi(Y_{\tau},\tau) | Y_{t} =x].
-%     \end{equation}
-%     With $dY_{s} = dW_{-s},\tau = \sup\{s | (Y_{s},s) \notin \Omega\}$.
-% \end{lemma}
-
-
-% \begin{proof} \label{proof: BM HE }
-%     Discretize the heat equation
-%     with a regular rectangular mesh that includes $(x,t)$ with equally
-%     spaced intervals over space and time ($\Delta x, \Delta t$) with
-%     the corresponding difference equation:
-
-%     \begin{equation}
-%         \frac{u(x,t)-u(x,t-\Delta t)}{\Delta t} = \frac{u(x + \Delta x,t)-2 u(x,t) +u(x - \Delta x,t)}{\Delta x^{2}} .
-%     \end{equation}
-
-%     Isolate $u(x,t)$:
-
-%     \begin{equation} \label{eq:discrete iso heat equation}
-%         u(x,t) =
-%         \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}
-%         \left(
-%         u(x+\Delta x,t)+u(x-\Delta x,t)
-%         \right) +
-%         \frac{\Delta x^{2}}{ 2 \Delta t + \Delta x^{2}}
-%         \left(
-%         u(x,t-\Delta t)
-%         \right).
-%     \end{equation}
-
-%     Because $u(x+\Delta x,t) \approx u(x-\Delta x,t) \approx u(x,t-\Delta t) \approx$
-%     right-hand side of equation (\ref{eq:discrete iso heat equation}) we may Russian roulette
-%     to remove branching recursion and generate a recursion path instead of a tree.
-%     \begin{equation} \label{eq:RRVE discrete heat equation }
-%         Z(x,t) =
-%         \begin{cases}
-%             \psi(\text{argmin}_{b \in \partial \Omega} ||(x,t) - b||)
-%              & \text{ when } (x,t) \notin \Omega \\
-%             \begin{cases}
-%                 Z(x+\Delta x , t)  & \text{ with chance  } \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}     \\
-%                 Z(x-\Delta x , t)  & \text{ with chance  } \frac{\Delta t}{ 2 \Delta t + \Delta x^{2}}     \\
-%                 Z(x, t - \Delta t) & \text{ with chance  } \frac{\Delta x^{2}}{ 2 \Delta t + \Delta x^{2}}
-%             \end{cases}
-%              & \text{ else }.
-%         \end{cases}
-%     \end{equation}
-%     This is a RRVE, $Z$ has finite variance because $ |\psi|$ is bounded
-%     and $E[Z(x,t)]$ is the solution to the discretized heat equation. Taking the limit
-%     makes the discrete solution converge to the real solution.
-%     For (\ref{eq:RRVE discrete heat equation }) the limit
-%     makes the recursion path go to Brownian motion $Y_{t}$.
-%     \begin{equation}
-%         Z(x,t) \rightarrow \psi(Y_{\tau},\tau)  .
-%     \end{equation}
-%     Finishing the proof.
-% \end{proof}
-
-% % maybe with the source
-
-% \begin{related}
-%   % (\ref{lem:BM HE}) is a subcase of the Feynman-Kac formula.
-%   % For a proof and an in-depth discussion of the Feynman-Kac formula
-%   % see . \\
-%   The Feynman-Kac formula is related to this. See \cite{oksendal_stochastic_2003}
-%   for a reference.
-% \end{related}
-
-
-% \begin{theorem}[Feynman-Kac formula (wikipedia)] \label{thrm:feymankac}
-%     Consider the partial differential equation
-%     \begin{equation}
-%         \frac{\partial u}{\partial t}(x, t)+\mu(x, t) \frac{\partial u}{\partial x}(x, t)+\frac{1}{2} \sigma^2(x, t) \frac{\partial^2 u}{\partial x^2}(x, t)-V(x, t) u(x, t)+f(x, t)=0,
-%     \end{equation}
-%     defined for all $x \in \mathbb{R}$ and $t \in[0, T]$, subject to the terminal condition
-%     \begin{equation}
-%         u(x, T)=\psi(x),
-%     \end{equation}
-%     where $\mu, \sigma, \psi, V, f$ are known functions, $T$ is a parameter, and $u: \mathbb{R} \times[0, T] \rightarrow \mathbb{R}$ is the unknown. Then the Feynman-Kac formula tells us that the solution can be written as a conditional expectation
-%     \begin{equation}
-%         u(x, t)=E^Q\left[\int_t^T e^{-\int_t^r V\left(X_\tau, \tau\right) d \tau} f\left(X_r, r\right) d r+e^{-\int_t^T V\left(X_\tau, \tau\right) d \tau} \psi\left(X_T\right) \mid X_t=x\right]
-%     \end{equation}
-%     under the probability measure $Q$ such that $X$ is an Itô process driven by the equation
-%     \begin{equation}
-%         d X_t=\mu(X, t) d t+\sigma(X, t) d W_t^Q
-%     \end{equation}
-%     with $W^Q(t)$ is a Wiener process (also called Brownian motion) under $Q$, and the initial condition for $X(t)$ is $X(t)=x$.
-% \end{theorem}
 
 \subsection{First Passage Sampling}
 
@@ -1815,29 +1567,6 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
 
 \end{example}
 
-% \begin{pythonn}[Euler first passage sampling] \label{py:euler FP sampling}
-%     \pythoncode{python code/sample_euler_triangle.py}
-% \end{pythonn}
-
-% \begin{pythonn}[recursive first passage sampling] \label{py:recu FP sampling}
-%     The maximum scaling of the triangular barrier that fits
-%     in the parabola is derived through (\ref{lem:self affine})
-%     and using the fact that a parabola domain is convex. To dampen barrier
-%     overstepping of (\ref{py:euler FP sampling}) we use a smaller scaling
-%     than the maximum. \\
-%     \pythoncode{python code/sample_recu_para.py}
-
-%     \begin{figure}[h!]
-%         \centering
-%         \includegraphics[width=1\textwidth]{plots/recursive first passage para.png}
-%         \caption{ $50000$ of realizations of recursive first passage sampling produced
-%             by (\ref{py:recu FP sampling}). The precomputed sample of $5000$ first
-%             passages of a triangular barrier uses the Euler scheme with
-%             step size $0.001$.}
-%         \label{fig:recursive first passage para}
-%     \end{figure}
-% \end{pythonn}
-
 \begin{related}[recursive first passage sampling]
   The original walk on spheres is a recursive first passage algorithm.
   Recursive first passage sampling for
@@ -1849,24 +1578,6 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
   inverse cumulative probability functions,
   as demonstrated in \cite{hwang_simulationtabulation_2001}.
 \end{related}
-
-% For recursive first passage sampling for high dimensional Brownian motion
-% there symmetry trick to be pulled off
-
-
-% \begin{example}[recursive first passage average sampling] \label{ex:recu FP average}
-%     In example (\ref{ex:recursive first passage sampling}) it is possible to keep
-%     track of the average because it scales and translates with our base first passage sampler.
-
-%     \begin{figure}[h!]
-%         \centering
-%         \includegraphics[width=1\textwidth]{plots/recursive first passage average para.png}
-%         \caption{ $10000$ of realizations of recursive first passage sampling (for the average).
-%             The precomputed sample of $1000$ first passages and averages of a triangular barrier
-%             uses the Euler scheme with step size $0.001$.}
-%         \label{fig:recursive first passage average para}
-%     \end{figure}
-% \end{example}
 
 
 \begin{technique}[Brownian motion path stitching]
@@ -1897,43 +1608,11 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
   \end{figure}
 \end{example}
 
-% For plotting the path we needed to accesses to all of its points.  
-
-% A way around scaling base samples is limiting scaling to a
-% discrete set and pick the biggest scaling that fits, instead
-% of generating base samples for $1$ scale and scaling it dynamically
-% precompute all the discrete scalings. \\
-
 
 \begin{related}[path stitching]
   Path stitching appears frequently in rendering and also in \cite{das_sarma_fast_2015}
   and \cite{ji_reusing_2012}.
 \end{related}
-
-% \subsection{Limitations and Future Work}
-
-% It would be interesting to extend proof technique of (\ref{lem:BM HE}) to the full
-% Feynman-Kac formula. Just adding a source term $f$ in the Feynman-Kac formula adds
-% an integral of the source term over the recursion path.
-% In equation (\ref{eq:discrete iso heat equation})
-% it would add $\frac{\Delta t \Delta x^{2}}{2 \Delta t + \Delta x ^{2}} f(x,t)$
-% term. This term can either be kept or Russian rouletted
-% to prevent infinite source evaluations in the limit.
-% This roughly corresponds to estimating the integral by
-% MC integration also requires knowing a finite amount of
-% intermediate points of the recursion path
-% sampled randomly. These can possibly be obtained from
-% the intermediate first passages of recursive first passage sampling or with a smart
-% application of path stitching. \\
-
-
-% Recursive first passage sampling for Brownian motion can be extended to geometric
-% Brownian motion by transforming the space. However, this transformation breaks
-% the symmetries required for the average used in the example (\ref{ex:recu FP average}).
-% An unsatisfying way to fix this is to approximate the base sampler at different points in
-% space and at different scales. Just accelerating a classic Euler scheme at critical places
-% with a base sampler can reduce precomputation requirements.
-
 
 \section{Limitations and Future Work}
 
@@ -1942,66 +1621,6 @@ is the key to developing better randomized ODE/PDE solvers.
 Randomized ODE/PDE solvers are useful for cases with little structure
 where the advantage of IBC is significant or where the linear trade-off
 between cost and variance is close to optimal. \\
-
-
-Besides that, some problems require access to low-bias solutions of
-ODEs. For example, when integrating a high-dimensional parametric ODE problem.
-The following example is a toy problem to showcase this.
-
-\begin{example} \label{ex:random ode}
-  Consider the following parametric IVP:
-  \begin{equation}\label{eq:random ode}
-    y_t = ay, \quad y(0)=1,
-  \end{equation}
-  with $a$ a parameter. The solution to this problem is given by
-  $y(t,a) = e^{ta}$. Imagine we have a belief about $a$ quantized
-  in the following way $a\sim U$. If we want
-  to estimate $E[y(t, U)]$ or in a more general case
-  $E[f(y(t, U))]$ with $f$ analytic directly
-  we need samples of $y(t,U)$. If we don't have a solution for the parametric IVP
-  we can't sample $y(t,U)$ instead, we use unbiased estimates ($Y(t,u)$) of samples ($y(t,u)$)
-  of $y(t, U)$ in the following
-  way using the total law of expectation:
-
-  \begin{align}
-    E[f(y(t,U))] & = E[f(y(t,u)) \mid U=u]     \\
-                 & = E[f(E[Y(t,u)]) \mid U=u].
-  \end{align}
-
-  To estimate $E[f(E[Y(t,u)]) \mid U =u]$, we use the approach outlined in
-  Example \ref{ex:exp int}. The first two moments of $y(t, U)$ are:
-  \begin{align}
-    E[y(t,U)]      & = \frac{e^t}{t} - \frac{1}{t},      \\
-    E[y^{2}(t, U)] & = \frac{e^{2t}}{2t} - \frac{1}{2t}.
-  \end{align}
-\end{example}
-
-\begin{pythonn}[implementation of Example \ref{ex:random ode}]
-  \pythoncode{python code/random_ODE.py}
-\end{pythonn}
-
-\vspace{0.5cm}
-
-The time process we used based on Example \ref{ex: russian roulette}
-has little control over the distribution of recursion calls $(t,Y(t))$
-in time see Figure \ref{fig:russian roulette}.
-
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=0.8\textwidth]{plots/time process.png}
-  \caption{This histogram depicts how the points
-    on Figure \ref{fig:russian roulette} are distributed over time
-    excluding $t=1$.}
-  \label{fig:time proces}
-\end{figure}
-
-Instead of that, a Poisson point process can be used.
-It samples backward with the corresponding
-exponential distribution and employs Russian roulette
-when out of range. The distribution of the recursion calls over time
-can be controlled by its intensity.
-In the case of constant intensity, the number of recursive calls
-follows a Poisson distribution. \\
 
 Besides the time process, other areas of development could
 include the cheaper construction of control variates,
