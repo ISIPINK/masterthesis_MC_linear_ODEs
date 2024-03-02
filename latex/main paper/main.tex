@@ -746,7 +746,7 @@ because of equal forward paths and backward paths distributions.
   Sampling $\tau$ uniformly is equivalent to sampling a Poisson process.
 \end{definition}
 
-\begin{julia}[implementation of \ref{def:main poisson}]
+\begin{julia}[implementation of \ref{def:main poisson}] \label{jl:main poisson}
   (\ref{eq:poisson main}) can be turned into a RRVE by sampling $\tau \sim U$, no Russian roulette is needed for
   termination because in the recursion the first integral get sampled with probability $1$. No recursion is used
   for the implementation as we can sample the Poisson process in the reverse order.
@@ -799,7 +799,7 @@ to reordering operations.
 
 The expensive matrix multiplications disappear when solving for $v^{T}y(t)$.
 
-\begin{julia}[adjoint tail recursion for \ref{def:main poisson}]
+\begin{julia}[adjoint tail recursion for \ref{def:main poisson}] \label{jl:adjoint main poisson}
   We collect the sum in the variable sol and instead of matrix multiplications in W
   matrix-vector multiplications in $v$.
 
@@ -1616,31 +1616,64 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
 
 \section{Limitations and Future Work}
 
-We believe that understanding and optimizing unbiased and deterministic linear ODE solvers
-is the key to developing better randomized ODE/PDE solvers.
-Randomized ODE/PDE solvers are useful for cases with little structure
-where the advantage of IBC is significant or where the linear trade-off
-between cost and variance is close to optimal. \\
+In this section we discuss the limitations of the presented work and interesting future directions. Many
+areas of presented work are not fully addressed, worked out or neither well integrated in
+the current literature. At time of writing this thesis we were mainly aware of the WoS literature
+and we independently rediscovered the improved random convergence of integration and IVPs,
+using a Poisson process to avoid recursion in \ref{jl:main poisson}
+and the recursive estimator for $e^{E[X]}$ in example \ref{ex:exp int} ,
+these discoveries guided us to the existing literature of work on it. \\
 
-Besides the time process, other areas of development could
-include the cheaper construction of control variates,
-different types of control variates, adaptive schemes,
-freezing less important terms in the inner recursion or Russian rouletting
-them into reasonable approximations, error estimates based on variance in the
-inner recursion, etc. \\
 
-To handle stiff problems we weigh towards exponential integrators
-type of methods. The biggest obstacle to implementing them similar to diagonal RRMC
-is getting unbiased estimates of $e^{A(t-s)} y(s)$ type of expressions. In the case
-of a big matrix $A$  unbiased sparsifaction will probably be useful
-see \cite{sabelfeld_sparsified_2009}.
-Initially, we came up with Example \ref{ex:exp int}, but some time later,
-we found the paper from NVIDIA \cite{kettunen_unbiased_2021} that optimizes
-that example. Closely related to this is directly estimating the Magnus expansion,
-where expressions like $e^{\int_{0}^{\Delta t} A(s)ds} y(0)$ are needed.
-In this case, \cite{kettunen_unbiased_2021} doesn't utilize the smoothness of
-$A(s)$, which is necessary
-for optimal IBC.
+We lack a parallel complexity analysis for RMC for linear IVPs. Different to MC, the cost of an estimator in RMC
+is also a RV. Naively we would expect unlimited parallel vs wall time scaling  just like in MC but the due
+to the tails of the cost distribution wall time at risk scales atleast logarithmic with splitting. The analysis
+for \ref{jl:main poisson} simplifies because the cost distribution of the estimator is Poisson distributed.\\
+
+The part on RRMC was written before we were aware of algorithm \ref{jl:main poisson} therefore we have not explored
+combining the two. The way we applied recursion in recursion to RMC for IVPs in RRMC is limited to
+achieving convergence behavior similar to classical solvers while staying unbiased.
+Recursion in recursion allows to 'freeze' terms in the outer recursion while staying unbiased,
+'freezing' slow varying terms is the next natural thing to study. \\
+
+As our techniques for linear IVPs are based on transforming to integral equations generalizations to
+linear delay differential equation may be possible. An other direction is directly estimating the Magnus expansion
+where unbiased estimators for $e^{\int_{0}^{\Delta t} A(s)ds} y(0)$ are needed. This connects to
+work on evaluating matrix functions with MC see \cite{guidotti_fast_2023}.\\
+
+
+We used the adjoint main Poisson method \ref{jl:adjoint main poisson} as base for deriving our point estimators
+for the heat equation. We are interested in the class of problems that can be handled by the adjoint main Poisson method
+in the way that the heat equation can be handled. \\
+
+We have not fully discussed how to combine presampling with path stitching and when it is possible to do so. \\
+
+
+% We believe that understanding and optimizing unbiased and deterministic linear ODE solvers
+% is the key to developing better randomized ODE/PDE solvers.
+% Randomized ODE/PDE solvers are useful for cases with little structure
+% where the advantage of IBC is significant or where the linear trade-off
+% between cost and variance is close to optimal. \\
+
+% Besides the time process, other areas of development could
+% include the cheaper construction of control variates,
+% different types of control variates, adaptive schemes,
+% freezing less important terms in the inner recursion or Russian rouletting
+% them into reasonable approximations, error estimates based on variance in the
+% inner recursion, etc. \\
+
+% To handle stiff problems we weigh towards exponential integrators
+% type of methods. The biggest obstacle to implementing them similar to diagonal RRMC
+% is getting unbiased estimates of $e^{A(t-s)} y(s)$ type of expressions. In the case
+% of a big matrix $A$  unbiased sparsifaction will probably be useful
+% see \cite{sabelfeld_sparsified_2009}.
+% Initially, we came up with Example \ref{ex:exp int}, but some time later,
+% we found the paper from NVIDIA \cite{kettunen_unbiased_2021} that optimizes
+% that example. Closely related to this is directly estimating the Magnus expansion,
+% where expressions like $e^{\int_{0}^{\Delta t} A(s)ds} y(0)$ are needed.
+% In this case, \cite{kettunen_unbiased_2021} doesn't utilize the smoothness of
+% $A(s)$, which is necessary
+% for optimal IBC.
 
 One of the elements lacking in our findings is rigor.  We believe
 that RMC is an informal approach to an unbiased estimate of
@@ -1656,20 +1689,20 @@ but tedious.
 The proof we have in mind is using a lower bound on IBC
 from integration and proving it is attained.\\
 
-Optimal IBC isn't everything. Being optimal in IBC doesn't necessarily mean it's optimized.
-An algorithm that uses $1000$ times more function calls may still have the same
-IBC. Additionally, the computational goal
-might not align well with the IBC framework.
-We admire \cite{becker_learning_2022},
-which employs deep learning to extend beyond the IBC framework.
-The emphasis here is on performing multiple rapid solves (inferences)
-while allowing for an expensive precomputation (training).
-IBC also doesn't take into account the parallel nature of computations.
-Given infinite parallel resources, it would be reasonable to cease reducing
-variance by decreasing the step size and instead opt for splitting the final estimator.
-The only necessary communication in splitting is averaging the final
-estimator. We hypothesize that for RMC, the wall time at risk
-increases logarithmically with the size of the splitting.
+% Optimal IBC isn't everything. Being optimal in IBC doesn't necessarily mean it's optimized.
+% An algorithm that uses $1000$ times more function calls may still have the same
+% IBC. Additionally, the computational goal
+% might not align well with the IBC framework.
+% We admire \cite{becker_learning_2022},
+% which employs deep learning to extend beyond the IBC framework.
+% The emphasis here is on performing multiple rapid solves (inferences)
+% while allowing for an expensive precomputation (training).
+% IBC also doesn't take into account the parallel nature of computations.
+% Given infinite parallel resources, it would be reasonable to cease reducing
+% variance by decreasing the step size and instead opt for splitting the final estimator.
+% The only necessary communication in splitting is averaging the final
+% estimator. We hypothesize that for RMC, the wall time at risk
+% increases logarithmically with the size of the splitting.
 
 
 
