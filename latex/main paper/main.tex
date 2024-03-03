@@ -1618,13 +1618,14 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
 
 \section{Limitations and Future Work}
 
-In this section we discuss the limitations of the presented work and interesting future directions. Many
-areas of presented work are not fully addressed, worked out or neither well integrated in
-the current literature. At time of writing this thesis we were mainly aware of the WoS literature
-and we independently rediscovered the improved random convergence of integration and IVPs,
-the use of a Poisson process to avoid recursion in \ref{jl:main poisson}
-and the recursive estimator for $e^{E[X]}$ in example \ref{ex:exp int} ,
-these discoveries guided us to the existing literature of work on it. \\
+In this section, we explore the limitations of our study and propose potential avenues for future work. 
+Several aspects of our work remain underdeveloped, inadequately explored, or insufficiently integrated
+into the existing body of literature. At the time of writing this thesis, our 
+primary reference was the WoS literature. We independently rediscovered 
+the improved random convergence of integration and IVPs, the 
+use of a Poisson process to circumvent recursion (as shown in \ref{jl:main poisson}), 
+and the recursive estimator for $e^{E[X]}$ (as demonstrated in example \ref{ex:exp int}). 
+These discoveries subsequently led us to other relevant literature. \\
 
 %maybe I should add this
 We lack a parallel complexity analysis for RMC for linear IVPs. Different to MC, the cost of an estimator in RMC
@@ -1632,26 +1633,33 @@ is also a RV. Naively we would expect unlimited parallel vs wall time scaling  j
 to the tails of the cost distribution wall time at risk scales atleast logarithmic with splitting. The analysis
 for \ref{jl:main poisson} simplifies because the cost distribution of the estimator is Poisson distributed.\\
 
-The part on RRMC was written before we were aware of algorithm \ref{jl:main poisson} therefore we have not explored
-combining the two. The way we applied recursion in recursion to RMC for IVPs in RRMC is limited to
-achieving convergence behavior similar to classical solvers while staying unbiased.
-Recursion in recursion allows to 'freeze' terms in the outer recursion while staying unbiased,
-'freezing' slow varying terms is the next natural thing to try. \\
+The section on RRMC was composed prior to our discovery of algorithm \ref{jl:main poisson}, 
+and as such, we did not investigate potential integration of the two. Our application of 
+recursion in recursion in RRMC for IVPs is primarily aimed at achieving convergence behavior 
+akin to classical solvers, while maintaining unbiasedness. This recursive approach allows us to 
+'freeze' terms in the outer recursion without bias. The next logical step would be 
+to attempt 'freezing' terms that vary slowly. We believe that RRMC, even after optimizations, could
+prove beneficial in specific use cases. Furthermore, insights derived from unbiased algorithms could
+enhance the performance of biased algorithms. \\
 
-As our techniques for linear IVPs are based on transforming to integral equations, generalizations to
-linear delay differential equation may be possible. An other direction is directly estimating the Magnus expansion
-where unbiased estimators for $e^{\int_{0}^{\Delta t} A(s)ds} y(0)$ are needed. This connects to
-work on evaluating matrix functions with MC see \cite{guidotti_fast_2023}.\\
+Our techniques for linear IVPs, which are based on transforming to integral equations, may be extendable 
+to linear delay differential equations. Another potential direction involves directly estimating 
+the Magnus expansion, where unbiased estimators for $e^{\int_{0}^{\Delta t} A(s)ds} y(0)$ are required. 
+This is related to work on evaluating matrix functions with Monte Carlo methods, as seen in \cite{guidotti_fast_2023}. \\
 
-We have not figured out the best way to implement coupled splitting while avoiding recursion. In subsection
-\ref{sec:greens functions} we derived global integral equations for our test problem but ODEs are local in nature.
-We are interested in methods that can exploit the local nature of ODEs directly in the estimators based on the
-global integral equations.\\
+In subsection \ref{sec:greens functions}, we developed global integral equations for our test problem. 
+Despite the inherent local nature of ODEs, we are curious whether this locality is retained in the global integral equations. 
+More specifically, we are interested in whether this local nature can be leveraged to enhance the efficiency of 
+estimators solving these global integral equations, even without knowledge of the original ODEs.  \\
 
-We used the adjoint main Poisson method \ref{jl:adjoint main poisson} as base for deriving our point estimators
-for the heat equation. It is still unclear what class of problems that can be handled by the adjoint main Poisson method
-similar to how the heat equation can be handled. \\
+Coupled splitting's convergence behavior and unbiasedness at each iteration are key attributes. 
+However, the use of recursion and Russian roulette in its implementation poses practical challenges. 
+Despite these challenges, numerous opportunities exist to further optimize the performance of coupled splitting
+with typical MC techniques.
 
+We employed the adjoint main Poisson method \ref{jl:adjoint main poisson} as the foundation for deriving our 
+point estimators for the heat equation. However, it remains uncertain which class of problems can be addressed 
+by the adjoint main Poisson method in a manner similar to the heat equation. 
 % maybe I should add this
 We have not fully discussed how to combine presampling with path stitching and when it is possible to do so.
 It has a nice interepertation with a U-statistic. \\
