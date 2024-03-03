@@ -812,6 +812,8 @@ The expensive matrix multiplications disappear when solving for $v^{T}y(t)$.
 \section{Ordinary Differential Equations}
 
 \subsection{Green's Functions}
+\label{sec:greens functions}
+
 In this subsection, we discuss how to transform ODEs into integral equations and
 subsequently solve them. Our main tool for this is Green's functions. \\
 
@@ -1620,11 +1622,11 @@ In this section we discuss the limitations of the presented work and interesting
 areas of presented work are not fully addressed, worked out or neither well integrated in
 the current literature. At time of writing this thesis we were mainly aware of the WoS literature
 and we independently rediscovered the improved random convergence of integration and IVPs,
-using a Poisson process to avoid recursion in \ref{jl:main poisson}
+the use of a Poisson process to avoid recursion in \ref{jl:main poisson}
 and the recursive estimator for $e^{E[X]}$ in example \ref{ex:exp int} ,
 these discoveries guided us to the existing literature of work on it. \\
 
-
+%maybe I should add this
 We lack a parallel complexity analysis for RMC for linear IVPs. Different to MC, the cost of an estimator in RMC
 is also a RV. Naively we would expect unlimited parallel vs wall time scaling  just like in MC but the due
 to the tails of the cost distribution wall time at risk scales atleast logarithmic with splitting. The analysis
@@ -1634,19 +1636,25 @@ The part on RRMC was written before we were aware of algorithm \ref{jl:main pois
 combining the two. The way we applied recursion in recursion to RMC for IVPs in RRMC is limited to
 achieving convergence behavior similar to classical solvers while staying unbiased.
 Recursion in recursion allows to 'freeze' terms in the outer recursion while staying unbiased,
-'freezing' slow varying terms is the next natural thing to study. \\
+'freezing' slow varying terms is the next natural thing to try. \\
 
-As our techniques for linear IVPs are based on transforming to integral equations generalizations to
+As our techniques for linear IVPs are based on transforming to integral equations, generalizations to
 linear delay differential equation may be possible. An other direction is directly estimating the Magnus expansion
 where unbiased estimators for $e^{\int_{0}^{\Delta t} A(s)ds} y(0)$ are needed. This connects to
 work on evaluating matrix functions with MC see \cite{guidotti_fast_2023}.\\
 
+We have not figured out the best way to implement coupled splitting while avoiding recursion. In subsection
+\ref{sec:greens functions} we derived global integral equations for our test problem but ODEs are local in nature.
+We are interested in methods that can exploit the local nature of ODEs directly in the estimators based on the
+global integral equations.\\
 
 We used the adjoint main Poisson method \ref{jl:adjoint main poisson} as base for deriving our point estimators
-for the heat equation. We are interested in the class of problems that can be handled by the adjoint main Poisson method
-in the way that the heat equation can be handled. \\
+for the heat equation. It is still unclear what class of problems that can be handled by the adjoint main Poisson method
+similar to how the heat equation can be handled. \\
 
-We have not fully discussed how to combine presampling with path stitching and when it is possible to do so. \\
+% maybe I should add this
+We have not fully discussed how to combine presampling with path stitching and when it is possible to do so.
+It has a nice interepertation with a U-statistic. \\
 
 
 % We believe that understanding and optimizing unbiased and deterministic linear ODE solvers
