@@ -78,22 +78,19 @@ We made an interactive data map of the literature read
 mainly in the function of this thesis available at
 \url{https://huggingface.co/spaces/ISIPINK/zotero_map}.\\
 
-Existing randomized algorithms for solving IVPs in general are either based
-on MC integration or randomizing parts of deterministic
-algorithms. Typically motivated by lower smoothness conditions where
-randomization adds significant
-convergence speed or solving ODEs where randomization
-aids in parallelization .\\
+Existing randomized algorithms for solving IVPs generally rely on MC integration or randomizing parts
+of deterministic algorithms. These are typically motivated by lower smoothness conditions where randomization
+significantly enhances convergence speed, or solving ODEs where randomization aids in parallelization.
+The most relevant literature in this context includes works by
+\citeauthor{daun_randomized_2011} and \citeauthor{ermakov_monte_2021}. \\
 
-\citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011}
-\cite{daun_randomized_2011} proposes a biased algorithm for IVPs that has optimal Information-Based
-Complexity (IBC) for some smoothness classes. Similarly to us, their method uses control variates.\\
+\citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011} \cite{daun_randomized_2011}
+proposes a biased algorithm for IVPs that has optimal Information-Based Complexity (IBC) for
+some smoothness classes. Like our method, their approach also employs control variates. \\
 
-
-\citeauthor{ermakov_monte_2021}'s \citeyear{ermakov_monte_2021}
-\cite{ermakov_monte_2021} proposes an unbiased method for
-a Cauchy problem for large systems of linear ODEs.
-Similarly to us, their method is based on Volterra integral equations.\\
+\citeauthor{ermakov_monte_2021}'s \citeyear{ermakov_monte_2021} \cite{ermakov_monte_2021} proposes
+an unbiased method for a Cauchy problem for large systems of linear ODEs. Their method, similar
+to ours, is based on Volterra integral equations.
 
 \section{Background}
 
@@ -141,7 +138,7 @@ are typically conducted with (root-)mean-square error (RMSE).
 Even comparisons based on RMSE can be counterintuitive; consider Stein's paradox,
 for example. We limit ourselves to simple cases such as $1$-dimensional
 unbiased estimators, making MSE equivalent to variance.
-Estimating variance is most cases possible and can be used to calculate
+Estimating variance is in most cases possible and can be used to calculate
 confidence intervals using Chebyshev's inequality.\\
 
 Average floating point operations or time per simulation are common cost statistics.
@@ -316,34 +313,23 @@ less computationally expensive approximation sometimes.
 \begin{example}[Russian roulette] \label{ex:simple russian roulette}
   Consider the estimation of $E[Z]$, with $Z$:
 
-  \begin{equation}
+  \begin{equation} \label{eq:simple russian roulette}
     Z = U + \frac{f(U)}{1000}.
   \end{equation}
 
-  Here, $f:\mathbb{R} \rightarrow [0,1]$ is expensive to compute.
-  Directly estimating $E[Z]$ would involve evaluating $f$ for each sample which
-  contributes little to the accuracy.
-  To address this, we can modify $Z$ to:
+  Here, let $f:\mathbb{R} \rightarrow [0,1]$ be $100$ times more expensive to compute then sampling $U$.
+  $f(U)$ contributes relatively little to the variance compared to $U$. To address this, we Russian roulette $f(U)$:
 
   \begin{equation}
     Z \cong U + B\left(\frac{1}{100}\right)\frac{f(U)}{10}.
   \end{equation}
 
-  This requires calling $f$ on
+  This modification requires calling $f$ on
   average once every $100$ samples. This significantly reduces the
   computational burden while increasing the variance slightly thereby increasing
   the overall MC efficiency.\\
 \end{example}
 
-\begin{related}[Example \ref{ex:simple russian roulette}]
-  In Example \ref{ex:simple russian roulette}, it is also
-  possible to estimate the expectations of the $2$ terms
-  of $Z$ separately. Given the variances and computational costs
-  of both terms, you can calculate the asymptotically optimal division
-  of samples for each term. However, this is no longer the case with RMC.
-  In \cite{rath_ears_2022}, a method is presented to estimate the optimal
-  Russian roulette/splitting factors for rendering.
-\end{related}
 
 
 \begin{example}[Russian roulette on (\ref{recursive RV})] \label{ex: russian roulette}
@@ -375,6 +361,29 @@ decreases the samples of unimportant terms.
     X \cong \frac{1}{N} \sum_{j=1}^{N} X_{j}.
   \end{equation}
 \end{definition}
+
+\begin{example}[Splitting on (\ref{eq:simple russian roulette})] \label{ex:simple splitting}
+  Consider Example \ref{ex:simple russian roulette} again.
+  Instead of using Russian roulette on $f(U)$, we split $U$:
+
+  \begin{equation}
+    Z \cong \frac{\sum_{j=1}^{10} U_j}{10} + f(U_{1}).
+  \end{equation}
+
+  This modification requires sampling $U,$
+  $10$ times as often which is insignificant to evaluating $f(U)$ once
+  but reduces the variance significantly thereby increasing the overall MC efficiency.\\
+\end{example}
+
+\begin{related}[Examples \ref{ex:simple russian roulette}, \ref{ex:simple splitting}]
+  In Example \ref{ex:simple russian roulette} and Example \ref{ex:simple splitting},
+  it is also possible to estimate the expectations of the $2$ terms
+  of $Z$ separately. Given the variances and computational costs
+  of both terms, you can calculate the asymptotically optimal division
+  of samples for each term. However, this is no longer the case with RMC.
+  In \cite{rath_ears_2022}, a method is presented to estimate the optimal
+  Russian roulette/splitting factors for rendering.
+\end{related}
 
 Splitting the recursive term in an RRVE can result in additive branching recursion,
 necessitating cautious management of terminating the branches promptly to prevent
@@ -712,7 +721,7 @@ In this subsection, we discuss recursion-related techniques.
 
 
 \begin{technique}[recursion in recursion]\label{tech:recu in recu}
-  Later we will use recursion in recursion which can get involved.
+  Later we will use recursion in recursion.
   Recursion in recursion is like proving an induction
   step of an induction proof with induction.
 \end{technique}
@@ -1618,13 +1627,13 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
 
 \section{Limitations and Future Work}
 
-In this section, we explore the limitations of our study and propose potential avenues for future work. 
+In this section, we explore the limitations of our study and propose potential avenues for future work.
 Several aspects of our work remain underdeveloped, inadequately explored, or insufficiently integrated
-into the existing body of literature. At the time of writing this thesis, our 
-primary reference was the WoS literature. We independently rediscovered 
-the improved random convergence of integration and IVPs, the 
-use of a Poisson process to circumvent recursion (as shown in \ref{jl:main poisson}), 
-and the recursive estimator for $e^{E[X]}$ (as demonstrated in example \ref{ex:exp int}). 
+into the existing body of literature. At the time of writing this thesis, our
+primary reference was the WoS literature. We independently rediscovered
+the improved random convergence of integration and IVPs, the
+use of a Poisson process to circumvent recursion (as shown in \ref{jl:main poisson}),
+and the recursive estimator for $e^{E[X]}$ (as demonstrated in example \ref{ex:exp int}).
 These discoveries subsequently led us to other relevant literature. \\
 
 %maybe I should add this
@@ -1633,33 +1642,33 @@ is also a RV. Naively we would expect unlimited parallel vs wall time scaling  j
 to the tails of the cost distribution wall time at risk scales atleast logarithmic with splitting. The analysis
 for \ref{jl:main poisson} simplifies because the cost distribution of the estimator is Poisson distributed.\\
 
-The section on RRMC was composed prior to our discovery of algorithm \ref{jl:main poisson}, 
-and as such, we did not investigate potential integration of the two. Our application of 
-recursion in recursion in RRMC for IVPs is primarily aimed at achieving convergence behavior 
-akin to classical solvers, while maintaining unbiasedness. This recursive approach allows us to 
-'freeze' terms in the outer recursion without bias. The next logical step would be 
+The section on RRMC was composed prior to our discovery of algorithm \ref{jl:main poisson},
+and as such, we did not investigate potential integration of the two. Our application of
+recursion in recursion in RRMC for IVPs is primarily aimed at achieving convergence behavior
+akin to classical solvers, while maintaining unbiasedness. This recursive approach allows us to
+'freeze' terms in the outer recursion without bias. The next logical step would be
 to attempt 'freezing' terms that vary slowly. We believe that RRMC, even after optimizations, could
 prove beneficial in specific use cases. Furthermore, insights derived from unbiased algorithms could
 enhance the performance of biased algorithms. \\
 
-Our techniques for linear IVPs, which are based on transforming to integral equations should be extendable 
-to linear delay differential equations. Another potential direction involves directly estimating 
-the Magnus expansion, where unbiased estimators for $e^{\int_{0}^{\Delta t} A(s)ds} y(0)$ are required. 
+Our techniques for linear IVPs, which are based on transforming to integral equations should be extendable
+to linear delay differential equations. Another potential direction involves directly estimating
+the Magnus expansion, where unbiased estimators for $e^{\int_{0}^{\Delta t} A(s)ds} y(0)$ are required.
 This is related to work on evaluating matrix functions with Monte Carlo methods, as seen in \cite{guidotti_fast_2023}. \\
 
-In subsection \ref{sec:greens functions}, we developed global integral equations for our test problem. 
-Despite the inherent local nature of ODEs, we are curious whether this locality is retained in the global integral equations. 
-More specifically, we are interested in whether this local nature can be leveraged to enhance the efficiency of 
+In subsection \ref{sec:greens functions}, we developed global integral equations for our test problem.
+Despite the inherent local nature of ODEs, we are curious whether this locality is retained in the global integral equations.
+More specifically, we are interested in whether this local nature can be leveraged to enhance the efficiency of
 estimators solving these global integral equations, even without knowledge of the original ODEs.  \\
 
-Coupled splitting's convergence behavior and unbiasedness at each iteration are key attributes. 
-However, the use of recursion and Russian roulette in its implementation poses practical challenges. 
+Coupled splitting's convergence behavior and unbiasedness at each iteration are key attributes.
+However, the use of recursion and Russian roulette in its implementation poses practical challenges.
 Despite these challenges, numerous opportunities exist to further optimize the performance of coupled splitting
 with typical MC techniques.
 
-We employed the adjoint main Poisson method \ref{jl:adjoint main poisson} as the foundation for deriving our 
-point estimators for the heat equation. However, it remains uncertain which class of problems can be addressed 
-by the adjoint main Poisson method in a manner similar to the heat equation. 
+We employed the adjoint main Poisson method \ref{jl:adjoint main poisson} as the foundation for deriving our
+point estimators for the heat equation. However, it remains uncertain which class of problems can be addressed
+by the adjoint main Poisson method in a manner similar to the heat equation.
 % maybe I should add this
 We have not fully discussed how to combine presampling with path stitching and when it is possible to do so.
 It has a nice interpretation as a U-statistic. \\
