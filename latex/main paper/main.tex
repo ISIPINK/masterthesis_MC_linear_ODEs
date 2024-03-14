@@ -371,7 +371,7 @@ decreases the samples of unimportant terms.
   \end{equation}
 
   This modification requires sampling $U,$
-  $10$ times as often which is insignificant to evaluating $f(U)$ once
+  $10$ times as often which is insignificant compared to evaluating $f(U)$ once
   but reduces the variance significantly thereby increasing the overall MC efficiency.\\
 \end{example}
 
@@ -752,12 +752,12 @@ because of equal forward paths and backward paths distributions.
     y(t) = \int_{0}^{e^{-\sigma t}}  y(0) d\tau + \int_{e^{-\sigma t}}^{1} \left(  \frac{A(s)}{\sigma} + I\right)  y(s) + \frac{f(s)}{\sigma} d\tau
     .
   \end{equation}
-  Sampling $\tau$ uniformly is equivalent to sampling a Poisson process.
+  Sampling $\tau$ uniformly is equivalent to sampling the next event in a Poisson process.
 \end{definition}
 
-\begin{julia}[implementation of \ref{def:main poisson}] \label{jl:main poisson}
+\begin{julia}[implementation of Example \ref{def:main poisson}] \label{jl:main poisson}
   (\ref{eq:poisson main}) can be turned into a RRVE by sampling $\tau \sim U$, no Russian roulette is needed for
-  termination because in the recursion the first integral get sampled with probability $1$. No recursion is used
+  termination because sampling the first integral ends recursion. No recursion is used
   for the implementation as we can sample the Poisson process in the reverse order.
 
   \juliacode{julia_code/main_poisson.jl}
@@ -766,8 +766,8 @@ because of equal forward paths and backward paths distributions.
 \begin{related}[main Poisson]
   A very similar estimator is used to solve ODEs derived from the
   $1$-dimensional telegraph equations in \cite{acebron_monte_2016}.
-  Unlike \ref{jl:point estimator heat} the recursion process they use can be reversed
-  because the paths consist of a Poisson process and reflections.
+  % Unlike \ref{jl:point estimator heat} the recursion process they use can be reversed
+  % because the paths consist of a Poisson process and reflections.
 \end{related}
 
 Tail recursion is commonly used in rendering to implement non-branching recursion.
@@ -784,7 +784,7 @@ The non-branching recursion presented in the RRVEs can
 be implemented using tail recursion due to the associativity
 of all operations ($(xy)z = x(yz)$) involved.
 
-\begin{julia}[tail recursion for \ref{def:main poisson}]
+\begin{julia}[tail recursion for Example \ref{def:main poisson}]
   We collect the sum in the variable sol and the matrix multiplications in W.
   Notice that the computation is going backwards in time.
 
@@ -808,7 +808,7 @@ to reordering operations.
 
 The expensive matrix multiplications disappear when solving for $v^{T}y(t)$.
 
-\begin{julia}[adjoint tail recursion for \ref{def:main poisson}] \label{jl:adjoint main poisson}
+\begin{julia}[adjoint tail recursion for Example \ref{def:main poisson}] \label{jl:adjoint main poisson}
   We collect the sum in the variable sol and instead of matrix multiplications in W
   matrix-vector multiplications in $v$.
 
