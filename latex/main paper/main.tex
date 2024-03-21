@@ -86,11 +86,11 @@ The most relevant literature in this context includes works by
 
 \citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011} \cite{daun_randomized_2011}
 proposes a biased algorithm for IVPs that has optimal Information-Based Complexity (IBC) for
-some smoothness classes. Like our method, their approach also employs control variates. \\
+some smoothness classes. Similar to \ref{ex:CV RRMC IVP}, their approach also employs control variates. \\
 
 \citeauthor{ermakov_monte_2021}'s \citeyear{ermakov_monte_2021} \cite{ermakov_monte_2021} proposes
 an unbiased method for a Cauchy problem for large systems of linear ODEs. Their method, similar
-to ours, is based on Volterra integral equations.
+to all our IVPs solvers, is based on Volterra integral equations.
 
 \section{Background}
 
@@ -1147,7 +1147,7 @@ this behavior.
   \begin{equation}
     y_{t}(t)= A(t)y(t)+g(t), y(t_{0}),
   \end{equation}
-  with $A$ a matrix and $g$ a vector function, each
+  with $A$ a matrix and $g$ a vector function, both
   once differentiable with the corresponding RRVE:
   \begin{equation}
     y(t) \cong Y(t) = y(t_{0}) + h B \left( \frac{t-t_{0}}{h}\right)
@@ -1202,10 +1202,10 @@ To achieve a higher order of convergence RRMC can be combined with control varia
   \end{figure}
 \end{example}
 
-\begin{related}[CV RRMC]
-  \cite{daun_randomized_2011} similarly uses control variates to achieve
-  a higher order of convergence.
-\end{related}
+% \begin{related}[CV RRMC]
+%   \cite{daun_randomized_2011} similarly uses control variates to achieve
+%   a higher order of convergence.
+% \end{related}
 
 Similar to explicit solvers, RRMC performs poorly on stiff problems.
 We attempted to make RRMC more like implicit solvers but this proved difficult.
@@ -1304,12 +1304,13 @@ is more viable.
 % \end{related}
 
 
-\section{Heat Equation}
+\section{Partial Differential Equations}
 
 In this section we discuss how to solve ODEs derived from the semi-discretized heat equation
 with Dirichlet boundary conditions in $1$ point and acceleration with recursive first-passage sampling
 combined with presampled path stitching.
 
+\subsection{Heat Equation}
 \begin{definition}[1D heat equation Dirichlet] \label{def:heat equation square}
   We define the 1D heat equation for $u(x,t)$ with $ (x,t) \in \Omega = [0,1]^2$
   with Dirichlet boundary conditions the following way:
@@ -1329,51 +1330,55 @@ combined with presampled path stitching.
   \end{equation}
   $\forall (j,t) \in \{0, 1, \ldots, N\} \times [0,1]$. \\
   Given $\left\{\tilde{u}(j \Delta x,0),\tilde{u}(1,t),\tilde{u}(0,t) | \forall j \in \{0, 1, \ldots, N\}, \forall t \in  [0,1]  \right\} $.
+
+  It is well-known that the solution to the semi-discretization 1D heat equation converges to the solution of the 1D heat equation with
+  corresponding boundary conditions as $\Delta x \rightarrow 0$.
 \end{definition}
 
 
-% maybe we need to find a reference for this
-It is well-known that the solution to the semi-discretization 1D heat equation converges to the solution of the 1D heat equation with
-corresponding boundary conditions as $\Delta x \rightarrow 0$. \\
-We want a point estimator for the solution to the semi-discretization 1D heat equation. We obtain this by
-using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and at the interior point $j$ this is:
 
+\begin{example}[point estimator of \ref{def:discrete heat equation square}] \label{ex: point estimator of semi heat}
+  We want a point estimator for the solution to the semi-discretization 1D heat equation. Apply (\ref{eq:poisson main})
+  with $\sigma = \frac{2}{\Delta x^{2}}$ at interior point $j$ this is:
 
-\begin{equation}
-  \tilde{u}(j \Delta x,t) = \int_{0}^{e^{-\frac{2t}{\Delta x^{2}}}}  \tilde{u}(j \Delta x,0) d\tau+
-  \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau. \label{eq:int semi heat}
-\end{equation}
+  \begin{equation}
+    \tilde{u}(j \Delta x,t) = \int_{0}^{e^{-\frac{2t}{\Delta x^{2}}}}  \tilde{u}(j \Delta x,0) d\tau+
+    \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau. \label{eq:int semi heat}
+  \end{equation}
+
+  This can be turned into a estimator $Y(j \Delta x,t,\Delta x ) \cong  \tilde{u}(j \Delta x,t)$
+  by sampling $\tau \sim U$,
+  sampling either $\tilde{u}((j+1) \Delta x,s)$ or $\tilde{u}((j-1) \Delta x,s)$ to avoid branching recursion and
+  terminating recursion when either hitting the boundary condition or sampling the first integral.
+\end{example}
 
 \begin{julia}[implementation of estimator of (\ref{eq:int semi heat})]\label{jl:point estimator heat}
-
-  (\ref{eq:int semi heat}) can be turned into a estimator $Y(j \Delta x,t,\Delta x ) \cong  \tilde{u}(j \Delta x,t)$
-  by sampling $\tau \sim U$,
-  sampling one of the $\tilde{u}$ of the second integral to avoid branching recursion and
-  recursing when $\tilde{u}$ is unknown.
 
   \juliacode{julia_code/point_estimator_heat_tail.jl}
 
   $Y(j \Delta x,t,\Delta x )$ is just the boundary condition
   for the first passage point from the time space domain for a Poisson time process and a random walk in space.
+  Therefore if the boundary conditions are bounded, $Y(j \Delta x,t,\Delta x )$ is bounded and has bounded variance.
   In this implementation as  $\Delta x \rightarrow 0$  the cost of calculating the first passage time grows
   $\approx O(\Delta x ^{-2})$ and the process converges to Brownian motion. Note that the estimator needs
   only $1$ function call from the boundary conditions.
+
 \end{julia}
 
-\begin{example}[\ref{def:discrete heat equation square} + source + coefficients] \label{ex:semi heat source}
+\begin{example}[\ref{ex: point estimator of semi heat} + source + coefficients] \label{ex:semi heat source}
 
-  Example \ref{def:discrete heat equation square}
-  can be extended with a source term and $0$-order coefficients:
+  Consider the equations in \ref{def:discrete heat equation square} with a source term and $0$-order coefficients, the
+  semi-discretization of:
 
   \begin{equation}
     u_{t} = u_{xx} + a(x,t)u + f(x,t)
     .
   \end{equation}
 
-  Again by using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}} +a_{0}$
-  looking at an interior point we obtain:
+  Again by applying (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}} +a_{0}$
+  we obtain at an interior point:
 
-  \begin{equation}
+  \begin{equation} \label{eq:int semi heat source}
     u =
     \int_{0}^{e^{-t \sigma }} u_{0} d\tau  + \int_{e^{-t \sigma }}^{1}
     \sigma^{-1}
@@ -1383,8 +1388,10 @@ using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and at the 
     d\tau
     .
   \end{equation}
-  To remove branching recursion we sample one of the $u$'s, we base the sampling
-  probability based on the magnitude of coefficients, let $a_m$ be approximately the magnitude of
+  This can be turned into a estimator $Y(j \Delta x,t,\Delta x ) \cong  \tilde{u}(j \Delta x,t)$
+  by sampling $\tau \sim U$.
+  To avoid branching recursion we sample
+  based on the magnitude of coefficients of the recursive terms, let $a_m$ be approximately the magnitude of
   $(a(x,s)+ a_{0})$. We chose to sample the $(a(x,s)+ a_{0})u$ term and $f$
   with probability $p_{\text{source}} = \frac{a_m}{a_m + \frac{2}{\Delta x^{2}}}$.
   As $\Delta x \rightarrow 0$ the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ term is
@@ -1396,7 +1403,7 @@ using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and at the 
   sampled $f$ together with $(a(x,s)+ a_{0})u$ for simplicity.
 \end{example}
 
-\begin{julia}[implementation of estimator of Example \ref{ex:semi heat source}]\label{jl:point estimator heat source}
+\begin{julia}[implementation of estimator of (\ref{eq:int semi heat source})]\label{jl:point estimator heat source}
   Because of the high chance of sampling the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ it is efficient
   to sample the interarrival until not sampling it which is geometrically distributed.
 
@@ -1404,14 +1411,14 @@ using (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}}$ and at the 
 \end{julia}
 
 Computing the estimator requires knowing more then the first passage point
-unlike Example \ref{def:discrete heat equation square} but this is limited
+unlike Example \ref{ex: point estimator of semi heat} but this is limited
 to a few points of the time space process and this amount does not scale with $\Delta x$.
 
 
 \begin{technique}[presampling the process of \ref{jl:point estimator heat source}] \label{tech:presampling heat}
   As $\Delta x \rightarrow 0$ the bottleneck is sampling the process that moves through space and time.
   This process is independent of the boundary conditions, $a(x,t)$ and $f(x,t)$. So it is possible to
-  precompute samples of the process and reuse them for different boundary conditions, $a(x,t)$ and $f(x,t)$.
+  precompute samples of the process and reuse them or discussed later in resampling TODO: refrence.
   Reusing paths makes the solutions correlated. To compute the estimator we need to know where we sampled the
   source term to update $sol$ and $w$, how many steps we took in between to update $w$ for the
   multiplications in not source points (line 13 of \ref{jl:point estimator heat source})
@@ -1438,7 +1445,7 @@ to a few points of the time space process and this amount does not scale with $\
 
 \begin{julia}[\ref{jl:point estimator heat source} using precomputed paths]\label{jl:path point estimator heat source}
   We implement \ref{jl:point estimator heat source} with a precomputed path from \ref{tech:presampling heat} using tail
-  recursion. Because we know the path beforehand a forward implementation is straightforward. Note that $(x,t)$ is
+  recursion. Note that $(x,t)$ is
   never explicitly used only for figuring out how we exited the domain. The whole calculation is linear in
   $a,f$ evaluated in the source points and $u_\text{bound}$ evaluated in the exit points so there are various
   ways to optimize it for example using unbiased estimates instead of exact evaluations.
@@ -1624,6 +1631,10 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
   Path stitching appears frequently in rendering and also in \cite{das_sarma_fast_2015}
   and \cite{ji_reusing_2012}.
 \end{related}
+
+Path stitching combined with resampling paths for applied to the semi-discretized heat equation can be
+interpreted as estimation with a U-statistic. The recursive path is a stitching of scaled i.i.d. subpaths.
+
 
 \section{Limitations and Future Work}
 
