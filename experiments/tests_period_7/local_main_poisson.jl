@@ -8,6 +8,7 @@ function Y(t, sig, A::Function, f::Function, y0)
 end
 
 using Plots
+using Statistics
 sig = 1.0
 A(s) = s
 f(s) = -s^3 + 2 * s
@@ -16,6 +17,22 @@ t = 1.0
 sol(s) = s^2
 errors = []
 nsim1 = 10^3
+
+sigs = exp10.(range(log10(1.0), log10(10000.0), length=10))
+stds = []
+for sig in sigs
+    push!(stds, mean((Y(t, sig, A, f, q) - sol(t))^2 for _ in 1:nsim1))
+end
+
+plot(sigs, stds, st=:scatter, xscale=:log10, yscale=:log10, label="std")
+ylabel!("std")
+xlabel!("sig")
+c = 1.5
+plot!(sigs, c * sigs .^ -0.5, label="sig^-1.5")
+plot!(sigs, c * sigs .^ -1, label="sig^-1.5")
+plot!(sigs, c * sigs .^ -1.5, label="sig^-1.5")
+
+
 for _ in 1:1000
     e = sum(Y(t, 1, A, f, q) for _ in 1:nsim1) / nsim1 - sol(t)
     push!(errors, e)
