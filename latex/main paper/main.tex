@@ -66,7 +66,7 @@ style=alphabetic,
 The primary motivating paper for this work is the work
 by \citeauthor{sawhney_grid-free_2022}
 (\citeyear{sawhney_grid-free_2022}) \cite{sawhney_grid-free_2022},
-which introduces the Walk-on-Sphere (WoS) method for solving second-order
+which introduces the Walk on Spheres (WoS) method for solving second-order
 elliptic PDEs with varying coefficients and Dirichlet boundary conditions.
 Their techniques have shown high accuracy even in the presence of geometrically
 complex boundary conditions. We were inspired to apply the underlying
@@ -86,7 +86,7 @@ The most relevant literature in this context includes works by
 
 \citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011} \cite{daun_randomized_2011}
 proposes a biased algorithm for IVPs that has optimal Information-Based Complexity (IBC) for
-some smoothness classes. Similar to \ref{ex:CV RRMC IVP}, their approach also employs control variates. \\
+some smoothness classes. Similar to \ref{ex:CV RRMC IVP}, their approach employs control variates. \\
 
 \citeauthor{ermakov_monte_2021}'s \citeyear{ermakov_monte_2021} \cite{ermakov_monte_2021} proposes
 an unbiased method for a Cauchy problem for large systems of linear ODEs. Their method, similar
@@ -164,7 +164,7 @@ the definition of MC efficiency for comparing estimators.
 \end{definition}
 
 \begin{related}[Monte Carlo Efficiency]
-  For a reference see \cite{veach_robust_1997} page 45.
+  For further reference see \cite{veach_robust_1997} page 45.
 \end{related}
 
 For smooth $1$-dimensional integration, the linear trade-off between
@@ -194,22 +194,7 @@ rigorous definition of IBC.
 
 \subsection{Recursive Monte Carlo}
 In this subsection, we introduce Recursive Monte Carlo (RMC)
-with the following  initial value problem:
-
-
-\begin{equation} \label{ydy}
-  y_t = y, \quad y(0) = 1.
-\end{equation}
-
-
-By integrating both sides of (\ref{ydy}), we obtain:
-
-\begin{equation} \label{Integral ydy}
-  y(t) = 1 + \int_{0}^{t} y(s) ds.
-\end{equation}
-
-(\ref{Integral ydy}) represents a recursive integral equation,
-specifically, a linear Volterra integral equation of the second type.
+with an example of initial value problem (IVP) and Walk on Spheres.
 
 \begin{notation}[$U,U_{j}$]
   We will frequently use the uniform distribution, so we will abbreviate it
@@ -223,44 +208,90 @@ specifically, a linear Volterra integral equation of the second type.
   we simply use $U.$
 \end{notation}
 
-By estimating the recursive integral in (\ref{Integral ydy})
-using MC, we derive the following estimator:
+\begin{example}[$y'=y$]
+  Consider following IVP:
 
-\begin{equation}
-  Y(t) = 1 + t  y(Ut).
-\end{equation}
+  \begin{equation} \label{ydy}
+    y_t = y, \quad y(0) = 1.
+  \end{equation}
 
 
-If $y$ is well-behaved, then $E[Y(t)] = y(t)$.
-However, we cannot directly simulate $Y(t)$ without access
-to $y(s)$ for $s < t$. Nevertheless, we can replace $y$ with
-an unbiased estimator without affecting $E[Y(t)] = y(t)$,
-by the law of total expectation ($E[X] = E[E[X|Z]]$).
-By replacing $y$ with $Y$ itself, we obtain a recursive
-expression for $Y$:
+  By integrating both sides of (\ref{ydy}), we obtain:
 
-\begin{equation} \label{recursive RV}
-  Y(t) = 1 + t  Y(Ut).
-\end{equation}
+  \begin{equation} \label{Integral ydy}
+    y(t) = 1 + \int_{0}^{t} y(s) ds.
+  \end{equation}
 
-\juliacode{julia_code/RMC_example.jl}
+  (\ref{Integral ydy}) represents a recursive integral equation,
+  specifically, a linear Volterra integral equation of the second type.
 
-(\ref{recursive RV}) is a Recursive Random Variable
-Equation (RRVE).
+  By estimating the recursive integral in (\ref{Integral ydy})
+  using MC, we derive the following estimator:
 
-\begin{definition}[Recursive Random Variable
-    Equation (RRVE)]
+  \begin{equation}
+    Y(t) = 1 + t  y(Ut).
+  \end{equation}
+
+
+  If $y$ is well-behaved, then $E[Y(t)] = y(t)$.
+  However, we cannot directly simulate $Y(t)$ without access
+  to $y(s)$ for $s < t$. Nevertheless, we can replace $y$ with
+  an unbiased estimator without affecting $E[Y(t)] = y(t)$,
+  by the law of total expectation ($E[X] = E[E[X|Z]]$).
+  By replacing $y$ with $Y$ itself, we obtain a recursive
+  expression for $Y$:
+
+  \begin{equation} \label{recursive RV}
+    y(t) \approx Y(t) = 1 + t  Y(Ut).
+  \end{equation}
+
+  \juliacode{julia_code/RMC_example.jl}
+
+  (\ref{recursive RV}) is a Recursive Random Variable
+  Equation (RRVE).
+
+  Simulation of $Y$ with (\ref{recursive RV}),
+  would recurse indefinitely (every $Y$ needs to sample another $Y$).
+  To stop the recursion, approximate
+  $Y(t) \approx 1$ near $t = 0$ introducing minimal bias.
+  Later, we will discuss Russian roulette; see Definition \ref{Russian roulette},
+  which can be used as an unbiased stopping mechanism.
+
+\end{example}
+
+\begin{definition}[Recursive Random Variable Equation (RRVE)]
   A Recursive Random Variable Equation (RRVE) is
   an equation that defines a
   family of random variables in terms of itself.
 \end{definition}
 
-Simulation of $Y$ with (\ref{recursive RV}),
-would recurse indefinitely (every $Y$ needs to sample another $Y$).
-To stop the recursion, approximate
-$Y(t) \approx 1$ near $t = 0$ introducing minimal bias.
-Later, we will discuss Russian roulette; see Definition \ref{Russian roulette},
-which can be used as an unbiased stopping mechanism.
+
+\begin{example}[Walk on Spheres]
+  Classical Walk on Spheres estimates the solution of the Laplace equation:
+  \begin{equation} \label{eq:laplace}
+    \nabla^2 u = 0, \quad u|_{\partial \Omega} = g,
+  \end{equation}
+
+  in a point by applying RMC to the mean value property of the Laplace equation :
+  \begin{equation}\label{eq:mean value}
+    u(x) = \frac{1}{\text{Vol}(\partial B(x))} \int_{\partial B(x)} u(y) dy,
+  \end{equation}
+  with $B(x) \subseteq \Omega$ a ball around $x$ chosen sufficiently big.
+  Obtaining following estimator:
+
+  \begin{equation}
+    u(x) \approx Y(x) = Y(U(\partial B(x)))
+    .
+  \end{equation}
+
+  The recursion is terminated by approximating $Y(x)$ with the boundary condition $g$
+  near the boundary.
+\end{example}
+
+\begin{related}[Walk on Spheres]
+  For further reference see \cite{sawhney_monte_nodate}.
+\end{related}
+
 
 \subsection{Modifying Monte Carlo}
 
@@ -728,7 +759,7 @@ In this subsection, we discuss recursion-related techniques.
 
 \begin{related}[recursion in recursion]
   A beautiful example of recursion in recursion is
-  the next flight variant of WoS in
+  the next flight variant of Walk on Spheres in
   \cite{sawhney_grid-free_2022}.
 \end{related}
 
@@ -1065,7 +1096,7 @@ samples.
   of \cite{sabelfeld_sparsified_2009}, which reduces
   variance by using larger submatrices in unbiased sparsification
   of matrices.
-  Reusing samples for WoS is discussed in both
+  Reusing samples for Walk on Spheres is discussed in both
   \cite{miller_boundary_2023} and \cite{bakbouk_mean_2023}.
 \end{related}
 
@@ -1454,6 +1485,8 @@ to a few points of the time space process and this amount does not scale with $\
 \end{julia}
 
 
+
+
 \subsection{First Passage Sampling}
 
 In this subsection we discuss recursive first passage sampling to efficiently
@@ -1641,7 +1674,7 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
 In this section, we explore the limitations of our study and propose potential avenues for future work.
 Several aspects of our work remain underdeveloped, inadequately explored, or insufficiently integrated
 into the existing body of literature. At the time of writing this thesis, our
-primary reference was the WoS literature. We independently rediscovered
+primary reference was the Walk on Spheres literature. We independently rediscovered
 the improved random convergence of integration and IVPs, the
 use of a Poisson process to circumvent recursion (as shown in \ref{jl:main poisson}),
 and the recursive estimator for $e^{E[X]}$ (as demonstrated in example \ref{ex:exp int}).
