@@ -168,7 +168,7 @@ the definition of MC efficiency for comparing estimators.
 \end{related}
 
 For smooth $1$-dimensional integration, the linear trade-off between
-variance and average simulation time is not even close to optimal see
+variance and average simulation time is not close to optimal see
 Theorem \ref{thrm:order trap}. \\
 When it comes to comparing better trade-offs,
 Information-Based Complexity (IBC) is often employed.
@@ -194,7 +194,8 @@ rigorous definition of IBC.
 
 \subsection{Recursive Monte Carlo}
 In this subsection, we introduce Recursive Monte Carlo (RMC)
-with an example of initial value problem (IVP) and Walk on Spheres.
+with an example of an Initial Value Problem (IVP) and
+Walk on Spheres.
 
 \begin{notation}[$U,U_{j}$]
   We will frequently use the uniform distribution, so we will abbreviate it
@@ -786,13 +787,33 @@ because of equal forward paths and backward paths distributions.
   Sampling $\tau$ uniformly is equivalent to sampling the next event in a Poisson process.
 \end{definition}
 
-\begin{julia}[implementation of Example \ref{def:main poisson}] \label{jl:main poisson}
+\begin{julia}[implementation of \ref{def:main poisson}] \label{jl:main poisson}
   (\ref{eq:poisson main}) can be turned into a RRVE by sampling $\tau \sim U$, no Russian roulette is needed for
   termination because sampling the first integral ends recursion. No recursion is used
   for the implementation as we can sample the Poisson process in the reverse order.
 
   \juliacode{julia_code/main_poisson.jl}
 \end{julia}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\textwidth]{julia_plots/main_poisson_error.pdf}
+  \caption{
+    Intermediate points of $5$ realizations of the error ($Y(t)-y(t)$) of \ref{jl:main poisson} for (\ref{couple recu ex1}) and (\ref{couple recu ex2}) with $a=1, \sigma = \{10,1000\}$.
+    Regression over the realizations and time is done with ordinary least square onto
+    a second degree polynomial. The uniform qqplot of the time realizations indicate that the time realizations
+    are uniformly distributed.
+  }
+  \label{fig:main poisson error}
+\end{figure}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\textwidth]{julia_plots/main_poisson_convergence.pdf}
+  \caption{Realizations of norm of the error of (split) \ref{jl:main poisson} for (\ref{couple recu ex1}) and (\ref{couple recu ex2}) with $a=1$,
+    $nsim =1$ and $\sigma$ variable or $nsim$ variable and $\sigma = 1$.}
+  \label{fig:main poisson convergence}
+\end{figure}
 
 \begin{related}[main Poisson]
   A very similar estimator is used to solve ODEs derived from the

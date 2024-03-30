@@ -1,3 +1,9 @@
+using Plots
+using Statistics
+using Distributions
+using GLM, DataFrames
+
+
 function Y(t, sig, A::Function, f::Function, y0)
     (s = -log(rand()) / sig; sol = y0)
     while s < t
@@ -7,8 +13,6 @@ function Y(t, sig, A::Function, f::Function, y0)
     sol
 end
 
-using Plots
-using Statistics
 sig = 1.0
 A(s) = s
 f(s) = -s^3 + s
@@ -68,7 +72,74 @@ plot(ttss, yyss, st=:scatter, xscale=:log10, yscale=:log10, label="Y(t)")
 
 
 
-while false
-    println("test")
+# plot of realizations
+using Plots
+using Statistics
+
+
+function Yplot(t, sig, A::Function, f::Function, y0)
+    (s = -log(rand()) / sig; sol = y0)
+    path = []
+    while s < t
+        push!(path, (s, sol))
+        sol += (A(s) * sol .+ f(s)) ./ sig
+        s -= log(rand()) / sig
+    end
+    if length(path) > 0
+        push!(paths, path)
+    end
+    sol
 end
-println("hah")
+
+A(s) = s
+f(s) = -s^3 + s
+q = 1.0
+sol(s) = s^2 + 1
+
+# A(s) = 1
+# f(s) = 0
+# q = 1.0
+# sol(s) = exp(s)
+
+t = 1.0
+sig = 1000.0
+nsim1 = 2 * 10^1
+paths = []
+for _ in 1:nsim1
+    Yplot(t, sig, A, f, q)
+end
+
+# Collect all points from all paths into two arrays
+x_values = Float64[]
+y_values = Float64[]
+
+for path in paths
+    append!(x_values, [p[1] for p in path])
+    append!(y_values, [p[2] for p in path])
+end
+
+# Perform OLS regression
+ols = lm(@formula(y ~ x + x^2), DataFrame(x=x_values, y=y_values))
+
+
+
+tt = range(0, t, length=100)
+pl = plot()
+
+for path in paths
+    # plot!(pl, [p[1] for p in path], [p[2]-sol(p[1]) for p in path], label="", st=:scatter, color=:blue, alpha=0.5)
+    plot!(pl, [p[1] for p in path], [p[2] - sol(p[1]) for p in path], label="", alpha=0.5)
+end
+# plot!(pl, tt, sol.(tt), label="sol(t)", linewidth=6, color=:orange)
+plot!(pl, tt, predict(ols, DataFrame(x=tt)) - sol.(tt), label="OLS y ~ x+x^2", linewidth=3, color=:red)
+title!("error of different realizations")
+display(pl)
+
+
+histogram([p[1] for p in points], bins=100, label="Y(t)")
+histogram([p[end] for p in paths], bins=100, label="Y(t)")
+
+
+endpoints = [p[end][2] for p in paths]
+n = length(endpoints)
+plot(sort(randn(n)), sort(endpoints), st=:scatter, alpha=0.3, markersize=3)
