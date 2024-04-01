@@ -61,7 +61,7 @@ for i in [1, 2]
         plot!(pl[(i-1)*3+c], tt, predict(ols, DataFrame(x=tt)) .- [sol(t)[c] for t in tt], label="OLS y ~ x+x^2", linewidth=3, color=:red)
         title!(pl[(i-1)*3+c], "error, sig=$sig, component=$c", titiefontsize=10)
         #qqplot of time
-        plot!(pl[(i-1)*3+3], sort(rand(length(xx))), sort(xx), title="uniform qqplot of time sig=$sig", label="", linewidth=3)
+        plot!(pl[(i-1)*3+3], sort(rand(length(xx))), sort(xx), title="uniform qqplot of time, sig=$sig", label="", linewidth=3)
         xlabel!(pl[(i-1)*3+3], "uniform")
         ylabel!(pl[(i-1)*3+3], "Poisson process")
     end

@@ -31,20 +31,18 @@ plot!(p1, sigs, 5 * sigs .^ -0.5, label="\$O(sig^{-0.5})\$", linewidth=4)
 plot!(p1, sigs, 5 * sigs .^ -1, label="\$O(sig^{-1})\$", linewidth=4)
 xticks!(p1, xticks)  # Set xticks
 yticks!(p1, yticks)  # Set yticks
-title!(p1, "error vs sig")
 xlabel!(p1, "sig")
-ylabel!(p1, "error")
+ylabel!(p1, "norm(error)")
 
 nsims = exp10.(range(1, 4, length=1000))
-errors = [norm(sum(Y(t, sig, A, f, q) for _ in 1:nsim) / nsim - sol(t, sig)) for nsim in nsims]
+errors = [norm(sum(Y(t, sig, A, f, q) for _ in 1:nsim) / nsim - sol(t)) for nsim in nsims]
 p2 = plot(nsims, errors, st=:scatter, xscale=:log10, yscale=:log10, label="error", alpha=0.5)
 plot!(p2, nsims, 5 * nsims .^ -0.5, label="\$O(nsim^{-0.5})\$", linewidth=4)
 plot!(p2, nsims, 5 * nsims .^ -1, label="\$O(nsim^{-1})\$", linewidth=4)
 xticks!(p2, xticks)  # Set xticks
 yticks!(p2, yticks)  # Set yticks
-title!(p2, "error vs nsim")
 xlabel!(p2, "nsim")
-ylabel!(p2, "error")
+ylabel!(p2, "norm(error)")
 
 p = plot(p1, p2, layout=(1, 2), size=(1000, 400), bottom_margin=5mm, left_margin=5mm)  # Combine both plots
 display(p)

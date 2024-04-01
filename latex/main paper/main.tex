@@ -110,9 +110,8 @@ estimate an integral.
   $f:\mathbb{R} \rightarrow \mathbb{R}$
   over $[0,1]$ as
   an estimation of the expected value of $f(U)$, with
-  $U \sim \text{Uniform}(0,1)$. Combined
-  with the Best Linear Unbiased Estimators (BLUEs), MC Integration
-  in that case, can be summarized in the following formula:
+  $U \sim \text{Uniform}(0,1)$. A simple MC Integration
+  scheme, can be summarized in the following formula:
   \begin{equation}\label{eq:BLUE}
     \int_{0}^1 f(s)ds \approx \frac{1}{n} \sum_{j=1}^{n}f(U_{j}),
   \end{equation}
@@ -123,7 +122,7 @@ estimate an integral.
 Because estimators are random variables (RVs), the cost and error are also random
 variables. In most cases, obtaining these RVs is difficult to impossible.
 Directly comparing estimators based on these RVs can be challenging;
-there is no simple Pareto front. Instead, comparisons can be made
+there is no Pareto front. Instead, comparisons can be made
 using statistics. \\
 
 Accuracy comparisons between estimators
@@ -135,7 +134,7 @@ are typically conducted with (root-)mean-square error (RMSE).
   \end{equation}
 \end{definition}
 
-Even comparisons based on RMSE can be counterintuitive; consider Stein's paradox,
+Comparisons based on RMSE can be counterintuitive; consider Stein's paradox,
 for example. We limit ourselves to simple cases such as $1$-dimensional
 unbiased estimators, making MSE equivalent to variance.
 Estimating variance is in most cases possible and can be used to calculate
@@ -202,7 +201,6 @@ Walk on Spheres.
   \begin{equation}
     U_{j}  \text{ i.i.d Uniform}(0,1).
   \end{equation}
-
   The subscripts are used to clarify independence
   between uniforms. However,
   when there is no risk of confusion,
@@ -211,29 +209,21 @@ Walk on Spheres.
 
 \begin{example}[$y'=y$]
   Consider following IVP:
-
   \begin{equation} \label{ydy}
     y_t = y, \quad y(0) = 1.
   \end{equation}
-
-
   By integrating both sides of (\ref{ydy}), we obtain:
-
   \begin{equation} \label{Integral ydy}
     y(t) = 1 + \int_{0}^{t} y(s) ds.
   \end{equation}
-
   (\ref{Integral ydy}) represents a recursive integral equation,
   specifically, a linear Volterra integral equation of the second type.
 
   By estimating the recursive integral in (\ref{Integral ydy})
   using MC, we derive the following estimator:
-
   \begin{equation}
     Y(t) = 1 + t  y(Ut).
   \end{equation}
-
-
   If $y$ is well-behaved, then $E[Y(t)] = y(t)$.
   However, we cannot directly simulate $Y(t)$ without access
   to $y(s)$ for $s < t$. Nevertheless, we can replace $y$ with
@@ -241,7 +231,6 @@ Walk on Spheres.
   by the law of total expectation ($E[X] = E[E[X|Z]]$).
   By replacing $y$ with $Y$ itself, we obtain a recursive
   expression for $Y$:
-
   \begin{equation} \label{recursive RV}
     y(t) \approx Y(t) = 1 + t  Y(Ut).
   \end{equation}
@@ -267,25 +256,22 @@ Walk on Spheres.
 \end{definition}
 
 
-\begin{example}[Walk on Spheres]
+\begin{example}[Walk on Spheres] \label{ex: walk on spheres}
   Classical Walk on Spheres estimates the solution of the Laplace equation:
   \begin{equation} \label{eq:laplace}
     \nabla^2 u = 0, \quad u|_{\partial \Omega} = g,
   \end{equation}
-
-  in a point by applying RMC to the mean value property of the Laplace equation :
+  in a point by applying RMC to the mean value property of the Laplace equation:
   \begin{equation}\label{eq:mean value}
     u(x) = \frac{1}{\text{Vol}(\partial B(x))} \int_{\partial B(x)} u(y) dy,
   \end{equation}
   with $B(x) \subseteq \Omega$ a ball around $x$ chosen sufficiently big.
   Obtaining following estimator:
-
   \begin{equation}
     u(x) \approx Y(x) = Y(U(\partial B(x)))
     .
   \end{equation}
-
-  The recursion is terminated by approximating $Y(x)$ with the boundary condition $g$
+  Recursion is terminated by approximating $Y(x)$ with the boundary condition $g$
   near the boundary.
 \end{example}
 
@@ -319,7 +305,6 @@ less computationally expensive approximation sometimes.
   $Y_{1} \cong Y_{2}$, $p \in [0,1]$
   and $U$ independent of $Y_{1}$, $Y_{2}$, $X$
   as follows:
-
   \begin{equation}
     X \cong
     \begin{cases}
@@ -344,18 +329,14 @@ less computationally expensive approximation sometimes.
 
 \begin{example}[Russian roulette] \label{ex:simple russian roulette}
   Consider the estimation of $E[Z]$, with $Z$:
-
   \begin{equation} \label{eq:simple russian roulette}
     Z = U + \frac{f(U)}{1000}.
   \end{equation}
-
   Here, let $f:\mathbb{R} \rightarrow [0,1]$ be $100$ times more expensive to compute then sampling $U$.
   $f(U)$ contributes relatively little to the variance compared to $U$. To address this, we Russian roulette $f(U)$:
-
   \begin{equation}
     Z \cong U + B\left(\frac{1}{100}\right)\frac{f(U)}{10}.
   \end{equation}
-
   This modification requires calling $f$ on
   average once every $100$ samples. This significantly reduces the
   computational burden while increasing the variance slightly thereby increasing
@@ -397,11 +378,9 @@ decreases the samples of unimportant terms.
 \begin{example}[Splitting on (\ref{eq:simple russian roulette})] \label{ex:simple splitting}
   Consider Example \ref{ex:simple russian roulette} again.
   Instead of using Russian roulette on $f(U)$, we split $U$:
-
   \begin{equation}
     Z \cong \frac{\sum_{j=1}^{10} U_j}{10} + f(U_{1}).
   \end{equation}
-
   This modification requires sampling $U,$
   $10$ times as often which is insignificant compared to evaluating $f(U)$ once
   but reduces the variance significantly thereby increasing the overall MC efficiency.\\
@@ -427,7 +406,6 @@ additive branching recursion in RRVEs (see Example \ref{ex:coupled splitting}).
 \begin{example}[splitting on (\ref{eq:rr example})] \label{ex:splitting}
   We can "split" the recursive term of (\ref{eq:rr example})
   into two parts as follows:
-
   \begin{equation}\label{eq:splitting}
     y(t) \cong Y(t) =1 + \frac{B(t)}{2}(Y_{1}(U_{1}t) + Y_{2}(U_{1}t))
   \end{equation}
@@ -445,13 +423,11 @@ additive branching recursion in RRVEs (see Example \ref{ex:coupled splitting}).
 
 \begin{definition}[control variates] \label{CV}
   Define control variating $f(U)$ with $\tilde{f}$ an approximation of $f$ as:
-
   \begin{align}
     f(U) & \cong f(U_{1})-\tilde{f}(U_{1}) + E[\tilde{f}(U)] \\
          & = (f-\tilde{f})(U_{1}) + E[\tilde{f}(U)]
     .
   \end{align}
-
   Note that control variating requires the evaluation of
   $E[\tilde{f}(U)]$.  When this is estimated instead, we refer to it as $2$-level MC
   and recursively applying $2$-level is multilevel MC.
@@ -462,12 +438,12 @@ additive branching recursion in RRVEs (see Example \ref{ex:coupled splitting}).
   To create a control variate for (\ref{recursive RV}) that
   effectively reduces variance, we employ the approximation
   $y(t) \approx \tilde{y} =1+t$ and define the modified recursive term as follows:
-
   \begin{align}
     y(t) \cong Y(t) & = 1 + t(Y(U_{1}t) - \tilde{y}(U_{1}t) + E[\tilde{y}(Ut)])     \\
                     & = 1 + t \left( E[1 + Ut]  \right) + t(Y(U_{1}t) - 1 - U_{1}t) \\
                     & = 1 + t + \frac{t^2}{2} + t(Y(U_{1}t) - 1 - U_{1}t).
   \end{align}
+
   \juliacode{julia_code/CV_example.jl}
 
   Note that while we could cancel out the constant term
@@ -492,7 +468,6 @@ enhanced with control variates based on the trapezoidal rule.
   of function $f$ over the interval $[x, x+\Delta x]$ with a Russian roulette rate
   $l$ and $\tilde{f}$ represents the linear approximation of $f$ corresponding
   to the trapezoidal rule as follows:
-
   \begin{align}
      & \int_{x}^{x+\Delta x} f(s) ds                           \\
      & = \int_{x}^{x+\Delta x}  \tilde{f}(s) ds +
@@ -504,7 +479,6 @@ enhanced with control variates based on the trapezoidal rule.
     \left(f(S) - f(x) - \frac{S - x}{\Delta x}
     \left(f(x+\Delta x) - f(x)\right) \right), \label{eq:MCtrap}
   \end{align}
-
   where $S \sim \text{Uniform}(x,x+\Delta x)$.
 \end{definition}
 
@@ -519,7 +493,6 @@ enhanced with control variates based on the trapezoidal rule.
 \begin{proof}
   Start from (\ref{eq:MCtrap}). The MSE is the variance
   so we can ignore addition by constants.
-
   \begin{equation}
     \text{MSE} = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
     \left(f(S) - f(x) - \frac{S - x}{\Delta x}
@@ -527,7 +500,6 @@ enhanced with control variates based on the trapezoidal rule.
   \end{equation}
   We substitute $S = \Delta x U + x$ and apply Taylor's theorem
   finishing the proof:
-
   \begin{align}
     \text{MSE} & = \text{Var}\left( \Delta x l B\left( \frac{1}{l}\right)
     \left(f(\Delta x U+x) - f(x) - U
@@ -559,15 +531,14 @@ enhanced with control variates based on the trapezoidal rule.
   Define the MC trapezoidal rule for approximating the integral
   of function $f$ over the interval $[0, 1]$ with a uniform grid
   with $n$ intervals as follows:
-
   \begin{equation}
     \int_{0}^{1} f(s) ds \approx \Delta x \sum_{j=0}^{n-1}  \frac{f(x_{j}) + f(x_{j}+\Delta x)}{2} .
   \end{equation}
+
   \juliacode{julia_code/composite_trapezoidal.jl}
 
   Define the  corresponding composite MC trapezoidal
   with a Russian roulette rate $l$ as follows:
-
   \begin{align} \label{eq:cMCtrap}
     \int_{0}^{1} f(s) ds \cong \Delta x \sum_{j=0}^{n-1} & \frac{f(x_{j}) + f(x_{j}+\Delta x)}{2} \nonumber \\
                                                          & + l B\left(\frac{1}{l}\right)
@@ -611,14 +582,12 @@ trapezoidal rule. The main difference is the
 accumulation of \enquote*{local truncation} errors into \enquote*{global truncation} error.
 Normally there is a loss of one order but the MC trapezoidal loses only a half order
 because the accumulation happens in variance instead of bias.
-
 \begin{align}
   \sqrt{\text{Var}\left(\sum_{j=1}^{n}  \Delta x^{3}U_{j}^{2}\right)}
    & = \Delta x^{3} \sqrt{ \sum_{j=1}^{n}\text{Var} (U_{j}^{2})} \\
    & = \Delta x^{3} \sqrt{ n \text{Var}(U^{2})}                  \\
    & = O( \Delta x^{2.5}).
 \end{align}
-
 Note that the meaning of a bound on the error, which behaves as $O(\Delta x^{2})$,
 and a bound on the RMSE, also behaving as $O(\Delta x^{2})$, is different.
 A bound on the error implies a bound on the RMSE, but not vice versa.
@@ -642,25 +611,21 @@ $Y_{1} \cong Y_{2} \cong y$.
 
 \begin{example}[$y_t=y^{2}$] \label{ex:nonlinear example}
   Consider the following ODE:
-
   \begin{equation} \label{eq:nonlinear example}
     y_t = y^2, \quad y(1) = -1.
   \end{equation}
-
   The solution to this equation is given by $y(t) = -\frac{1}{t}$.
   By integrating both sides of (\ref{eq:nonlinear example}),
   we obtain the following integral equation:
-
   \begin{equation}
     y(t) = -1 + \int_{1}^{t} y(s) y(s)ds.
   \end{equation}
-
   To estimate the recursive integral in (\ref{eq:nonlinear example}),
   we use  $Y_1,Y_2 \text{ i.i.d. } Y$ in following RRVE:
-
   \begin{equation} \label{RRVE: nonlinear example}
     y(t) \cong Y(t) = -1 + (t-1) Y_1(S_{1}) Y_2(S_{1}),
   \end{equation}
+
   \juliacode{julia_code/nonlinear_example.jl}
 
   where $S_{1} \sim \text{Uniform}(1,t)$.
@@ -744,6 +709,7 @@ In this subsection, we discuss recursion-related techniques.
     \end{bmatrix}
     X(Ut).
   \end{equation}
+
   \juliacode{julia_code/coupled_recursion.jl}
 
   Observe how this eliminates the additive branching recursion
@@ -793,6 +759,12 @@ because of equal forward paths and backward paths distributions.
   for the implementation as we can sample the Poisson process in the reverse order.
 
   \juliacode{julia_code/main_poisson.jl}
+
+  Figure \ref{fig:main poisson error} and Figure \ref{fig:main poisson convergence} demonstrate the convergence
+  behavior of the estimator. The estimated convergence of RMSE is $O(\sigma^{-0.5} nsim^{-0.5})$, the amount of
+  time steps is simply $\sim$ Poisson($\sigma t$). Note that unlike MC integration the cost of a simulation is not
+  a bounded, therefore wall clock time at risk increases with $nsim$.
+
 \end{julia}
 
 \begin{figure}[h!]
@@ -810,8 +782,9 @@ because of equal forward paths and backward paths distributions.
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{julia_plots/main_poisson_convergence.pdf}
-  \caption{Realizations of norm of the error of (split) \ref{jl:main poisson} for (\ref{couple recu ex1}) and (\ref{couple recu ex2}) with $a=1$,
-    $nsim =1$ and $\sigma$ variable or $nsim$ variable and $\sigma = 1$.}
+  \caption{Realizations of norm of the error of \ref{jl:main poisson} for (\ref{couple recu ex1}) and (\ref{couple recu ex2}) with $a=1$,
+    $nsim =1$ and $\sigma$ variable or $nsim$ variable and $\sigma = 1$. $nsim$ denoting the number of simulations
+    when splitting the whole estimator.}
   \label{fig:main poisson convergence}
 \end{figure}
 
@@ -909,59 +882,43 @@ To clarify Green's functions, let us look at the following example.
 
 \begin{example}[$y_t=y$ average condition]
   Consider equation:
-
   \begin{equation} \label{ydy int}
     y_t = y,
   \end{equation}
-
   with following condition making the solution unique:
-
   \begin{equation}
     \int_{0}^{1} y(s) ds = e-1.
   \end{equation}
-
   The solution to this equation remains the same: $y(t) = e^{t}$.
   We define the corresponding source Green's function $G(t,x)$ for $y_t$
   and this type of condition as follows:
-
   \begin{equation}
     G_t = \delta(x-t), \quad \int_{0}^{1} G(s,x) ds = 0.
   \end{equation}
-
   Solving this equation yields:
-
   \begin{equation}
     G(t,x) = H(t-x) + x - 1.
   \end{equation}
-
   We define the corresponding boundary Green's function $G(t,x)$ for $y_t$
   and this type of condition as follows:
-
   \begin{equation}
     P_{t} = 0, \quad \int_{0}^{1} P(s) ds = e -1.
   \end{equation}
-
   Solving this equation yields:
-
   \begin{equation}
     P(t) = e -1.
   \end{equation}
-
   The Green's functions are constructed
   to form the following integral equation
   for (\ref{ydy int}):
-
   \begin{equation} \label{int ydy int}
     y(t) = P(t) + \int_{0}^{1} G(t,s) y(s) ds.
   \end{equation}
-
   Converting (\ref{int ydy int}) into an RRVE
   using RMC, we obtain:
-
   \begin{equation}\label{RRVE ydy int}
     y(t) \cong Y(t) = e - 1 + 2B\left(\frac{1}{2}\right)Y(S)(H(t-S)+S-1),
   \end{equation}
-
   where $S \sim U$. We plot realizations of
   (\ref{RRVE ydy int}) in Figure \ref{fig:ydy int}.
 
@@ -999,7 +956,6 @@ and uniqueness of solutions using a fixed-point argument.
     y_{tt}=y.
   \end{equation}
   With boundary conditions $y(b_{0}),y(b_{1})$. The Green's functions corresponding to $y_{tt}$ and Dirichlet conditions are:
-
   \begin{align}
     P(t|x) & = \begin{cases}
                  \frac{b_{1}-t}{b_{1}-b_{0}} & \text{if } x = b_{0} \\
@@ -1056,7 +1012,6 @@ samples.
   In addition to normal splitting (see definition \ref{def:splitting}),
   we can also split the domain in (\ref{inteq:main dirichlet})
   as follows:
-
   \begin{align}\label{inteq:coupled splitting}
     y(t_1) & = P(t_1|b_{0}) y(b_{0}) + P(t_1|b_{1}) y(b_{1})                \\
            & + \int_{b_{0}}^{\frac{b_{0}+b_{1}}{2}} G(t_1,s_1)y(s_1) ds_1 +
@@ -1065,7 +1020,6 @@ samples.
            & + \int_{b_{0}}^{\frac{b_{0}+b_{1}}{2}} G(t_2,s_1)y(s_1) ds_1
     +\int_{\frac{b_{0}+b_{1}}{2}}^{b_{1}} G(t_2,s_2)y(s_2) ds_2.
   \end{align}
-
   By coupling, we can eliminate the additive branching recursion
   in the RRVEs corresponding to (\ref{inteq:coupled splitting})
   and (\ref{inteq:coupled domain splitting}). In other words,
@@ -1073,7 +1027,6 @@ samples.
   instead of doing it twice we reuse the same estimate.
 
   This results in the following RRVE:
-
   \begin{equation} \label{RRVE:coupled splitting}
     X(t_{1},t_{2})=
     \begin{bmatrix}
@@ -1092,6 +1045,7 @@ samples.
     \end{bmatrix}
     X(S_{1},S_{2}),
   \end{equation}
+
   \juliacode{julia_code/coupled_splitting.jl}
   with $W$ some weighting matrix,
   $S_{1}$ and $S_{2}$ can be chosen
@@ -1151,24 +1105,18 @@ this behavior.
 
 \begin{example}[RRMC $y_t=y$] \label{ex:RRMC IVP}
   We demonstrate RRMC for IVPs with
-
   \begin{equation}
     y_t = y, \quad y(0) = 1.
   \end{equation}
-
   Imagine we have a time-stepping scheme $(t_{n}), \forall n: t_{n-1} < t_{n}$
   then the following integral equations hold:
-
   \begin{equation}
     y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , \quad t>t_{n}.
   \end{equation}
-
   Turn these in the following class of RRVEs:
-
   \begin{equation}
     y(t) \cong Y_{j}(t) = y(t_{j}) + (t-t_{j})Y_{j}((t-t_{j})U+t_{j}), \quad t>t_{j}.
   \end{equation}
-
   A problem with these RRVEs is that we do not know $y(t_{j})$.
   Instead, we can replace it with an unbiased estimate $y_{j}$
   which we keep fixed in the inner recursion:
@@ -1216,14 +1164,11 @@ this behavior.
 To achieve a higher order of convergence RRMC can be combined with control variates.
 \begin{example}[CV RRMC $y_t=y$]\label{ex:CV RRMC IVP}
   Let us control variate Example \ref{ex:RRMC IVP}.
-
   \begin{equation}
     y(t)= y(t_{n}) + \int_{t_{n}}^{t}y(s)ds , \quad t>t_{n}.
   \end{equation}
-
   We build a control variate with a lower-order approximation
   of the integrand:
-
   \begin{align}
     y(s) & = y(t_{n}) + (s-t_{n})y_t(t_{n}) + O((s-t_{n})^{2})      \\
          & \approx y(t_{n}) + (s-t_{n})f(y(t_{n}),t_{n})            \\
@@ -1231,16 +1176,13 @@ To achieve a higher order of convergence RRMC can be combined with control varia
     (s-t_{n})\left(\frac{y(t_{n})-y(t_{n-1})}{t_{n}-t_{n-1}}\right) \\
          & \approx y(t_{n})(1+s-t_{n}). \label{eq:CVCV RRMC}
   \end{align}
-
   Using (\ref{eq:CVCV RRMC}) as a control variate for the integral:
-
   \begin{align}
     y(t) & = y(t_{n}) + \int_{t_{n}}^{t}y(s)ds                                          \\
          & = y(t_{n}) + \int_{t_{n}}^{t}y(s)-y(t_{n})(1+s-t_{n}) +y(t_{n})(1+s-t_{n})ds \\
          & = y(t_{n})\left(1 + (1-t_{n})(t-t_{n})+\frac{t^{2}-t_{n}^{2}}{2}\right)
     + \int_{t_{n}}^{t}y(s)-y(t_{n})(1+s-t_{n})ds. \label{eq: int CV RRMC}
   \end{align}
-
   Figure \ref{fig:CV RRMC IVP} displays the error
   of realizations of an RRVE constructed from (\ref{eq: int CV RRMC})
   for various step sizes.
@@ -1376,7 +1318,6 @@ combined with presampled path stitching.
 \begin{definition}[semi-discretization 1D heat equation Dirichlet] \label{def:discrete heat equation square}
   We define the semi-discretization 1D heat equation for $\tilde{u}$ as space discretized heat equation
   using the central difference scheme:
-
   \begin{equation}
     \tilde{u}_t(j \Delta x,t)  = \frac{\tilde{u}((j+1) \Delta x, t)-2\tilde{u}(j \Delta x, t)+\tilde{u}((j-1) \Delta x, t)}{\Delta x^{2}}
   \end{equation}
@@ -1392,16 +1333,16 @@ combined with presampled path stitching.
 \begin{example}[point estimator of \ref{def:discrete heat equation square}] \label{ex: point estimator of semi heat}
   We want a point estimator for the solution to the semi-discretization 1D heat equation. Apply (\ref{eq:poisson main})
   with $\sigma = \frac{2}{\Delta x^{2}}$ at interior point $j$ this is:
-
   \begin{equation}
     \tilde{u}(j \Delta x,t) = \int_{0}^{e^{-\frac{2t}{\Delta x^{2}}}}  \tilde{u}(j \Delta x,0) d\tau+
     \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau. \label{eq:int semi heat}
   \end{equation}
-
   This can be turned into a estimator $Y(j \Delta x,t,\Delta x ) \cong  \tilde{u}(j \Delta x,t)$
   by sampling $\tau \sim U$,
   sampling either $\tilde{u}((j+1) \Delta x,s)$ or $\tilde{u}((j-1) \Delta x,s)$ to avoid branching recursion and
-  terminating recursion when either hitting the boundary condition or sampling the first integral.
+  terminating recursion when either hitting the boundary condition or sampling the first integral. Either sampling
+  $\tilde{u}((j+1) \Delta x,s)$ or $\tilde{u}((j-1) \Delta x,s)$ loses
+  the convergence in $\sigma$ demonstrated in Figure \ref{fig:main poisson convergence}.
 \end{example}
 
 \begin{julia}[implementation of estimator of (\ref{eq:int semi heat})]\label{jl:point estimator heat}
@@ -1421,15 +1362,12 @@ combined with presampled path stitching.
 
   Consider the equations in \ref{def:discrete heat equation square} with a source term and $0$-order coefficients, the
   semi-discretization of:
-
   \begin{equation}
     u_{t} = u_{xx} + a(x,t)u + f(x,t)
     .
   \end{equation}
-
   Again by applying (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}} +a_{0}$
   we obtain at an interior point:
-
   \begin{equation} \label{eq:int semi heat source}
     u =
     \int_{0}^{e^{-t \sigma }} u_{0} d\tau  + \int_{e^{-t \sigma }}^{1}
@@ -1470,7 +1408,7 @@ to a few points of the time space process and this amount does not scale with $\
 \begin{technique}[presampling the process of \ref{jl:point estimator heat source}] \label{tech:presampling heat}
   As $\Delta x \rightarrow 0$ the bottleneck is sampling the process that moves through space and time.
   This process is independent of the boundary conditions, $a(x,t)$ and $f(x,t)$. So it is possible to
-  precompute samples of the process and reuse them or discussed later in resampling TODO: refrence.
+  precompute samples of the process and reuse them.
   Reusing paths makes the solutions correlated. To compute the estimator we need to know where we sampled the
   source term to update $sol$ and $w$, how many steps we took in between to update $w$ for the
   multiplications in not source points (line 13 of \ref{jl:point estimator heat source})
@@ -1565,7 +1503,6 @@ first passage sample complicated geometries.
 
 Another way to obtain an unbiased estimator for the semi-discretized heat equation is using unbiased estimates
 of the boundary Green's boundary function. Because of:
-
 \begin{align}
   \tilde{u}(x_{0},t_{0}) & = \int_{\partial \Omega} \tilde{u}(x,t) P(x,t|x_{0},t_{0}) d(x,t)                    \\
                          & = \int_{\partial \Omega} \tilde{u}(x,t)  dP((X_{\tau},\tau) = (x,t)| X_{t_0} = x_0 )
@@ -1640,13 +1577,13 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
 \end{example}
 
 \begin{related}[recursive first passage sampling]
-  The original walk on spheres is a recursive first passage algorithm.
+  Walk on Spheres see \ref{ex: walk on spheres} is a recursive first passage algorithm.
   Recursive first passage sampling for
   Brownian motion is discussed in \cite{herrmann_first-passage_2016}
   and by transformation also first passage problems for the
   Ornstein-Uhlenbeck process.
   % To add jumps you can use \cite{herrmann_exact_2021}.
-  A more efficient alternative to resampling from an Euler scheme is to use tabulated
+  An alternative to resampling from an Euler scheme is to use tabulated
   inverse cumulative probability functions,
   as demonstrated in \cite{hwang_simulationtabulation_2001}.
 \end{related}
@@ -1692,8 +1629,8 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
 
 \section{Limitations and Future Work}
 
-In this section, we explore the limitations of our study and propose potential avenues for future work.
-Several aspects of our work remain underdeveloped, inadequately explored, or insufficiently integrated
+In this section, we discuss limitations of our work and propose potential future work.
+Some parts are underdeveloped, unexplored, or insufficiently integrated
 into the existing body of literature. At the time of writing this thesis, our
 primary reference was the Walk on Spheres literature. We independently rediscovered
 the improved random convergence of integration and IVPs, the
@@ -1701,27 +1638,21 @@ use of a Poisson process to circumvent recursion (as shown in \ref{jl:main poiss
 and the recursive estimator for $e^{E[X]}$ (as demonstrated in example \ref{ex:exp int}).
 These discoveries subsequently led us to other relevant literature. \\
 
-%maybe I should add this
-We lack a parallel complexity analysis for RMC for linear IVPs. Different to MC, the cost of an estimator in RMC
-is also a RV. Naively we would expect unlimited parallel vs wall time scaling  just like in MC but the due
-to the tails of the cost distribution wall time at risk scales atleast logarithmic with splitting. The analysis
-for \ref{jl:main poisson} simplifies because the cost distribution of the estimator is Poisson distributed.\\
-
 The section on RRMC was composed prior to our discovery of algorithm \ref{jl:main poisson},
-and as such, we did not investigate potential integration of the two. Our application of
+and as such are not integrated. Our application of
 recursion in recursion in RRMC for IVPs is primarily aimed at achieving convergence behavior
 akin to classical solvers, while maintaining unbiasedness. This recursive approach allows us to
 'freeze' terms in the outer recursion without bias. The next logical step would be
-to attempt 'freezing' terms that vary slowly. We believe that RRMC, even after optimizations, could
-prove beneficial in specific use cases. Furthermore, insights derived from unbiased algorithms could
-enhance the performance of biased algorithms. \\
+to attempt 'freezing' terms that vary slowly. We believe that RRMC, even after optimizations, would
+be useful in specific use cases. Furthermore, insights from unbiased algorithms could
+help develop biased algorithms. \\
 
-Our techniques for linear IVPs, which are based on transforming to integral equations should be extendable
+Our techniques for linear IVPs are based on transforming to integral equations which should be extendable
 to linear delay differential equations. Another potential direction involves directly estimating
 the Magnus expansion, where unbiased estimators for $e^{\int_{0}^{\Delta t} A(s)ds} y(0)$ are required.
 This is related to work on evaluating matrix functions with Monte Carlo methods, as seen in \cite{guidotti_fast_2023}. \\
 
-In subsection \ref{sec:greens functions}, we developed global integral equations for our test problem.
+In subsection \ref{sec:greens functions}, we developed global integral equations for a test problem.
 Despite the inherent local nature of ODEs, we are curious whether this locality is retained in the global integral equations.
 More specifically, we are interested in whether this local nature can be leveraged to enhance the efficiency of
 estimators solving these global integral equations, even without knowledge of the original ODEs.  \\
@@ -1736,7 +1667,7 @@ point estimators for the heat equation. However, it remains uncertain which clas
 by the adjoint main Poisson method in a manner similar to the heat equation.
 % maybe I should add this
 We have not fully discussed how to combine presampling with path stitching and when it is possible to do so.
-It has a nice interpretation as a U-statistic. \\
+We think that this can be interpreted as U-statistic with i.i.d. subpaths. \\
 
 
 % We believe that understanding and optimizing unbiased and deterministic linear ODE solvers
