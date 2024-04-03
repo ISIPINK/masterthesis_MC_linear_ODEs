@@ -14,8 +14,8 @@ end
 
 a = 1
 A(s) = [a 0; 1 a]
-q = [1, 0]
-f(s) = zero(q)
+q = [1.0, 0.0]
+f(s) = 0.0
 sol(s) = [exp(a * s), s * exp(a * s)]
 sig = 1.0
 t = 1.0
