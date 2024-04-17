@@ -24,7 +24,7 @@ t = 1.0
 Random.seed!(2234)
 xticks = 10.0 .^ range(1, 4, step=1)
 yticks = 10.0 .^ range(-4, 0, step=1)
-sigs = exp10.(range(1, 4, length=1000))
+sigs = exp10.(range(4, 7, length=10))
 errors = [norm(Y(t, sig, A, f, q) - sol(t)) for sig in sigs]
 p1 = plot(sigs, errors, st=:scatter, xscale=:log10, yscale=:log10, label="error", alpha=0.5)
 plot!(p1, sigs, 5 * sigs .^ -0.5, label="\$O(sig^{-0.5})\$", linewidth=4)
@@ -34,7 +34,7 @@ yticks!(p1, yticks)  # Set yticks
 xlabel!(p1, "sig")
 ylabel!(p1, "norm(error)")
 
-nsims = exp10.(range(1, 4, length=1000))
+nsims = exp10.(range(4, 7, length=10))
 errors = [norm(sum(Y(t, sig, A, f, q) for _ in 1:nsim) / nsim - sol(t)) for nsim in nsims]
 p2 = plot(nsims, errors, st=:scatter, xscale=:log10, yscale=:log10, label="error", alpha=0.5)
 plot!(p2, nsims, 5 * nsims .^ -0.5, label="\$O(nsim^{-0.5})\$", linewidth=4)

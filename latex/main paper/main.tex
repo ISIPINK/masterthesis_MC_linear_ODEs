@@ -74,22 +74,22 @@ mechanics of these Monte Carlo (MC) techniques to Inital Value Problems (IVPs) t
 parallel in time and the possibility of extending their techniques
 to other types of PDEs. \\
 
-We made an interactive data map of the literature read
-mainly in the function of this thesis available at
+An interactive data map of literature is available at
 \url{https://huggingface.co/spaces/ISIPINK/zotero_map}.\\
 
 Existing randomized algorithms for solving IVPs generally rely on MC integration or randomizing parts
 of deterministic algorithms. These are typically motivated by lower smoothness conditions where randomization
 significantly enhances convergence speed, or solving ODEs where randomization aids in parallelization.
-The most relevant literature in this context includes works by
+The most relevant literature in this context includes papers by
 \citeauthor{daun_randomized_2011} and \citeauthor{ermakov_monte_2021}. \\
 
-\citeauthor{daun_randomized_2011}'s \citeyear{daun_randomized_2011} \cite{daun_randomized_2011}
-proposes a biased algorithm for IVPs that has optimal Information-Based Complexity (IBC) for
+
+\citeauthor{daun_randomized_2011} \citeyear{daun_randomized_2011} \cite{daun_randomized_2011}
+proposes a biased algorithm for nonlinear IVPs that has optimal Information-Based Complexity (IBC) for
 some smoothness classes. Similar to \ref{ex:CV RRMC IVP}, their approach employs control variates. \\
 
-\citeauthor{ermakov_monte_2021}'s \citeyear{ermakov_monte_2021} \cite{ermakov_monte_2021} proposes
-an unbiased method for a Cauchy problem for large systems of linear ODEs. Their method, similar
+\citeauthor{ermakov_monte_2021} \citeyear{ermakov_monte_2021} \cite{ermakov_monte_2021} proposes
+an unbiased method for functionals of a Cauchy problem for large systems of linear ODEs. Their method, similar
 to all our IVPs solvers, is based on Volterra integral equations.
 
 \section{Background}
@@ -149,9 +149,9 @@ finite variance assumption on error and simulation time,
 simulations can be computed in parallel, making them well-suited for a GPU implementation.
 These assumptions are useful for establishing a baseline and
 when they are close to being optimal, they become highly practical.
-In this case, there is a linear trade-off
-between average simulation time and variance which motivate
-the definition of MC efficiency for comparing estimators.
+Given these assumption, there is a linear trade-off
+between average simulation time and variance. This relationship can be quantified
+using the following definition of MC efficiency.
 
 \begin{definition}[Monte Carlo Efficiency]
   Define MC efficiency of an
@@ -283,13 +283,13 @@ Walk on Spheres.
 \subsection{Modifying Monte Carlo}
 
 In this subsection, we discuss techniques for modifying RRVEs
-in a way that preserves the expected value of the solution while
+in a way that preserves the expected value of the estimator while
 acquiring more desirable properties. These techniques are only
 effective when applied by using prior information
 about the problem or computational costs. \\
 
 We will frequently interchange RVs with the same expected values.
-Therefore introduce following notation:
+Therefore introducing following notation:
 \begin{notation}[$\cong$]
   \[
     X \cong Y \iff E[X]=E[Y]
@@ -404,7 +404,7 @@ we will explore the utilization of coupled recursion as a technique to mitigate
 additive branching recursion in RRVEs (see Example \ref{ex:coupled splitting}).
 
 \begin{example}[splitting on (\ref{eq:rr example})] \label{ex:splitting}
-  We can "split" the recursive term of (\ref{eq:rr example})
+  We can split the recursive term of (\ref{eq:rr example})
   into two parts as follows:
   \begin{equation}\label{eq:splitting}
     y(t) \cong Y(t) =1 + \frac{B(t)}{2}(Y_{1}(U_{1}t) + Y_{2}(U_{1}t))
@@ -458,7 +458,7 @@ additive branching recursion in RRVEs (see Example \ref{ex:coupled splitting}).
 
 \subsection{Monte Carlo Trapezoidal Rule}
 
-In this subsection, we introduce an MC trapezoidal rule that
+In this subsection, we introduce a MC trapezoidal rule that
 exhibits similar convergence behavior to the methods discussed later.
 The MC trapezoidal rule is essentially a regular Monte Carlo method
 enhanced with control variates based on the trapezoidal rule.
@@ -789,8 +789,8 @@ because of equal forward paths and backward paths distributions.
 \end{figure}
 
 \begin{related}[main Poisson]
-  A very similar estimator is used to solve ODEs derived from the
-  $1$-dimensional telegraph equations in \cite{acebron_monte_2016}.
+  \cite{acebron_monte_2016} derives a similar estimator for solving
+  $1$-dimensional telegraph equations.
   % Unlike \ref{jl:point estimator heat} the recursion process they use can be reversed
   % because the paths consist of a Poisson process and reflections.
 \end{related}
@@ -848,8 +848,8 @@ The expensive matrix multiplications disappear when solving for $v^{T}y(t)$.
 \subsection{Green's Functions}
 \label{sec:greens functions}
 
-In this subsection, we discuss how to transform ODEs into integral equations and
-subsequently solve them. Our main tool for this is Green's functions. \\
+In this subsection, we discuss how to transform ODEs into integral equations using Green's functions and
+subsequently solve them. \\
 
 A Green's function is a type of kernel function used
 for solving linear problems with linear conditions. In this context,
@@ -1038,7 +1038,7 @@ samples.
       y(b_{1})
     \end{bmatrix}
     +
-    W
+    \frac{b_{1}-b_{0}}{2}
     \begin{bmatrix}
       G(t_{1},S_{1}) & G(t_{1},S_{2}) \\
       G(t_{2},S_{1}) & G(t_{2},S_{2})
@@ -1047,9 +1047,9 @@ samples.
   \end{equation}
 
   \juliacode{julia_code/coupled_splitting.jl}
-  with $W$ some weighting matrix,
-  $S_{1}$ and $S_{2}$ can be chosen
-  in various ways. (\ref{RRVE:coupled splitting}) is unbiased in the following way:
+  with $S_{1} = b_{0} + \frac{U}{2} (b_{1} - b_{0}) $ and
+  $S_{2} = b_{0} + \frac{U+1}{2} (b_{1} - b_{0}) $.
+  (\ref{RRVE:coupled splitting}) is unbiased in the following way:
   $X(t_{1},t_{2}) \cong [y(t_{1}) \quad y(t_{2})]^{T}$.
 
 \end{example}
@@ -1337,7 +1337,7 @@ combined with presampled path stitching.
     \tilde{u}(j \Delta x,t) = \int_{0}^{e^{-\frac{2t}{\Delta x^{2}}}}  \tilde{u}(j \Delta x,0) d\tau+
     \int_{e^{-\frac{2t}{\Delta x^{2}}}}^{1} \frac{\tilde{u}((j+1) \Delta x,s)+\tilde{u}((j-1) \Delta x,s)}{2}d\tau. \label{eq:int semi heat}
   \end{equation}
-  This can be turned into a estimator $Y(j \Delta x,t,\Delta x ) \cong  \tilde{u}(j \Delta x,t)$
+  This can be turned into an estimator $Y(j \Delta x,t,\Delta x ) \cong  \tilde{u}(j \Delta x,t)$
   by sampling $\tau \sim U$,
   sampling either $\tilde{u}((j+1) \Delta x,s)$ or $\tilde{u}((j-1) \Delta x,s)$ to avoid branching recursion and
   terminating recursion when either hitting the boundary condition or sampling the first integral. Either sampling
@@ -1594,7 +1594,7 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
   framed as a first passage problem. Instead of sampling
   first passage points we sample first passage paths.
   This requires a simple first passage paths sampler and the paths
-  sampled this way are "stitched" together.
+  sampled this way are stitched together.
 \end{technique}
 
 \begin{example}[path stitching parabola]
