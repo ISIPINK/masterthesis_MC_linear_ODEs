@@ -13,7 +13,7 @@
 
 \usepackage[style=authoryear,backend=biber]{biblatex}
 
-\addbibresource{bibliography2.bib} 
+\addbibresource{bibliography3.bib} 
 \pdfmapfile{+sansmathaccent.map}
 
 \title{RMC voor lineaire ODEs}
@@ -52,294 +52,178 @@
 
 % 2 min
 \begin{frame}
-    \frametitle{random sample efficientie van optelling}
-    Probleem: benader $k\bar{x} = \sum_{i=1}^{k} x_{i}$ met $x_{i}\in [0,1]$ zonder alle $x_{i}$
+    \frametitle{Random sample efficientie van optelling}
+    \action<+->{
+        Probleem: benader $\bar{x} = \frac{1}{k}\sum_{i=1}^{k} x_{i}$ met $n<k$ van de $x_{i}$'s $\in [0,1]$\\
+        (symmetrisch in $x_{i}$) \\
+        \vspace{0.5cm}
+    }
+    \action<+->{
+        Vertrouwensinterval kans $=1$  $\sim \frac{k-n}{k}= 1-\frac{n}{k}$ \\
+        (worst case scenarios van de missende informatie liggen $\frac{1}{k}$ uit elkaar) \\
+        \vspace{0.5cm}
+    }
+    \action<+->{
+        Benader door te samplen met vervanging $\bar{x}  \cong \frac{1}{n}\sum_{i=1}^{n} x_{I_{i}}$\\
+        (zonder vervanging is sneller maar niet onafhankelijk) \\
+        \vspace{0.5cm}
+    }
+    \action<+->{
+        Variantie = RMSE $\sim O\left(\frac{1}{\sqrt{n}}\right)$\\
+        en ook vertrouwensintervallen kans $<1$\\
+        (CLT of Chebychev's ongelijkheid)\footcitetext{heinrich_optimal_2001}\\
+    }
+
 \end{frame}
 
 % 2 min
 \begin{frame}
-    \frametitle{Monte Carlo}
-    \vspace{-1cm}
+    \frametitle{Monte Carlo Integratie}
+    Integratie $\approx$ sommatie, integreerbare $f: \mathbb{R} \rightarrow [0,1]$:
     \begin{align}
-        \int_{0}^{1} f(s) ds & = E[f(U)]                                   \\
-                             & \approx \frac{1}{n} \sum_{j=1}^{n} f(U_{j}) \\
+        \int_{0}^{1} f(s) ds & = E[f(U)]                                 \\
+                             & \cong \frac{1}{n} \sum_{j=1}^{n} f(U_{j}) \\
         \text{met } U_{j}    & \sim \text{Uniform}(0,1)
     \end{align}
+    % Sommatie en integratie hebben $1$-sample unbiased estimator.
 \end{frame}
 
 \begin{frame}
-    \frametitle{Monte Carlo Fout Analyse}
-    \vspace{-1cm}
-    \begin{equation}
-        \text{fout} = O_{p} \left(\sqrt{\frac{\text{Var}(f(U))}{n}} \right) \text{(CLT)}
-    \end{equation}
-    \pause
-    \vspace{-1cm}
-    \begin{align}
-         & \sqrt{\text{Var}  (f(U))}      \\
-         & = \sqrt{E[(f(U)-E[f(U)])^{2}]} \\
-         & = ||f-E[f(U)]||_{2}            \\
-         & \sim ||f||_{2}
-    \end{align}
-\end{frame}
+    \frametitle{Lineaire ODEs}
+    \action<+->{
+        Probleem: benader $y(t)$ waar $y'(t) = A(t)y(t)$ gegeven $y(0)$ en $A(t)$ begrensd\\
+        \vspace{0.25cm}
+    }
+    \action<+->{
+        Biased algoritme met $n$ samples
+        \footcite{jentzen_random_2009},\footcite{daun_randomized_2011} \\
+        (enkel random)\\
+        \vspace{0.25cm}
+    }
+    \action<+->{
+        $\nexists$ unbiased algoritme met $n$ samples van $A(t)$\\
+        (niet bewezen $\implies$ te sterk parallel algoritme)
+        \vspace{0.25cm}
+    }
 
-\begin{frame}
-    \frametitle{Waarom Monte Carlo?}
-    \begin{itemize}
-        \item Paralleliseerbaar
-        \item Hoge dimensie
-        \item Complexe geometrie
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Waarom ODEs?}
-    \begin{itemize}
-        \item Grid-free + tijdafhankelijkheid?
-        \item ODEs simpeler als PDEs
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Stochastic Gradient Descent}
-    \vspace*{-0.3cm}
-    \begin{center}
-        SGD = GD + unbiased gradients
-    \end{center}
-    \vspace*{-0.3cm}
-    \pause
-    \begin{align}
-        \action<+->{f(x)        & = \frac{1}{n}\sum_{j=1}^{n} f_{j}(x)  }        \\
-        \action<+->{\nabla f(x) & = \frac{1}{n}\sum_{j=1}^{n} \nabla f_{j}(x)  } \\
-        \action<+->{            & =  E[\nabla f_{J}(x)]}
-    \end{align}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Russische Roulette Voorbeeld}
-    \vspace*{-1cm}
-    \begin{align}
-        \action<+->{Z         & = U + \frac{f(U)}{1000}  }                          \\
-        \action<.->{U         & \sim \text{Uniform}(0,1), \text{ } f \text{ duur} } \\
-        \action<+->{\tilde{Z} & = U + B \left(\frac{1}{100}\right)\frac{f(U)}{10}}  \\
-        \action<.->{B(p)      & \sim \text{Bernoulli}(p)}
-    \end{align}
+    \action<+->{
+        $\exists$ unbiased algoritme met gemiddeld $n$ samples van $A(t)$\\
+        (gemakkelijk paralleliseerbaar) \\
+    }
 \end{frame}
 
 % 2 min
 \begin{frame}
-    \frametitle{Control Variates}
+    \frametitle{Willekeurig hoeveelheid samples}
+    \action<+->{
+        Hoeveelheid samples: vast vs willekeurig  \\
+        (Russische roulette in recursieve Monte Carlo )\\
+    }
+    \action<+->{
+        Russische roulette $\approx$ \\
+        unbiased techniek om soms te vervangen met een benadering \\
+        \begin{equation}
+            X \cong
+            \begin{cases}
+                \frac{1}{p}(X - (1-p)Y_{1}) & \text{ met kans }  p \\
+                Y_{2}                       & \text{ anders }
+            \end{cases}.
+        \end{equation}
+    }
+    \action<+->{
+        Voor de optelling roulette de $x_{i}$'s:
+        \begin{equation}
+            x_{i} \cong
+            \begin{cases}
+                \frac{1}{p}(x_{i} - \frac{1-p}{2}) & \text{ met kans }  p \\
+                \frac{1}{2}                        & \text{ anders }
+            \end{cases}.
+        \end{equation}
+    }
 
-    \begin{columns}[t]
-        \begin{column}{0.55\textwidth}
-            \vspace*{-2cm}
-            \begin{figure}[h]
-                \includegraphics[height=0.8\textheight]{"imgs/control_variate.png"}
-            \end{figure}
-        \end{column}
-        \begin{column}{0.45\textwidth}
-            \pause
-            \[
-                f  \approx \tilde{f} \rightarrow
-            \]\pause
-            \vspace*{-1cm}
-            \[
-                ||f-\tilde{f}||_{2} \le ||f||_{2}
-            \]
-            \pause
-            \vspace*{-1cm}
-            \begin{center}
-                weet $\int \tilde{f}(s)ds$ \\
-                bv $\tilde{f}$ lineair
-            \end{center}
-
-        \end{column}
-    \end{columns}
+    \action<+->{
+        Gebruikt $x_{i}$ met kans $p$, of $\text{Bionmial}(k,p)$ samples in totaal en $kp$ gemiddeld
+    }
 
 \end{frame}
 
-% % 2 min
-% \begin{frame}
-%     \frametitle{RMSE vs fout begrenzing}
-%     \begin{itemize}
-%         \item verschil (+ formule)
-%         \item mss: steins paradox (yt video)
-%         \item MSE decompositie
-%         \item tabel: $0$ variantie vs $0$ bias
-%     \end{itemize}
-% \end{frame}
-
-% 2 min
 \begin{frame}
-    \frametitle{Trapezium Monte Carlo}
-    \fontsize{15}{17}\selectfont
-    \begin{center}
-        Trap MC = \textcolor{red!90!black}{Russische Roulette} + Control Variates
-    \end{center}
-    \pause
-    \vspace{-0.2cm}
-    \begin{align}
-        \action<+->{ & \textcolor{blue!95!black}{\int_{x}^{x+\Delta x} f(s) ds}     }          \\
-        \action<+->{ & = \textcolor{orange!95!black}{\int_{x}^{x+\Delta x}  \tilde{f}(s) ds} +
-        \textcolor{green!80!black}{\int_{x}^{x+\Delta x}  f(s) - \tilde{f}(s) ds}  }           \\
-        \action<+->{ & =\textcolor{orange!95!black}{\Delta x \frac{f(x) + f(x+\Delta x)}{2}}
-            + E \left[\textcolor{red!90!black}{l B\left( \frac{1}{l}\right)}
-        \textcolor{green!80!black}{(f(S_x) - \tilde{f}(S_x))}\right]}                          \\
-        \action<+->{ & \text{waar }
-            \textcolor{red!90!black}{\text{ l}} = \text{ RR rate},
-            \textcolor{green!80!black}{S_x} \sim \text{Uniform}(x,x+\Delta x)
-        }
-    \end{align}
-\end{frame}
-
-% \begin{frame}
-%     \frametitle{Trapezium Monte Carlo}
-%     \begin{columns}[t]
-%         \begin{column}{0.55\textwidth}
-%             \vspace*{-2cm}
-%             \begin{figure}[h]
-%                 \includegraphics[height=0.8\textheight]{"imgs/control_variate.png"}
-%             \end{figure}
-%         \end{column}
-%         \begin{column}{0.45\textwidth}
-%             \fontsize{14}{16}\selectfont
-%             \begin{align*}
-%                 \hspace{0.1cm} & \textcolor{blue!95!black}{\int_{x}^{x+\Delta x} f(s) ds}               \\
-%                                & = \textcolor{orange!95!black}{\Delta x \frac{f(x) + f(x+\Delta x)}{2}} \\
-%                                & +E \left[\textcolor{red!90!black}{l B\left( \frac{1}{l}\right)}
-%                     \textcolor{green!80!black}{(f(S_x) - \tilde{f}(S_x))}\right]
-%             \end{align*}
-%         \end{column}
-%     \end{columns}
-
-% \end{frame}
-
-
-\begin{frame}
-    \frametitle{Trapezium Monte Carlo}
-    \fontsize{15}{17}\selectfont
-    \begin{align}
-         & \int_{a}^{b} f(s) ds                                      \\
-         & \approx \Delta x \sum_{x}  \frac{f(x) + f(x+\Delta x)}{2} \\
-         & + l B\left(\frac{1}{l}\right)
-        \left(f(S_x) - f(x) - \frac{S_x - x}{\Delta x}(f(x+\Delta x) - f(x))\right)
-    \end{align}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Trapezium Monte Carlo}
-    \vspace{-0.5cm}
-    \fontsize{15}{17}\selectfont
-    \begin{equation}
-        \int_{0}^{1} e^{s} ds, \quad \Delta x = h, \quad l = 100
-    \end{equation}
-    \vspace{-0.5cm}
-    \begin{figure}[h]
+    \frametitle{Willekeurig hoeveelheid samples (plot)}
+    \begin{figure}[h!]
         \centering
-        \includegraphics[width=0.8\textwidth]{"imgs/trapMC.png"}
-    \end{figure}
-\end{frame}
-
-% \begin{frame}
-%     \frametitle{Trapezium Monte Carlo}
-%     \vspace{-2cm}
-%     \begin{align}
-%         \action<+->{\| \text{fout}\|_{\infty} & = O(h^{k })                          }     \\
-%         \action<.->{\|\text{fout}\|_2         & = O(h^{k + \frac{d}{2}})  }                \\
-%         \action<+->{\hspace{0.3cm}\|.\|_2     & \leqslant \sqrt{\|.\|_1 \|.\|_{\infty}}  } \\
-%         \action<+->{                          & \downarrow}   \nonumber                    \\
-%         \action<.->{\|\text{fout}\|_1         & = O\left(h^{k+d}\right) ?}
-%     \end{align}
-%     \action<+->{\cite{heinrich_optimal_2001}
-%     }
-% \end{frame}
-
-
-% 3 min
-\begin{frame}
-    \frametitle{RMC Voorbeeld}
-    \vspace{-2cm}
-    \begin{align}
-        \action<+->{y'            & =y  }                        \\
-        \action<+->{y(t)          & =y(0)+ \int_{0}^{t} y(s)ds } \\
-        \action<+->{\text{wil } Y & : E[Y(t)] = y(t)}            \\
-        \action<+->{Y(t)          & =y(0)+tY(S) } \label{RRVE}   \\
-        \action<.->{S             & \sim \text{Uniform}(0,t)}
-    \end{align}
-\end{frame}
-
-\begin{frame}
-    \frametitle{RMC Voorbeeld}
-    \vspace{-2cm}
-    \begin{align}
-        \action<+->{Y(t)    & =y(0)+tY(S) }             \\
-        \action<+->{ \infty & \text{ recursie } }       \\
-        \action<+->{ Y(t)   & = 1 + B(t)Y(S)}           \\
-        \action<.->{ t      & < 1}                      \\
-        \action<.->{B(t)    & \sim \text{Bernoulli}(t)}
-    \end{align}
-\end{frame}
-
-\begin{frame}
-    \frametitle{RMC Plot}
-    \vspace{-1cm}
-    \begin{figure}[h]
-        \centering
-        \includegraphics[width=\textwidth]{"imgs/russian roulette example.png"}
+        \includegraphics[width=0.8\textwidth]{imgs/convergence_sums.pdf}
+        \label{fig:convergentie_optelling}
     \end{figure}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Recursie in Recursie}
+    \frametitle{Main Poisson algoritme}
 
-    \begin{itemize}
-        \item Next Flight (Rendering)
-        \item Stochastic Variance Reduced Gradient Descent
-              \begin{align}
-                   & \nabla f(x)   \nonumber                                          \\
-                   & =E[\nabla f_{J}(x)-\nabla f_{J}(\tilde{x})] +\nabla f(\tilde{x})
-              \end{align}
-    \end{itemize}
-\end{frame}
-
-% 4 min
-\begin{frame}
-    \frametitle{RRMC Voorbeeld}
-    \begin{center}
-        \begin{tikzpicture}
-            \draw (0,0) -- (10,0); % horizontal line
-            \foreach \x in {0,1,...,10} % loop over labels
-            \draw (\x,-0.1) -- (\x,0.1) node[above] {$t_{\x}$}; % draw tick and label
-        \end{tikzpicture}
-    \end{center}
-    \vspace{-0.5cm}
-    \pause
     \begin{align}
+        \action<+->{y'                              & = A y + f \Leftrightarrow                                                              \\}
+        \action<+->{y'+\sigma y                     & = (A + \sigma I) y + f\Leftrightarrow                                                                 \\}
+        \action<+->{e^{-\sigma t} ( e^{\sigma t}y)' & = (A + \sigma I) y + f  \Leftrightarrow                                                               \\}
+        \action<+->{y(t)                            & = e^{-\sigma t} y(0) + \int_{0}^{t} e^{(s-t) \sigma} \left(  (A(s) + \sigma I ) y(s) +f(s)\right) ds,}
+    \end{align}
+    \action<+->{doe volgende substitutie $e^{(s-t)\sigma} = \tau$, equivalent aan exponentieel te samplen}
+
+    \begin{equation} \label{eq:poisson main}
         \action<+->{
-        y_{n}                       & = \begin{cases}
-                                                Y_{n-1}(t_{n},y_{n-1}) & \text{ als } n \neq 0        \\
-                                                y(t_{0})               & \text{ als } n = 0 \nonumber
-                                            \end{cases} \\
-        }                                                                                     \\
-        \action<+->{ Y_{n}(t,y_{n}) & = y_{n} + \Delta t Y_{n}(S_{n},y_{n}) }
-    \end{align}
+        y(t) = \int_{0}^{e^{-\sigma t}}  y(0) d\tau
+        + \int_{e^{-\sigma t}}^{1} \left(  \frac{A(s)}{\sigma} + I\right)  y(s) + \frac{f(s)}{\sigma} d\tau.
+        }
+    \end{equation}
+    \action<+->{sample $\tau$ uniform, equivalent aan een Poisson proces te samplen.}
 \end{frame}
 
 \begin{frame}
-    \frametitle{RRMC Plot}
-    \begin{figure}[h]
+    \frametitle{Main Poisson algoritme (recursief samplen)}
+
+    \begin{equation} \label{eq:poisson main 2}
+        y(t) = \int_{0}^{e^{-\sigma t}}  y(0) d\tau
+        + \int_{e^{-\sigma t}}^{1} \left(  \frac{A(s)}{\sigma} + I\right)  y(s) + \frac{f(s)}{\sigma} d\tau.
+    \end{equation}
+    sample $\tau$ uniform, equivalent aan een Poisson proces te samplen. \\
+    \action<+->{}
+    \action<+->{
+        Sample $y(t)$ recursief
+        \begin{equation}
+            Y(t)= \begin{cases}
+                y(0)                                                               & \text{als }  e^{-\sigma t} \le  \tau \\
+                \left(  \frac{A(S)}{\sigma} + I\right)  Y(S) + \frac{f(S)}{\sigma} & \text{anders}
+            \end{cases}
+            ,
+        \end{equation}
+        met $S = t +\frac{\ln\left(\tau\right)}{\sigma}$, let op $y \neq Y$
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Main Poisson algoritme (implementatie)}
+    Verschillende implementaties, voorwaarts door Poisson proces andersom
+    te samplen.
+    \begin{figure}[h!]
         \centering
-        \includegraphics[width=0.8\textwidth]{imgs/RRMC IVP.png}
+        \includegraphics[width=0.8\textwidth]{imgs/main poisson julia.jpg}
+        \label{fig:imgs/main poisson julia.jpg}
     \end{figure}
 \end{frame}
 
 \begin{frame}
-    \frametitle{CV RRMC Plot}
-    \begin{figure}[h]
+    \frametitle{Main Poisson algoritme (convergentie)}
+    Niet bewezen: robust tegen unbiased vervanging van $A,f,y(0)$.
+    \begin{figure}[h!]
         \centering
-        \includegraphics[width=0.9\textwidth]{imgs/CV RRMC IVP.png}
+        \includegraphics[width=\textwidth]{imgs/convergence_main_poisson.pdf}
+        \caption{Realizaties van de norm van de fout,
+            met $nsim =1$ en $\sigma$ variabel of $nsim$ variabel en $\sigma = 1$.
+            Hoeveelheid samples van $A,f$ per simulatie $= \text{Poisson}(\sigma)$.
+        }
+        \label{fig:imgs/main poisson convergentie}
     \end{figure}
 \end{frame}
+
+
 
 \begin{frame}
     \frametitle{Limitaties}

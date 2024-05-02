@@ -44,6 +44,13 @@ yticks!(p2, yticks)  # Set yticks
 xlabel!(p2, "nsim")
 ylabel!(p2, "norm(error)")
 
-p = plot(p1, p2, layout=(1, 2), size=(1000, 400), bottom_margin=5mm, left_margin=5mm)  # Combine both plots
+p = plot(p1, p2,
+    layout=(1, 2),
+    size=(900, 300),
+    bottom_margin=5mm,
+    left_margin=5mm,
+    legend=:bottomleft
+)  # Combine both plots
 display(p)
-savefig(p, "latex/main paper/julia_plots/main_poisson_convergence.pdf")
+savefig(p, "latex/presentation 2 (dutch)/imgs/convergence_main_poisson.pdf")
+
