@@ -1128,7 +1128,7 @@ this behavior.
   \begin{equation}
     y(t) \cong Y_{j}(t) = y(t_{j}) + (t-t_{j})Y_{j}((t-t_{j})U+t_{j}), \quad t>t_{j}.
   \end{equation}
-  A problem with these RRVEs is that we do not know $y(t_{j})$.
+  The problem with these RRVEs is that we do not know $y(t_{j})$.
   Instead, we can replace it with an unbiased estimate $y_{j}$
   which we keep fixed in the inner recursion:
   \begin{align}
@@ -1159,7 +1159,7 @@ this behavior.
     y_{t}(t)= A(t)y(t)+g(t), y(t_{0}),
   \end{equation}
   with $A$ a matrix and $g$ a vector function, both
-  once differentiable with the corresponding RRVE:
+  once Lipschitz differentiable with the corresponding RRVE:
   \begin{equation}
     y(t) \cong Y(t) = y(t_{0}) + h B \left( \frac{t-t_{0}}{h}\right)
     A(S) Y(S) + g(S),
@@ -1380,32 +1380,34 @@ combined with presampled path stitching.
   Again by applying (\ref{eq:poisson main}) with $\sigma = \frac{2}{\Delta x^{2}} +a_{0}$
   we obtain at an interior point:
   \begin{equation} \label{eq:int semi heat source}
-    u =
-    \int_{0}^{e^{-t \sigma }} u_{0} d\tau  + \int_{e^{-t \sigma }}^{1}
+    \tilde{u} =
+    \int_{0}^{e^{-t \sigma }} \tilde{u}_{0} d\tau  + \int_{e^{-t \sigma }}^{1}
     \sigma^{-1}
     \left(
-    \frac{u_{+} + u_{-}}{\Delta x^{2}} +(a(x,s)+ a_{0}) u+ f
+    \frac{\tilde{u}_{+} + \tilde{u}_{-}}{\Delta x^{2}} +(a(x,s)+ a_{0}) \tilde{u}+ f
     \right)
     d\tau
     .
   \end{equation}
+
   This can be turned into a estimator $Y(j \Delta x,t,\Delta x ) \cong  \tilde{u}(j \Delta x,t)$
   by sampling $\tau \sim U$.
   To avoid branching recursion we sample
   based on the magnitude of coefficients of the recursive terms, let $a_m$ be approximately the magnitude of
-  $(a(x,s)+ a_{0})$. We chose to sample the $(a(x,s)+ a_{0})u$ term and $f$
+  $(a(x,s)+ a_{0})$. We chose to sample the $(a(x,s)+ a_{0})\tilde{u}$ term and $f$
   with probability $p_{\text{source}} = \frac{a_m}{a_m + \frac{2}{\Delta x^{2}}}$.
-  As $\Delta x \rightarrow 0$ the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ term is
+  As $\Delta x \rightarrow 0$ the $\frac{\tilde{u}_{+} + \tilde{u}_{-}}{\Delta x^{2}}$ term is
   the main contribution to the second integral therefore
   being sampled almost always.
   In total for $1$ fully recursed sample,
-  the $f(x,s)$ and the $(a(x,s)+ a_{0})u$ term only
+  the $f(x,s)$ and the $(a(x,s)+ a_{0})\tilde{u}$ term only
   is sampled a few times and this does not scale with $\Delta x$. We
-  sampled $f$ together with $(a(x,s)+ a_{0})u$ for simplicity.
+  sampled $f$ together with $(a(x,s)+ a_{0})\tilde{u}$ for simplicity.
+
 \end{example}
 
 \begin{julia}[Implementation of estimator of (\ref{eq:int semi heat source})]\label{jl:point estimator heat source}
-  Because of the high chance of sampling the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ it is efficient
+  Because of the high chance of sampling the $\frac{\tilde{u}_{+} + \tilde{u}_{-}}{\Delta x^{2}}$ it is efficient
   to sample the interarrival until not sampling it which is geometrically distributed.
 
   \juliacode{julia_code/pest_heat_varcoef.jl}
@@ -1447,7 +1449,7 @@ to a few points of the time space process and this amount does not scale with $\
 \begin{julia}[\ref{jl:point estimator heat source} using precomputed paths]\label{jl:path point estimator heat source}
   We implement \ref{jl:point estimator heat source} with a precomputed path from \ref{tech:presampling heat} using tail
   recursion. Note that $(x,t)$ is
-  never explicitly used only for figuring out how we exited the domain. The whole calculation is linear in
+  never explicitly used, only for figuring out how we exited the domain. The whole calculation is linear in
   $a,f$ evaluated in the source points and $u_\text{bound}$ evaluated in the exit points so there are various
   ways to optimize it for example using unbiased estimates instead of exact evaluations.
 
