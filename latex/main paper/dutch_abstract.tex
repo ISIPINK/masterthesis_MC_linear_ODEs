@@ -1,10 +1,22 @@
-Deze scriptie introduceert recursieve Monte Carlo voor het oplossen van
-lineaire beginwaardeproblemen met het oog op PDEs.
-Verder worden drie nieuwe methoden voorgesteld: RRMC, een unbiased methode
-voor lineaire beginwaardeproblemen met een vergelijkbaar convergentiegedrag in
-stapgrootte of functie-evaluaties als traditionele solvers, coupled splitting, een unbiased techniek
-voor het oplossen van lineaire Fredholm-integraalvergelijkingen van de tweede soort met een vergelijkbaar
-convergentiegedrag als fixpuntmethoden, en ten slotte een pad herbruikingsmethode,
-vergelijkbaar met walk on spheres,
-toegepast op recursieve Monte Carlo voor een
-beginwaardeprobleem verkregen door semi-discretisering van de warmtevergelijking.
+Unbiased algoritmes voor het oplossen van lineaire initiële waardeproblemen zijn
+nauwelijks bestudeerd.
+Dit wordt aangepakt door het presenteren van unbiased recursieve Monte Carlo-methoden
+voor het oplossen van lineaire initiële waardeproblemen en lineaire Fredholm-integraalvergelijkingen
+van de tweede soort. Gemotiveerd door random
+parallelle complexiteit en downstream-toepassingen voor partiële differentiaalvergelijkingen.
+
+Voorheen waren alleen biased methoden bekend die optimale convergentiesnelheden bereiken
+voor niet-lineaire initiële waardeproblemen, wat voornamelijk theoretische betekenis heeft.
+De voorgestelde RRMC methode, een unbiased algoritme voor lineaire initiële waardeproblemen,
+samen met control variated, wordt vermoed om orde-optimaal te zijn met hoge kans
+voor overeenkomstige gladheidsklassen.
+
+Daarnaast wordt het main Poisson algoritme voorgesteld, dat het algoritme in \cite{acebron_monte_2016} veralgemeend,
+dat simpel en voorwaarts-implementeerbaar is. Het main Poisson algoritme wordt toegepast op de semi-gediscreteerde
+warmtevergelijking om een pad-resampling-techniek te demonstreren, dit biedt een nieuwe perspectief van Walk on Spheres methode,
+met potentieel voor alternatieve veralgemeningen.
+
+De voorgestelde methoden verbreden
+wat mogelijk lijkt te zijn met unbiased algoritmes voor
+het oplossen van lineaire initiële waardeproblemen,
+en wijzen de weg uit voor verder onderzoek in dit gebied.

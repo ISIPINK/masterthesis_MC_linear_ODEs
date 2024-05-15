@@ -74,8 +74,8 @@ mechanics of these Monte Carlo (MC) techniques to Inital Value Problems (IVPs) t
 parallel in time and the possibility of extending their techniques
 to other types of PDEs. \\
 
-An interactive data map of literature is available at
-\url{https://huggingface.co/spaces/ISIPINK/zotero_map}.\\
+% A data map, which includes the literature for this thesis, 
+% is available at \url{https://huggingface.co/spaces/ISIPINK/zotero_map}.\\
 
 Existing randomized algorithms for solving IVPs generally rely on MC integration or randomizing parts
 of deterministic algorithms. These are typically motivated by lower smoothness conditions where randomization
@@ -181,6 +181,10 @@ rigorous definition of IBC.
   the trade-off between the average amount of function calls (information)
   needed and accuracy.
 \end{definition}
+
+Note that we consider average
+amount of function calls as a measure of cost instead of deterministic
+amount of function calls used which encompasses a broader range of algorithms.
 
 \begin{example}[IBC of (\ref{eq:BLUE})]
   In (\ref{eq:BLUE}) the function calls trades of
@@ -367,7 +371,7 @@ less computationally expensive approximation sometimes.
 Splitting is a technique that increases samples of important terms, similar to how Russian roulette
 decreases the samples of unimportant terms.
 
-\begin{definition}[splitting] \label{def:splitting}
+\begin{definition}[Splitting] \label{def:splitting}
   Splitting $X$ refers to utilizing multiple $X_{j} \cong X$ (not necessarily independent) to
   reduce variance by taking their average:
   \begin{equation}
@@ -403,7 +407,7 @@ strategies that have been previously discussed can be employed. Subsequently,
 we will explore the utilization of coupled recursion as a technique to mitigate
 additive branching recursion in RRVEs (see Example \ref{ex:coupled splitting}).
 
-\begin{example}[splitting on (\ref{eq:rr example})] \label{ex:splitting}
+\begin{example}[Splitting on (\ref{eq:rr example})] \label{ex:splitting}
   We can split the recursive term of (\ref{eq:rr example})
   into two parts as follows:
   \begin{equation}\label{eq:splitting}
@@ -421,7 +425,7 @@ additive branching recursion in RRVEs (see Example \ref{ex:coupled splitting}).
   where $Y_{1}(t)$ and $Y_{2}(t)$ are i.i.d. with $Y(t)$.
 \end{example}
 
-\begin{definition}[control variates] \label{CV}
+\begin{definition}[Control variates] \label{CV}
   Define control variating $f(U)$ with $\tilde{f}$ an approximation of $f$ as:
   \begin{align}
     f(U) & \cong f(U_{1})-\tilde{f}(U_{1}) + E[\tilde{f}(U)] \\
@@ -434,7 +438,7 @@ additive branching recursion in RRVEs (see Example \ref{ex:coupled splitting}).
 \end{definition}
 
 
-\begin{example}[control variate on (\ref{recursive RV})] \label{ex:CV}
+\begin{example}[Control variate on (\ref{recursive RV})] \label{ex:CV}
   To create a control variate for (\ref{recursive RV}) that
   effectively reduces variance, we employ the approximation
   $y(t) \approx \tilde{y} =1+t$ and define the modified recursive term as follows:
@@ -527,7 +531,7 @@ enhanced with control variates based on the trapezoidal rule.
 \end{related}
 
 
-\begin{definition}[composite (MC) trapezoidal rule] \label{MCtrap}
+\begin{definition}[Composite (MC) trapezoidal rule] \label{MCtrap}
   Define the MC trapezoidal rule for approximating the integral
   of function $f$ over the interval $[0, 1]$ with a uniform grid
   with $n$ intervals as follows:
@@ -673,12 +677,12 @@ $Y_{1} \cong Y_{2} \cong y$.
 
 In this subsection, we discuss recursion-related techniques.
 
-\begin{technique}[coupled recursion]
+\begin{technique}[Coupled recursion]
   The idea behind coupled recursion is sharing recursion calls of
   multiple RRVEs for simulation. This does make them dependent.
 \end{technique}
 
-\begin{example}[coupled recursion] \label{ex:coupled recursion}
+\begin{example}[Coupled recursion] \label{ex:coupled recursion}
   Consider calculating the
   sensitivity of following ODE to a
   parameter $a$:
@@ -718,13 +722,13 @@ In this subsection, we discuss recursion-related techniques.
 \end{example}
 
 
-\begin{technique}[recursion in recursion]\label{tech:recu in recu}
+\begin{technique}[Recursion in recursion]\label{tech:recu in recu}
   Later we will use recursion in recursion.
   Recursion in recursion is like proving an induction
   step of an induction proof with induction.
 \end{technique}
 
-\begin{related}[recursion in recursion]
+\begin{related}[Recursion in recursion]
   A beautiful example of recursion in recursion is
   the next flight variant of Walk on Spheres in
   \cite{sawhney_grid-free_2022}.
@@ -736,7 +740,7 @@ Non-branching recursion can be avoided by directly traversing the computational 
 reverse order. Poisson time processes can be sampled in the reverse order
 because of equal forward paths and backward paths distributions.
 
-\begin{definition}[main Poisson] \label{def:main poisson}
+\begin{definition}[Main Poisson] \label{def:main poisson}
   Consider the following linear IVP with $\forall s>0 \in \mathbb{R}: f(s) \in \mathbb{R}^{n}, A(s) \in \mathbb{R}^{n \times n}$:
   \begin{align}
     y'                              & = A y + f \Leftrightarrow                                                                             \\
@@ -753,7 +757,7 @@ because of equal forward paths and backward paths distributions.
   Sampling $\tau$ uniformly is equivalent to sampling the next event in a Poisson process.
 \end{definition}
 
-\begin{julia}[implementation of \ref{def:main poisson}] \label{jl:main poisson}
+\begin{julia}[Implementation of \ref{def:main poisson}] \label{jl:main poisson}
   (\ref{eq:poisson main}) can be turned into a RRVE by sampling $\tau \sim U$, no Russian roulette is needed for
   termination because sampling the first integral ends recursion. No recursion is used
   for the implementation as we can sample the Poisson process in the reverse order.
@@ -788,7 +792,7 @@ because of equal forward paths and backward paths distributions.
   \label{fig:main poisson convergence}
 \end{figure}
 
-\begin{related}[main Poisson]
+\begin{related}[Main Poisson]
   \cite{acebron_monte_2016} derives a similar estimator for solving
   $1$-dimensional telegraph equations.
   % Unlike \ref{jl:point estimator heat} the recursion process they use can be reversed
@@ -797,7 +801,7 @@ because of equal forward paths and backward paths distributions.
 
 Tail recursion is commonly used in rendering to implement non-branching recursion.
 
-\begin{technique}[non-branching tail recursion]
+\begin{technique}[Non-branching tail recursion]
   Tail recursion involves reordering all operations
   so that almost no operation needs to happen after
   the recursion call. This allows us to return the
@@ -809,7 +813,7 @@ The non-branching recursion presented in the RRVEs can
 be implemented using tail recursion due to the associativity
 of all operations ($(xy)z = x(yz)$) involved.
 
-\begin{julia}[tail recursion for Example \ref{def:main poisson}]
+\begin{julia}[Tail recursion for Example \ref{def:main poisson}]
   We collect the sum in the variable sol and the matrix multiplications in W.
   Notice that the computation is going backwards in time.
 
@@ -822,7 +826,7 @@ may increase computational costs because of the reordering of operations.
 The computational cost of matrix multiplications are sensitive
 to reordering operations.
 
-\begin{related}[non-branching tail recursion]
+\begin{related}[Non-branching tail recursion]
   % Example \ref{ex:coupled recursion} is inspired by \cite{vicini_path_2021}.
   \cite{vicini_path_2021} proposes an efficient unbiased backpropagation
   algorithm for rendering exploiting properties of non-branching tail recursion
@@ -833,7 +837,7 @@ to reordering operations.
 
 The expensive matrix multiplications disappear when solving for $v^{T}y(t)$.
 
-\begin{julia}[adjoint tail recursion for Example \ref{def:main poisson}] \label{jl:adjoint main poisson}
+\begin{julia}[Adjoint tail recursion for Example \ref{def:main poisson}] \label{jl:adjoint main poisson}
   We collect the sum in the variable sol and instead of matrix multiplications in W
   matrix-vector multiplications in $v$.
 
@@ -1008,7 +1012,7 @@ We tested coupled splitting on Example \ref{main dirichlet}.
 Coupled splitting removes the additive branching of splitting by coupling (reusing)
 samples.
 
-\begin{example}[coupled splitting on Example \ref{main dirichlet}] \label{ex:coupled splitting}
+\begin{example}[Coupled splitting on Example \ref{main dirichlet}] \label{ex:coupled splitting}
   In addition to normal splitting (see definition \ref{def:splitting}),
   we can also split the domain in (\ref{inteq:main dirichlet})
   as follows:
@@ -1066,7 +1070,7 @@ samples.
   \label{fig:coupled splitting}
 \end{figure}
 
-\begin{related}[coupled splitting]
+\begin{related}[Coupled splitting]
   Coupled splitting is partly inspired by the approach
   of \cite{sabelfeld_sparsified_2009}, which reduces
   variance by using larger submatrices in unbiased sparsification
@@ -1085,7 +1089,7 @@ can be improved by increasing the coupled splitting amount when
 approaching the bottleneck. Alternatively when reaching
 the bottleneck it is possible to rely on splitting to converge.
 
-\begin{related}[convergence coupled splitting]
+\begin{related}[Convergence coupled splitting]
   See \cite{gupta_convergence_2021} for a discussion on the convergence
   of recursive stochastic algorithms.
 \end{related}
@@ -1315,7 +1319,7 @@ combined with presampled path stitching.
   Given $\left\{u(x,0),u(1,t),u(0,t) | \forall x,t \in [0,1]  \right\} $.
 \end{definition}
 
-\begin{definition}[semi-discretization 1D heat equation Dirichlet] \label{def:discrete heat equation square}
+\begin{definition}[Semi-discretization 1D heat equation Dirichlet] \label{def:discrete heat equation square}
   We define the semi-discretization 1D heat equation for $\tilde{u}$ as space discretized heat equation
   using the central difference scheme:
   \begin{equation}
@@ -1330,7 +1334,7 @@ combined with presampled path stitching.
 
 
 
-\begin{example}[point estimator of \ref{def:discrete heat equation square}] \label{ex: point estimator of semi heat}
+\begin{example}[Point estimator of \ref{def:discrete heat equation square}] \label{ex: point estimator of semi heat}
   We want a point estimator for the solution to the semi-discretization 1D heat equation. Apply (\ref{eq:poisson main})
   with $\sigma = \frac{2}{\Delta x^{2}}$ at interior point $j$ this is:
   \begin{equation}
@@ -1345,7 +1349,7 @@ combined with presampled path stitching.
   the convergence in $\sigma$ demonstrated in Figure \ref{fig:main poisson convergence}.
 \end{example}
 
-\begin{julia}[implementation of estimator of (\ref{eq:int semi heat})]\label{jl:point estimator heat}
+\begin{julia}[Implementation of estimator of (\ref{eq:int semi heat})]\label{jl:point estimator heat}
 
   \juliacode{julia_code/point_estimator_heat_tail.jl}
 
@@ -1393,7 +1397,7 @@ combined with presampled path stitching.
   sampled $f$ together with $(a(x,s)+ a_{0})u$ for simplicity.
 \end{example}
 
-\begin{julia}[implementation of estimator of (\ref{eq:int semi heat source})]\label{jl:point estimator heat source}
+\begin{julia}[Implementation of estimator of (\ref{eq:int semi heat source})]\label{jl:point estimator heat source}
   Because of the high chance of sampling the $\frac{u_{+} + u_{-}}{\Delta x^{2}}$ it is efficient
   to sample the interarrival until not sampling it which is geometrically distributed.
 
@@ -1405,7 +1409,7 @@ unlike Example \ref{ex: point estimator of semi heat} but this is limited
 to a few points of the time space process and this amount does not scale with $\Delta x$.
 
 
-\begin{technique}[presampling the process of \ref{jl:point estimator heat source}] \label{tech:presampling heat}
+\begin{technique}[Presampling the process of \ref{jl:point estimator heat source}] \label{tech:presampling heat}
   As $\Delta x \rightarrow 0$ the bottleneck is sampling the process that moves through space and time.
   This process is independent of the boundary conditions, $a(x,t)$ and $f(x,t)$. So it is possible to
   precompute samples of the process and reuse them.
@@ -1452,7 +1456,7 @@ In this subsection we discuss recursive first passage sampling to efficiently
 first passage sample complicated geometries.
 
 
-\begin{definition}[first passage time] \label{def:first passage time}
+\begin{definition}[First passage time] \label{def:first passage time}
   Define the first passage time for a process $X_{t}$ for a set of valid states
   $V$ as
   \begin{equation}
@@ -1462,7 +1466,7 @@ first passage sample complicated geometries.
   Note that the first passage time is a RV itself.
 \end{definition}
 
-\begin{definition}[first passage] \label{def:first passage}
+\begin{definition}[First passage] \label{def:first passage}
   Define the first passage for a process $X_{t}$ for a set of valid states
   $V$ as
   \begin{equation}
@@ -1509,14 +1513,14 @@ of the boundary Green's boundary function. Because of:
   .
 \end{align}
 
-\begin{related}[recursively estimating Green's functions]
+\begin{related}[Recursively estimating Green's functions]
   In \cite{qi_bidirectional_2022} unbiased estimators for the boundary Green's function are constructed
   by recursively sampling known Green's functions.
 \end{related}
 
 Similar to recursively  sampling simpler Green's function we recursively sample first passages.
 
-\begin{technique}[recursive first passage sampling]
+\begin{technique}[Recursive first passage sampling]
   Recursive first passage sampling involves sampling an initial,
   simpler first passage, the base that includes fewer valid states. Using
   this sampled first passage as a starting point, we
@@ -1540,7 +1544,7 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
 \end{example}
 
 
-\begin{example}[recursive first passage sampling] \label{ex:recursive first passage sampling}
+\begin{example}[Recursive first passage sampling] \label{ex:recursive first passage sampling}
   In this example, we sample the first passage of Brownian motion from a parabolic barrier
   with recursive first passage sampling.
   For the simpler first passage sampler, we  exploit the self-affinity of Brownian motion
@@ -1576,7 +1580,7 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
 
 \end{example}
 
-\begin{related}[recursive first passage sampling]
+\begin{related}[Recursive first passage sampling]
   Walk on Spheres see \ref{ex: walk on spheres} is a recursive first passage algorithm.
   Recursive first passage sampling for
   Brownian motion is discussed in \cite{herrmann_first-passage_2016}
@@ -1597,7 +1601,7 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
   sampled this way are stitched together.
 \end{technique}
 
-\begin{example}[path stitching parabola]
+\begin{example}[Path stitching parabola]
   Example \ref{ex:recursive first passage sampling} but
   resampling full Euler scheme generated paths.
   The advantages over generating paths directly from
@@ -1618,7 +1622,7 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
 \end{example}
 
 
-\begin{related}[path stitching]
+\begin{related}[Path stitching]
   Path stitching appears frequently in rendering and also in \cite{das_sarma_fast_2015}
   and \cite{ji_reusing_2012}.
 \end{related}

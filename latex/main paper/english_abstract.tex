@@ -1,10 +1,19 @@
-This thesis introduces recursive Monte Carlo
-for solving linear initial value problems with a vision towards
-partial differential equations.
-Proposing $3$ new methods:
-RRMC an unbiased method for linear initial value problems
-that has similar convergence behavior in step size or function evaluations to traditional methods,
-coupled splitting an unbiased technique for linear Fredholm integral equations of the
-second kind that has similar convergence behavior to fix-point methods
-and finally a path resampling method similar to walk on spheres applied
-to recursive Monte Carlo of an IVP obtained by semi-discretizing the heat equation.
+Unbiased algorithms for solving linear initial value problems have received limited attention.
+This is addressed here by proposing unbiased Recursive Monte Carlo methods for solving
+linear initial value problems and linear Fredholm integral equations of the second kind. Motivated
+by understanding randomized parallel complexity and downstream applications to partial differential
+equations, these methods are developed.
+
+Previously only biased methods were known to achieve optimal convergence rates for nonlinear
+initial value problems which has primarily theoretical significance.
+The proposed RRMC method, an unbiased algorithm for linear initial value problems,
+together with control variates is conjectured to be order optimal with high
+probability for corresponding smoothness classes.
+
+Parallel to this, the main Poisson algorithm is proposed, generalizing the algorithm in \cite{acebron_monte_2016},
+which is simple and forward implementable. The main Poisson algorithm is applied
+to the semi-discretized heat equation demonstrating a path resampling technique, that provides
+a novel perspective on the Walk on Spheres method, with potential for alternative generalizations.
+
+The proposed methods broadens the understanding of what is possible with unbiased algorithms for
+solving linear initial value problems, paving the way for further research in this area.
