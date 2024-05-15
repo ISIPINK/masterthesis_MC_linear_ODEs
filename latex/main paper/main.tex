@@ -182,9 +182,10 @@ rigorous definition of IBC.
   needed and accuracy.
 \end{definition}
 
-Note that we consider average
-amount of function calls as a measure of cost instead of deterministic
-amount of function calls used which encompasses a broader range of algorithms.
+Note that we consider the average amount of function calls as a measure of cost,
+rather than the deterministic amount of function calls used. We implicitly assume that the variance of the amount
+of function calls exists, which provides confidence intervals for the function calls through Chebyshev's inequality.
+
 
 \begin{example}[IBC of (\ref{eq:BLUE})]
   In (\ref{eq:BLUE}) the function calls trades of
@@ -375,7 +376,7 @@ decreases the samples of unimportant terms.
   Splitting $X$ refers to utilizing multiple $X_{j} \cong X$ (not necessarily independent) to
   reduce variance by taking their average:
   \begin{equation}
-    X \cong \frac{1}{N} \sum_{j=1}^{N} X_{j}.
+    X \cong \frac{1}{n} \sum_{j=1}^{n} X_{j}.
   \end{equation}
 \end{definition}
 
@@ -743,18 +744,20 @@ because of equal forward paths and backward paths distributions.
 \begin{definition}[Main Poisson] \label{def:main poisson}
   Consider the following linear IVP with $\forall s>0 \in \mathbb{R}: f(s) \in \mathbb{R}^{n}, A(s) \in \mathbb{R}^{n \times n}$:
   \begin{align}
-    y'                              & = A y + f \Leftrightarrow                                                                             \\
-    y'+\sigma y                     & = (A + \sigma I) y + f\Leftrightarrow                                                                 \\
-    e^{-\sigma t} ( e^{\sigma t}y)' & = (A + \sigma I) y + f  \Leftrightarrow                                                               \\
-    y(t)                            & = e^{-\sigma t} y(0) + \int_{0}^{t} e^{(s-t) \sigma} \left(  (A(s) + \sigma I ) y(s) +f(s)\right) ds.
+    y_t                              & = A(t) y + f(t) \Leftrightarrow                                                                       \\
+    y_t + \sigma y                   & = (A(t) + \sigma I) y + f(t) \Leftrightarrow                                                          \\
+    e^{-\sigma t} ( e^{\sigma t}y)_t & = (A(t) + \sigma I) y + f(t)  \Leftrightarrow                                                         \\
+    y(t)                             & = e^{-\sigma t} y(0) + \int_{0}^{t} e^{(s-t) \sigma} \left(  (A(s) + \sigma I ) y(s) +f(s)\right) ds.
   \end{align}
+
   With $\sigma>0 \in \mathbb{R}$ . Do following substitution: $e^{(s-t)\sigma} = \tau$ equivalent to importance sampling
   the exponential term:
   \begin{equation} \label{eq:poisson main}
     y(t) = \int_{0}^{e^{-\sigma t}}  y(0) d\tau + \int_{e^{-\sigma t}}^{1} \left(  \frac{A(s)}{\sigma} + I\right)  y(s) + \frac{f(s)}{\sigma} d\tau
     .
   \end{equation}
-  Sampling $\tau$ uniformly is equivalent to sampling the next event in a Poisson process.
+  Sampling $\tau$ uniformly is equivalent to sampling the next event in a Poisson process,
+  which produces an unbiased estimator of the solution to the linear IVP.
 \end{definition}
 
 \begin{julia}[Implementation of \ref{def:main poisson}] \label{jl:main poisson}
@@ -767,7 +770,7 @@ because of equal forward paths and backward paths distributions.
   Figure \ref{fig:main poisson error} and Figure \ref{fig:main poisson convergence} demonstrate the convergence
   behavior of the estimator. The estimated convergence of RMSE is $O(\sigma^{-0.5} nsim^{-0.5})$, the amount of
   time steps is simply $\sim$ Poisson($\sigma t$). Note that unlike MC integration the cost of a simulation is not
-  a bounded, therefore wall clock time at risk increases with $nsim$.
+  a bounded, resulting in increased wall clock time at risk as $nsim$ grows for parallel simulations.
 
 \end{julia}
 
@@ -786,8 +789,8 @@ because of equal forward paths and backward paths distributions.
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{julia_plots/main_poisson_convergence.pdf}
-  \caption{Realizations of norm of the error of \ref{jl:main poisson} for (\ref{couple recu ex1}) and (\ref{couple recu ex2}) with $a=1$,
-    $nsim =1$ and $\sigma$ variable or $nsim$ variable and $\sigma = 1$. $nsim$ denoting the number of simulations
+  \caption{Realizations of norm of the error at $t=1$ of \ref{jl:main poisson} for (\ref{couple recu ex1}) and (\ref{couple recu ex2}) with $a=1$,
+    $nsim =1$ and $\sigma$ variable or $nsim$ variable and $\sigma = 1$ . $nsim$ denoting the number of simulations
     when splitting the whole estimator.}
   \label{fig:main poisson convergence}
 \end{figure}
@@ -846,6 +849,10 @@ The expensive matrix multiplications disappear when solving for $v^{T}y(t)$.
   We are interested in methods that can keep $v$ sparse.
   When $(v)_{j} = \delta_{jn}$ we obtain an estimator for $(y(t))_{n}$.
 \end{julia}
+
+\begin{related}[Adjoint tail recursion]
+  \cite{ermakov_monte_2021}  also proposes an unbiased method for functionals of linear IVPs.
+\end{related}
 
 \section{Ordinary Differential Equations}
 
