@@ -1642,101 +1642,28 @@ Similar to recursively  sampling simpler Green's function we recursively sample 
 
 \section{Limitations and Future Work}
 
-In this section, we discuss limitations of our work and propose potential future work.
-Some parts are underdeveloped, unexplored, or insufficiently integrated
-into the existing body of literature. At the time of writing this thesis, our
-primary reference was the Walk on Spheres literature. We independently rediscovered
-the improved random convergence of integration and IVPs, the
-use of a Poisson process to circumvent recursion (as shown in \ref{jl:main poisson}),
-and the recursive estimator for $e^{E[X]}$ (as demonstrated in example \ref{ex:exp int}).
-These discoveries subsequently led us to other relevant literature. \\
+While we discussed many different topics, the scope was limited.
+There are still several areas that require further exploration,
+development, and better integration into the existing literature. \\
 
-The section on RRMC was written before we discovered algorithm \ref{jl:main poisson}.
-It may be possible to circumvent recursion in RRMC similar to algorithm \ref{jl:main poisson}.
-Our application of
-recursion in recursion in RRMC for IVPs is primarily aimed at achieving convergence behavior
-akin to classical solvers, while maintaining unbiasedness. This recursive approach allows us to
-'freeze' terms in the outer recursion without bias. The next logical step would be
-to attempt 'freezing' terms that vary slowly. We believe that RRMC, even after optimizations, would
-be useful in specific use cases. Furthermore, insights from unbiased algorithms could
-help develop biased algorithms. \\
+Initially, our primary reference was the Walk on Spheres literature.
+The application of its techniques to IVPs guided us to random
+convergence for integration/IVPs, using a Poisson process to
+bypass recursion, and the recursive estimator for $e^{E[X]}$. These different discoveries resulted in numerous structural modifications in our thesis, resulting in a disjointed narrative throughout. \\
 
-Our techniques for linear IVPs are based on transforming to integral equations which should be extendable
-to linear delay differential equations. Another potential direction involves directly estimating
-the Magnus expansion, where unbiased estimators for $e^{\int_{0}^{\Delta t} A(s)ds} y(0)$ are required.
-This is related to work on evaluating matrix functions with Monte Carlo methods, as seen in \cite{guidotti_fast_2023}. \\
+One area that definitely deserves further investigation is the main Poisson algorithm, which we discovered after completing our section on RRMC. Our investigation of the algorithm is rushed, and we are confident that there are additional valuable properties that remain to be discovered. We are interested in methods that exhibit behavior similar to RRMC derived from or related to the Main Poisson algorithm. Additionally, we are also interested in methods of these types for stiff problems. \\
 
-In subsection \ref{sec:greens functions}, we developed global integral equations for a test problem.
-Despite the inherent local nature of ODEs, we are curious whether this locality is retained in the global integral equations.
-More specifically, we are interested in whether this local nature can be leveraged to enhance the efficiency of
-estimators solving these global integral equations, even without knowledge of the original ODEs.  \\
+In addition to this, our methods for linear IVPs, which involve transformation to integral equations, could potentially be expanded to linear delay differential equations. Besides the integral equation approach, another direction involves direct estimation of the Magnus expansion. This would require unbiased estimators for expressions of the type $e^{\int_{0}^{\Delta t} A(s)ds} y(0)$. This is related to the work on evaluating matrix functions using MC methods, as referenced in \cite{guidotti_fast_2023}. An alternative approach could be to combine unbiased piecewise constant estimators of $A(t)$ and $f(t)$ with solvers for linear constant variable IVPs. \\
 
-Coupled splitting's convergence behavior and unbiasedness at each iteration are key attributes.
-However, the use of recursion and Russian roulette in its implementation poses practical challenges.
-Despite these challenges, numerous opportunities exist to further optimize the performance of coupled splitting
-with typical MC techniques.
+In the subsection discussing Green's functions, we formulated global integral equations for a test problem. We interested if the local characteristics of ODEs persist in these global integral equations. Specifically, if this local aspect can be utilized to improve the efficiency of estimators tasked with solving these integral equations. \\
 
-We employed the adjoint main Poisson method \ref{jl:adjoint main poisson} as the foundation for deriving our
-point estimators for the heat equation. However, it remains uncertain which class of problems can be addressed
-by the adjoint main Poisson method in a manner similar to the heat equation.
-% maybe I should add this
-We have not fully discussed how to combine presampling with path stitching and when it is possible to do so.
-We think that this can be interpreted as U-statistic with i.i.d. subpaths. \\
+The practicality of coupled splitting remains uncertain. Despite its favorable convergence behavior and unbiasedness at each iteration, the implementation presents practical difficulties due to the use of recursion and Russian roulette. Additionally, the dense matrix multiplications make it too costly to be efficient. However, these challenges do not rule out the potential for performance optimization of coupled splitting using standard MC techniques. \\
 
+We used the adjoint main Poisson method as the basis for deriving our point estimators for the heat equation. Another point of view can be obtained by using the Feynman-Kac formula by MC estimating the integral over time and doing a space discretization. However, it's unclear which types of problems can be tackled using the adjoint main Poisson method in a way similar to the heat equation. Ideally, we would like to find something akin to the Feynman-Kac formula for different PDEs that retains as many of the desirable properties as possible, but is more broadly applicable. Furthermore, we have yet to fully investigate how to merge presampling with path stitching and under what circumstances this is feasible. An interesting observation when combining presampling with path stitching is that we can interpret subpaths as iid variables in a U-estimator. \\
 
-% We believe that understanding and optimizing unbiased and deterministic linear ODE solvers
-% is the key to developing better randomized ODE/PDE solvers.
-% Randomized ODE/PDE solvers are useful for cases with little structure
-% where the advantage of IBC is significant or where the linear trade-off
-% between cost and variance is close to optimal. \\
+Identifying suitable applications for the proposed algorithms could result in specialized versions tailored specifically for those use cases. Potential applications could be in fields where MC methods are already prevalent. Unbiased algorithms naturally fit scenarios where the primary computational load or the quantity of interest is an average. This is particularly true in situations with minimal structure, where the advantage of IBC over deterministic algorithms are meaningful, or where the linear trade-off between cost and variance is nearly optimal. We believe that unbiased linear IVPs solvers are important to developing/understanding randomized ODE/PDE solvers. The applications beyond general ODEs/PDEs that we have in mind include enhancing the efficiency of existing WoS methods, adapting MC algorithms in reinforcement learning, and creating stochastic gradient descent methods from an ODE perspective that utilize stochastic step sizes to improve stability. \\
 
-% Besides the time process, other areas of development could
-% include the cheaper construction of control variates,
-% different types of control variates, adaptive schemes,
-% freezing less important terms in the inner recursion or Russian rouletting
-% them into reasonable approximations, error estimates based on variance in the
-% inner recursion, etc. \\
-
-% To handle stiff problems we weigh towards exponential integrators
-% type of methods. The biggest obstacle to implementing them similar to diagonal RRMC
-% is getting unbiased estimates of $e^{A(t-s)} y(s)$ type of expressions. In the case
-% of a big matrix $A$  unbiased sparsifaction will probably be useful
-% see \cite{sabelfeld_sparsified_2009}.
-% Initially, we came up with Example \ref{ex:exp int}, but some time later,
-% we found the paper from NVIDIA \cite{kettunen_unbiased_2021} that optimizes
-% that example. Closely related to this is directly estimating the Magnus expansion,
-% where expressions like $e^{\int_{0}^{\Delta t} A(s)ds} y(0)$ are needed.
-% In this case, \cite{kettunen_unbiased_2021} doesn't utilize the smoothness of
-% $A(s)$, which is necessary
-% for optimal IBC.
-
-One of the elements lacking in our findings is rigor.
-\cite{ermakov_monte_2021} presents Theorems $1$ and $2$ to
-show that their estimators have finite variance and provide an expression for it.
-Before becoming aware of \cite{ermakov_monte_2021}, we
-previously attempted to derive an expression for the variance
-by employing the law of total variance, similar to (16) in \cite{rath_ears_2022}. \\
-We believe that proving the optimality of IBC in Example \ref{ex:CV RRMC IVP} is feasible
-but tedious.
-\cite{daun_randomized_2011} presented a proof for optimal IBC for their algorithm.
-The proof we have in mind is using a lower bound on IBC
-from integration and proving it is attained.\\
-
-% Optimal IBC isn't everything. Being optimal in IBC doesn't necessarily mean it's optimized.
-% An algorithm that uses $1000$ times more function calls may still have the same
-% IBC. Additionally, the computational goal
-% might not align well with the IBC framework.
-% We admire \cite{becker_learning_2022},
-% which employs deep learning to extend beyond the IBC framework.
-% The emphasis here is on performing multiple rapid solves (inferences)
-% while allowing for an expensive precomputation (training).
-% IBC also doesn't take into account the parallel nature of computations.
-% Given infinite parallel resources, it would be reasonable to cease reducing
-% variance by decreasing the step size and instead opt for splitting the final estimator.
-% The only necessary communication in splitting is averaging the final
-% estimator. We hypothesize that for RMC, the wall time at risk
-% increases logarithmically with the size of the splitting.
-
+Finally, one of the elements lacking in our findings is rigor. We attempted to derive an expression for the variance by employing the law of total variance, similar to \cite{rath_ears_2022}. However, we were unaware of \cite{ermakov_monte_2021} at the time, which presents theorems to show that their estimators have finite variance and provide an expression for it but this aplies only directly on the adjoint Main Poisson algorithm and may require some work to further generalize. We believe that proving the optimality of IBC in Example \ref{ex:CV RRMC IVP} is feasible but tedious, by a proof using a lower bound on IBC from integration and proving it is attained.
 
 
 \newpage
