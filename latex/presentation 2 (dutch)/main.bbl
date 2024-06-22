@@ -19,58 +19,6 @@
 
 \refsection{0}
   \datalist[entry]{nyt/global//global/global}
-    \entry{daun_randomized_2011}{article}{}
-      \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=d8e4cbc639458d56282aa7b3cc7d6fe0}{%
-           family={Daun},
-           familyi={D\bibinitperiod},
-           given={Thomas},
-           giveni={T\bibinitperiod},
-           givenun=0}}%
-      }
-      \list{language}{1}{%
-        {en}%
-      }
-      \strng{namehash}{d8e4cbc639458d56282aa7b3cc7d6fe0}
-      \strng{fullhash}{d8e4cbc639458d56282aa7b3cc7d6fe0}
-      \strng{bibnamehash}{d8e4cbc639458d56282aa7b3cc7d6fe0}
-      \strng{authorbibnamehash}{d8e4cbc639458d56282aa7b3cc7d6fe0}
-      \strng{authornamehash}{d8e4cbc639458d56282aa7b3cc7d6fe0}
-      \strng{authorfullhash}{d8e4cbc639458d56282aa7b3cc7d6fe0}
-      \field{sortinit}{D}
-      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{abstract}{We study the randomized solution of initial value problems for systems of ordinary differential equations \$\$ y{\textasciicircum}\{{\textbackslash}prime\}(x)=f(x, y(x)), x {\textbackslash}in[a, b], y(a)=y\_0 {\textbackslash}in {\textbackslash}mathbb\{R\}{\textasciicircum}d . \$\$ Recently S. Heinrich and B. Milla presented an order optimal randomized algorithm solving this problem for \${\textbackslash}gamma\$-smooth input data (i.e. \${\textbackslash}gamma=r+{\textbackslash}rho\$ : the \$r\$-th derivatives of \$f\$ satisfy a \${\textbackslash}rho\$-Hölder condition). This algorithm uses function values and values of derivatives of \$f\$. In this paper we present an order optimal randomized algorithm for the class of \${\textbackslash}gamma\$-smooth functions that uses only values of \$f\$. For this purpose we show how to obtain an order optimal randomized algorithm from an order (sub)optimal deterministic one.}
-      \field{issn}{0885064X}
-      \field{journaltitle}{Journal of Complexity}
-      \field{month}{6}
-      \field{number}{3-4}
-      \field{title}{On the randomized solution of initial value problems}
-      \field{urlday}{6}
-      \field{urlmonth}{3}
-      \field{urlyear}{2023}
-      \field{volume}{27}
-      \field{year}{2011}
-      \field{urldateera}{ce}
-      \field{pages}{300\bibrangedash 311}
-      \range{pages}{12}
-      \verb{doi}
-      \verb 10.1016/j.jco.2010.07.002
-      \endverb
-      \verb{file}
-      \verb Daun - 2011 - On the randomized solution of initial value proble.pdf:C\:\\Users\\isido\\Zotero\\storage\\NCVQFBK5\\Daun - 2011 - On the randomized solution of initial value proble.pdf:application/pdf
-      \endverb
-      \verb{urlraw}
-      \verb https://linkinghub.elsevier.com/retrieve/pii/S0885064X1000066X
-      \endverb
-      \verb{url}
-      \verb https://linkinghub.elsevier.com/retrieve/pii/S0885064X1000066X
-      \endverb
-      \keyw{monte carlo,ODE,IBC}
-    \endentry
     \entry{heinrich_optimal_2001}{misc}{}
       \name{author}{2}{}{%
         {{un=0,uniquepart=base,hash=d2366e969003a688a9301ca3e3117f0b}{%
@@ -124,64 +72,6 @@
       \verb http://arxiv.org/abs/quant-ph/0105114
       \endverb
       \keyw{Mathematics - Numerical Analysis,Quantum Physics,integration,IBC}
-    \endentry
-    \entry{jentzen_random_2009}{article}{}
-      \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=ba09c62d08532759bb23122bc4595700}{%
-           family={Jentzen},
-           familyi={J\bibinitperiod},
-           given={A.},
-           giveni={A\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=a721774a6722a83ce174592a5e2d1694}{%
-           family={Neuenkirch},
-           familyi={N\bibinitperiod},
-           given={A.},
-           giveni={A\bibinitperiod},
-           givenun=0}}%
-      }
-      \list{language}{1}{%
-        {en}%
-      }
-      \strng{namehash}{025c9f3f131836daa7e46e9a5266d7f9}
-      \strng{fullhash}{025c9f3f131836daa7e46e9a5266d7f9}
-      \strng{bibnamehash}{025c9f3f131836daa7e46e9a5266d7f9}
-      \strng{authorbibnamehash}{025c9f3f131836daa7e46e9a5266d7f9}
-      \strng{authornamehash}{025c9f3f131836daa7e46e9a5266d7f9}
-      \strng{authorfullhash}{025c9f3f131836daa7e46e9a5266d7f9}
-      \field{sortinit}{J}
-      \field{sortinithash}{b2f54a9081ace9966a7cb9413811edb4}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{abstract}{We study a random Euler scheme for the approximation of Carathéodory differential equations and give a precise error analysis. In particular, we show that under weak assumptions, this approximation scheme obtains the same rate of convergence as the classical Monte–Carlo method for integration problems.}
-      \field{issn}{03770427}
-      \field{journaltitle}{Journal of Computational and Applied Mathematics}
-      \field{month}{2}
-      \field{number}{1}
-      \field{title}{A random {Euler} scheme for {Carathéodory} differential equations}
-      \field{urlday}{6}
-      \field{urlmonth}{3}
-      \field{urlyear}{2023}
-      \field{volume}{224}
-      \field{year}{2009}
-      \field{urldateera}{ce}
-      \field{pages}{346\bibrangedash 359}
-      \range{pages}{14}
-      \verb{doi}
-      \verb 10.1016/j.cam.2008.05.060
-      \endverb
-      \verb{file}
-      \verb Jentzen en Neuenkirch - 2009 - A random Euler scheme for Carathéodory differentia.pdf:C\:\\Users\\isido\\Zotero\\storage\\LFZQS9Q7\\Jentzen en Neuenkirch - 2009 - A random Euler scheme for Carathéodory differentia.pdf:application/pdf
-      \endverb
-      \verb{urlraw}
-      \verb https://linkinghub.elsevier.com/retrieve/pii/S0377042708002136
-      \endverb
-      \verb{url}
-      \verb https://linkinghub.elsevier.com/retrieve/pii/S0377042708002136
-      \endverb
-      \keyw{monte carlo,ODE}
     \endentry
     \entry{kettunen_unbiased_2021}{article}{}
       \name{author}{4}{}{%

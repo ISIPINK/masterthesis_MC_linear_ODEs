@@ -19,6 +19,7 @@
 \title{RMC voor lineaire ODEs}
 \author{Isidoor Pinillo Esquivel }
 \usetheme{Madrid}
+
 \date{}
 
 \begin{document}
@@ -27,9 +28,38 @@
 \begin{frame}
     \titlepage
 \end{frame}
+
+\section{Introductie}
 % 2 min
 \begin{frame}
-    \frametitle{Mijn motivatie}
+    \frametitle{Introductie}
+    \begin{equation}
+        y_{t} = A(t)y(t)
+        .
+    \end{equation}
+    Euler:
+    \begin{alignat}{2}
+        \frac{\tilde{y}(t_{k}+\Delta t)-\tilde{y}(t_{k})}{\Delta t} & = & A(t_{k})                & \tilde{y}(t_{k}) \\
+        \tilde{y}(t_{k+1})                                          & = & (I+\Delta t A(t_{k}))   & \tilde{y}(t_{k}) \\
+        Y(T_{k+1})                                                  & = & (I+\Delta t A(T_{k+1})) & Y(T_{k})
+    \end{alignat}
+    $T_{k+1} = T_{k} + \text{Exp}(\Delta t)$, exponentiële verdeelde stappen.
+    \begin{equation}
+        y(T_{k})=E[Y(T_{k})].
+    \end{equation}
+
+\end{frame}
+
+% 1 min
+\begin{frame}
+    \frametitle{Overzicht}
+    \tableofcontents
+\end{frame}
+
+% 2 min
+\section{Motivatie}
+\begin{frame}
+    \frametitle{Motivatie}
     Veralgemenen van WoS algoritme van (\cite{sawhney_grid-free_2022})
     naar tijd
     \vspace{-0.25cm}
@@ -40,15 +70,11 @@
     \end{figure}
 \end{frame}
 
+\section{Monte Carlo}
 \begin{frame}
-    \frametitle{Overzicht}
-    \begin{itemize}
-        \item randomized information/sample-based complexity theory of summation
-        \item main Poisson algoritme voor lineaire beginwaardeproblemen
-        \item recursive first passage resampling as a U-estimator?
-    \end{itemize}
+    \frametitle{Monte Carlo}
+    \tableofcontentscurrent
 \end{frame}
-
 
 % 2 min
 \begin{frame}
@@ -56,27 +82,40 @@
     \action<+->{
         Probleem: benader $\bar{x} = \frac{1}{k}\sum_{i=1}^{k} x_{i}$ met $n<k$ van de $x_{i}$'s $\in [0,1]$\\
         (symmetrisch in $x_{i}$) \\
-        \vspace{0.5cm}
+        \vspace{0.2cm}
     }
     \action<+->{
         Vertrouwensinterval kans $=1$  $\sim \frac{k-n}{k}= 1-\frac{n}{k}$ \\
         (worst case scenarios van de missende informatie liggen $\frac{1}{k}$ uit elkaar) \\
-        \vspace{0.5cm}
+        \vspace{0.2cm}
     }
     \action<+->{
-        Benader door te samplen met vervanging $\bar{x}  \cong \frac{1}{n}\sum_{i=1}^{n} x_{I_{i}}$\\
-        (zonder vervanging is sneller maar niet onafhankelijk) \\
-        \vspace{0.5cm}
+        Benader door te samplen of door termen willekeurig weg laten
+        \begin{equation}
+            \bar{x}  \cong \frac{1}{n}\sum_{i=1}^{n} x_{I_{i}} \cong \frac{1}{k}\sum_{i=1}^{k} B_{i} x_{i}
+            .
+        \end{equation}
+        ($E[B_{i}] = 1, P[B_{i}=0]=p$) \\
+        \vspace{0.2cm}
     }
     \action<+->{
-        Variantie = RMSE $\sim O\left(\frac{1}{\sqrt{n}}\right)$\\
-        en ook vertrouwensintervallen kans $<1$\\
+        Variantie = RMSE $\sim O\left(\frac{1}{\sqrt{n}}\right)$ en ook vertrouwensintervallen kans $<1$\\
         (CLT of Chebychev's ongelijkheid)\footcitetext{heinrich_optimal_2001}\\
     }
 
 \end{frame}
 
-% 2 min
+% 1 min
+\begin{frame}
+    \frametitle{Optelling algoritmes (plot)}
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.8\textwidth]{imgs/convergence_sums.pdf}
+        \label{fig:convergentie_optelling}
+    \end{figure}
+\end{frame}
+
+% 1 min
 \begin{frame}
     \frametitle{Monte Carlo Integratie}
     Integratie $\approx$ sommatie, integreerbare $f: \mathbb{R} \rightarrow [0,1]$:
@@ -88,125 +127,58 @@
     % Sommatie en integratie hebben $1$-sample unbiased estimator.
 \end{frame}
 
-\begin{frame}
-    \frametitle{Lineaire ODEs}
-    \action<+->{
-        Probleem: benader $y(t)$ waar $y'(t) = A(t)y(t)$ gegeven $y(0)$ en $A(t)$ begrensd\\
-        \vspace{0.25cm}
-    }
-    \action<+->{
-        Biased algoritme met $n$ samples
-        \footcite{jentzen_random_2009},\footcite{daun_randomized_2011} \\
-        (enkel random)\\
-        \vspace{0.25cm}
-    }
-    \action<+->{
-        $\nexists$ unbiased algoritme met $n$ samples van $A(t)$\\
-        (niet bewezen $\implies$ te sterk parallel algoritme)
-        \vspace{0.25cm}
-    }
+\section{Main Poisson algoritme}
 
-    \action<+->{
-        $\exists$ unbiased algoritme met gemiddeld $n$ samples van $A(t)$\\
-        (gemakkelijk paralleliseerbaar) \\
-    }
+\begin{frame}
+    \tableofcontentscurrent
 \end{frame}
 
 % 2 min
 \begin{frame}
-    \frametitle{Willekeurig hoeveelheid samples}
-    \action<+->{
-        Hoeveelheid samples: vast vs willekeurig  \\
-        (Russische roulette in recursieve Monte Carlo )\\
-    }
-    \action<+->{
-        Russische roulette $\approx$ \\
-        unbiased techniek om soms te vervangen met een benadering \\
-        \begin{equation}
-            X \cong
-            \begin{cases}
-                \frac{1}{p}(X - (1-p)Y_{1}) & \text{ met kans }  p \\
-                Y_{2}                       & \text{ anders }
-            \end{cases}.
-        \end{equation}
-    }
-    \action<+->{
-        Voor de optelling roulette de $x_{i}$'s:
-        \begin{equation}
-            x_{i} \cong
-            \begin{cases}
-                \frac{1}{p}(x_{i} - \frac{1-p}{2}) & \text{ met kans }  p \\
-                \frac{1}{2}                        & \text{ anders }
-            \end{cases}.
-        \end{equation}
-    }
-
-    \action<+->{
-        Gebruikt $x_{i}$ met kans $p$, of $\text{Bionmial}(k,p)$ samples in totaal en $kp$ gemiddeld
-    }
-
-\end{frame}
-
-\begin{frame}
-    \frametitle{Willekeurig hoeveelheid samples (plot)}
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{imgs/convergence_sums.pdf}
-        \label{fig:convergentie_optelling}
-    \end{figure}
-\end{frame}
-
-\begin{frame}
     \frametitle{Main Poisson algoritme}
 
     \begin{align}
-        \action<+->{y'                              & = A y + f \Leftrightarrow                                                              \\}
-        \action<+->{y'+\sigma y                     & = (A + \sigma I) y + f\Leftrightarrow                                                                 \\}
-        \action<+->{e^{-\sigma t} ( e^{\sigma t}y)' & = (A + \sigma I) y + f  \Leftrightarrow                                                               \\}
-        \action<+->{y(t)                            & = e^{-\sigma t} y(0) + \int_{0}^{t} e^{(s-t) \sigma} \left(  (A(s) + \sigma I ) y(s) +f(s)\right) ds,}
+        \action<+->{y_t                              & = A(t) y \Leftrightarrow                                                              \\}
+        \action<+->{y_t+\sigma y                     & = (\sigma I + A(t)) y \Leftrightarrow                                                                 \\}
+        \action<+->{e^{-\sigma t} ( e^{\sigma t}y)_t & = (\sigma I + A(t)) y    \Leftrightarrow                                                               \\}
+        \action<+->{y(t)                             & = e^{-\sigma t} y(0) + \int_{0}^{t} e^{(s-t) \sigma} \left(  \left(\sigma I + A(s) \right) y(s)\right) ds,}
     \end{align}
     \action<+->{doe volgende substitutie $e^{(s-t)\sigma} = \tau$, equivalent aan exponentieel te samplen}
 
     \begin{equation} \label{eq:poisson main}
         \action<+->{
         y(t) = \int_{0}^{e^{-\sigma t}}  y(0) d\tau
-        + \int_{e^{-\sigma t}}^{1} \left(  \frac{A(s)}{\sigma} + I\right)  y(s) + \frac{f(s)}{\sigma} d\tau.
+        + \int_{e^{-\sigma t}}^{1} \left(  I+ \frac{A(s)}{\sigma} \right)  y(s) d\tau.
         }
     \end{equation}
     \action<+->{sample $\tau$ uniform, equivalent aan een Poisson proces te samplen.}
 \end{frame}
-
+% 2min
 \begin{frame}
     \frametitle{Main Poisson algoritme (recursief samplen)}
 
     \begin{equation} \label{eq:poisson main 2}
         y(t) = \int_{0}^{e^{-\sigma t}}  y(0) d\tau
-        + \int_{e^{-\sigma t}}^{1} \left(  \frac{A(s)}{\sigma} + I\right)  y(s) + \frac{f(s)}{\sigma} d\tau.
+        + \int_{e^{-\sigma t}}^{1} \left(I+   \frac{A(s)}{\sigma} \right)  y(s) d\tau.
     \end{equation}
     sample $\tau$ uniform, equivalent aan een Poisson proces te samplen. \\
     \action<+->{}
     \action<+->{
-        Sample $y(t)$ recursief
+        Doe dit recursief verder:
         \begin{equation}
             Y(t)= \begin{cases}
-                y(0)                                                               & \text{als }  e^{-\sigma t} \le  \tau \\
-                \left(  \frac{A(S)}{\sigma} + I\right)  Y(S) + \frac{f(S)}{\sigma} & \text{anders}
+                y(0)                                        & \text{als }  e^{-\sigma t} \le  \tau \\
+                \left( I+ \frac{A(S)}{\sigma} \right)  Y(S) & \text{anders}
             \end{cases}
             ,
         \end{equation}
-        met $S = t +\frac{\ln\left(\tau\right)}{\sigma}$, let op $y \neq Y$
+        met $S = t +\frac{\ln\left(\tau\right)}{\sigma}$.
     }
-\end{frame}
-
-\begin{frame}
-    \frametitle{Main Poisson algoritme (implementatie)}
-    Verschillende implementaties, voorwaarts door Poisson proces andersom
-    te samplen.
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{imgs/main poisson julia.jpg}
-        \label{fig:imgs/main poisson julia.jpg}
-    \end{figure}
+    \action<+->{
+        \begin{equation}
+            y(t) = E \left[ \prod_{k=1}^{N_{t}}\left(I + \frac{A(T_{k})}{\sigma} \right) \right]   y(0).
+        \end{equation}
+    }
 \end{frame}
 
 \begin{frame}
@@ -223,7 +195,9 @@
     \end{figure}
 \end{frame}
 
+\section{Geavanceerde methoden}
 
+\section{Conclusie}
 
 \begin{frame}
     \frametitle{Limitaties}
