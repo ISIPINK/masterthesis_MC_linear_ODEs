@@ -80,22 +80,22 @@
 \begin{frame}
     \frametitle{Random sample efficientie van optelling}
     \action<+->{
-        Probleem: benader $\bar{x} = \frac{1}{k}\sum_{i=1}^{k} x_{i}$ met $n<k$ van de $x_{i}$'s $\in [0,1]$\\
+        Probleem: benader $\bar{x} = \frac{1}{k}\sum_{i=1}^{k} x_{i}$ met $n<<k$ van $x_{i}$'s $\in [0,1]$\\
         (symmetrisch in $x_{i}$) \\
         \vspace{0.2cm}
     }
     \action<+->{
-        Vertrouwensinterval kans $=1$  $\sim \frac{k-n}{k}= 1-\frac{n}{k}$ \\
-        (worst case scenarios van de missende informatie liggen $\frac{1}{k}$ uit elkaar) \\
+        Vertrouwensinterval kans $=1$  $\sim \frac{k-n}{k}= 1-\frac{n}{k} \approx 1$ \\
+        (worst case $\frac{1}{k}$ uit elkaar) \\
         \vspace{0.2cm}
     }
     \action<+->{
-        Benader door te samplen of door termen willekeurig weg laten
+        Samplen of termen willekeurig weg laten (Russische roulette)
         \begin{equation}
             \bar{x}  \cong \frac{1}{n}\sum_{i=1}^{n} x_{I_{i}} \cong \frac{1}{k}\sum_{i=1}^{k} B_{i} x_{i}
             .
         \end{equation}
-        ($E[B_{i}] = 1, P[B_{i}=0]=p$) \\
+        $\left(E[B_{i}] = 1, P[B_{i}=0]=1-\frac{n}{k}\right)$ \\
         \vspace{0.2cm}
     }
     \action<+->{
@@ -117,14 +117,35 @@
 
 % 1 min
 \begin{frame}
-    \frametitle{Monte Carlo Integratie}
+    \frametitle{Monte Carlo integratie}
     Integratie $\approx$ sommatie, integreerbare $f: \mathbb{R} \rightarrow [0,1]$:
     \begin{align}
         \int_{0}^{1} f(s) ds & = E[f(U)]                                 \\
                              & \cong \frac{1}{n} \sum_{j=1}^{n} f(U_{j}) \\
         \text{met } U_{j}    & \sim \text{Uniform}(0,1)
     \end{align}
-    % Sommatie en integratie hebben $1$-sample unbiased estimator.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Overzicht integratie}
+    Beschouw $f:[0,1]^d \rightarrow [0,1]$ $k$-keer Lipschitz-differentieerbaar:
+    \begin{equation}
+        \int_{[0,1]^d} f(x) dx  .
+    \end{equation}
+    \pause
+    CVMC = Control Variate MC, $+0.5$ orde over DET algoritmes \\
+    FFT = Clenshaw-Curtis/Gauss Quadrature.
+    \pause
+    \begin{table}
+        \centering
+        \begin{tabular}{lcccc}
+                            & $k=-1$ & $0 \le k \le 2$ & $3 \le k \le 5$ & $k>5$ \\
+            $d=1$           & MC     & CVMC            & ?               & FFT   \\
+            $2 \le d \le 5$ & MC     & CVMC            & CVMC            & ?     \\
+            $d>5$           & MC     & MC              & MC              & MC    \\
+        \end{tabular}
+        \caption{Overzicht integratie algoritmes.}
+    \end{table}
 \end{frame}
 
 \section{Main Poisson algoritme}
@@ -138,7 +159,7 @@
     \frametitle{Main Poisson algoritme}
 
     \begin{align}
-        \action<+->{y_t                              & = A(t) y \Leftrightarrow                                                              \\}
+        \action<+->{y_t                              & = A(t) y,  \quad A(t) \text{ meetbaar en } \sup _{t}||A(t)||< \infty  \Leftrightarrow                                                              \\}
         \action<+->{y_t+\sigma y                     & = (\sigma I + A(t)) y \Leftrightarrow                                                                 \\}
         \action<+->{e^{-\sigma t} ( e^{\sigma t}y)_t & = (\sigma I + A(t)) y    \Leftrightarrow                                                               \\}
         \action<+->{y(t)                             & = e^{-\sigma t} y(0) + \int_{0}^{t} e^{(s-t) \sigma} \left(  \left(\sigma I + A(s) \right) y(s)\right) ds,}
@@ -155,7 +176,7 @@
 \end{frame}
 % 2min
 \begin{frame}
-    \frametitle{Main Poisson algoritme (recursief samplen)}
+    \frametitle{Main Poisson algoritme (recursie)}
 
     \begin{equation} \label{eq:poisson main 2}
         y(t) = \int_{0}^{e^{-\sigma t}}  y(0) d\tau
@@ -183,16 +204,28 @@
 
 \begin{frame}
     \frametitle{Main Poisson algoritme (convergentie)}
-    Niet bewezen: robust tegen unbiased vervanging van $A,f,y(0)$.
     \begin{figure}[h!]
         \centering
         \includegraphics[width=\textwidth]{imgs/convergence_main_poisson.pdf}
         \caption{Realizaties van de norm van de fout,
             met $nsim =1$ en $\sigma$ variabel of $nsim$ variabel en $\sigma = 1$.
-            Hoeveelheid samples van $A,f$ per simulatie $= \text{Poisson}(\sigma)$.
+            Hoeveelheid samples van $A$ per simulatie $= \text{Poisson}(\sigma)$.
         }
         \label{fig:imgs/main poisson convergentie}
     \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Main Poisson algoritme (opmerkingen)}
+    \begin{equation}
+        y(t) \cong Y(t) =  \prod_{k=1}^{N_{t}}\left(I + \frac{A(T_{k})}{\sigma} \right)    y(0).
+    \end{equation}
+    \begin{itemize}
+        \item TB: $E[Y(t)],Var[Y(t)]< \infty$
+        \item Parallelle complexiteit
+        \item Volgorde matrix vermenigvuldingen $v^{T}y(t)$
+        \item Inspiratie uit \cite{acebron_monte_2016}
+    \end{itemize}
 \end{frame}
 
 \section{Geavanceerde methoden}

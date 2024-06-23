@@ -19,6 +19,62 @@
 
 \refsection{0}
   \datalist[entry]{nyt/global//global/global}
+    \entry{acebron_monte_2016}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=84c331a24f26523459bd1416c88b1d5a}{%
+           family={Acebrón},
+           familyi={A\bibinitperiod},
+           given={Juan\bibnamedelima A.},
+           giveni={J\bibinitperiod\bibinitdelim A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=d460b719d9aca87e16e5d5a28e3f9add}{%
+           family={Ribeiro},
+           familyi={R\bibinitperiod},
+           given={Marco\bibnamedelima A.},
+           giveni={M\bibinitperiod\bibinitdelim A\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \strng{namehash}{fb10c4969404564b1a75c5e931a52c1f}
+      \strng{fullhash}{fb10c4969404564b1a75c5e931a52c1f}
+      \strng{bibnamehash}{fb10c4969404564b1a75c5e931a52c1f}
+      \strng{authorbibnamehash}{fb10c4969404564b1a75c5e931a52c1f}
+      \strng{authornamehash}{fb10c4969404564b1a75c5e931a52c1f}
+      \strng{authorfullhash}{fb10c4969404564b1a75c5e931a52c1f}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{A Monte Carlo algorithm is derived to solve the one-dimensional telegraph equations in a bounded domain subject to resistive and non-resistive boundary conditions. The proposed numerical scheme is more eﬃcient than the classical Kac’s theory because it does not require the discretization of time. The algorithm has been validated by comparing the results obtained with theory and the Finite-diﬀerence time domain (FDTD) method for a typical two-wire transmission line terminated at both ends with general boundary conditions. We have also tested transmission line heterogeneities to account for wave propagation in multiple media. The algorithm is inherently parallel, since it is based on Monte Carlo simulations, and does not suﬀer from the numerical dispersion and dissipation issues that arise in ﬁnite diﬀerencebased numerical schemes on a lossy medium. This allowed us to develop an eﬃcient numerical method, capable of outperforming the classical FDTD method for large scale problems and high frequency signals.}
+      \field{issn}{00219991}
+      \field{journaltitle}{Journal of Computational Physics}
+      \field{month}{1}
+      \field{title}{A {Monte} {Carlo} method for solving the one-dimensional telegraph equations with boundary conditions}
+      \field{urlday}{9}
+      \field{urlmonth}{9}
+      \field{urlyear}{2023}
+      \field{volume}{305}
+      \field{year}{2016}
+      \field{urldateera}{ce}
+      \field{pages}{29\bibrangedash 43}
+      \range{pages}{15}
+      \verb{doi}
+      \verb 10.1016/j.jcp.2015.10.027
+      \endverb
+      \verb{file}
+      \verb Acebrón en Ribeiro - 2016 - A Monte Carlo method for solving the one-dimension.pdf:C\:\\Users\\isido\\Zotero\\storage\\7A7CJ95A\\Acebrón en Ribeiro - 2016 - A Monte Carlo method for solving the one-dimension.pdf:application/pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://linkinghub.elsevier.com/retrieve/pii/S0021999115006919
+      \endverb
+      \verb{url}
+      \verb https://linkinghub.elsevier.com/retrieve/pii/S0021999115006919
+      \endverb
+    \endentry
     \entry{heinrich_optimal_2001}{misc}{}
       \name{author}{2}{}{%
         {{un=0,uniquepart=base,hash=d2366e969003a688a9301ca3e3117f0b}{%

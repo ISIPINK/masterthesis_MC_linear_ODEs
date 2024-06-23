@@ -10,26 +10,38 @@ function Y(t, sig, A::Function, f::Function, y0)
     sol
 end
 
-y0 = 1
-A(t) = 1
-f(t) = 0
-sig = 100
-nsim = 20
 
-tt = 0:0.001:1
-yys = []
-p = plot(tt, exp.(tt), label="exp(t)", lw=8, color=:red, ylim=(0.95, 3))
+function plot_ex(sig, nsim)
+    tt = 0:0.002:1
+    yys = []
+    p = plot()
 
-Random.seed!(rand(1:10000))
-for _ in 1:nsim
-    yy = []
-    s = rand(1:1000000)
-    for t in tt
-        Random.seed!(s)
-        push!(yy, Y(t, sig, A, f, y0))
+    Random.seed!(rand(1:10000))
+    for _ in 1:nsim
+        yy = []
+        s = rand(1:1000000)
+        for t in tt
+            Random.seed!(s)
+            push!(yy, Y(t, sig, A, f, y0))
+        end
+        push!(yys, yy)
+        plot!(p, tt, yy, label="", xlabel="t", ylabel="Y(t)", lw=2, alpha=0.3)
     end
-    push!(yys, yy)
-    plot!(p, tt, yy, label="", xlabel="t", ylabel="Y(t)", title="Poisson process", lw=2, alpha=0.3)
+    plot!(p, tt, sol.(tt), label="sol(t)", lw=8, color=:red)
+    plot!(p, tt, sum(yys) / length(yys), label="avg", xlabel="t", ylabel="Y(t)", lw=4, color=:blue)
+    plot!(p, title="nsim=$nsim, sig=$sig")
+    return p
 end
-plot!(p, tt, sum(yys) / length(yys), label="avg", xlabel="t", ylabel="Y(t)", title="Poisson process", lw=4, color=:blue)
-display(p)
+
+begin
+    y0 = 1
+    A(t) = (t < 0.5) ? 1 : -1
+    sol(t) = (t < 0.5) ? exp(t) : exp(1 - t)
+    f(t) = 0
+
+    Random.seed!(29)
+    p1 = plot_ex(20, 40)
+    p2 = plot_ex(200, 4)
+    plot(p1, p2, layout=(1, 2), size=(900, 500),
+        left_margin=5mm, right_margin=5mm, bottom_margin=5mm, top_margin=5mm)
+end

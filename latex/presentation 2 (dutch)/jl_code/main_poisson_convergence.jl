@@ -1,7 +1,5 @@
 using Plots
 using Random
-using LinearAlgebra
-using Plots.PlotMeasures
 
 function Y(t, sig, A::Function, f::Function, y0)
     (s = -log(rand()) / sig; sol = y0)
@@ -12,45 +10,40 @@ function Y(t, sig, A::Function, f::Function, y0)
     sol
 end
 
-a = 1
-A(s) = [a 0; 1 a]
-q = [1.0, 0.0]
-f(s) = 0.0
-sol(s) = [exp(a * s), s * exp(a * s)]
-sig = 1.0
-t = 1.0
 
+function plot_ex(sig, nsim)
+    tt = 0:0.002:1
+    yys = []
+    p = plot()
 
-Random.seed!(2234)
-xticks = 10.0 .^ range(1, 4, step=1)
-yticks = 10.0 .^ range(-4, 0, step=1)
-sigs = exp10.(range(1, 4, length=100))
-errors = [norm(Y(t, sig, A, f, q) - sol(t)) for sig in sigs]
-p1 = plot(sigs, errors, st=:scatter, xscale=:log10, yscale=:log10, label="error", alpha=0.5)
-plot!(p1, sigs, 5 * sigs .^ -0.5, label="\$O(sig^{-0.5})\$", linewidth=4)
-plot!(p1, sigs, 5 * sigs .^ -1, label="\$O(sig^{-1})\$", linewidth=4)
-xticks!(p1, xticks)  # Set xticks
-yticks!(p1, yticks)  # Set yticks
-xlabel!(p1, "sig")
-ylabel!(p1, "norm(error)")
+    Random.seed!(rand(1:10000))
+    for _ in 1:nsim
+        yy = []
+        s = rand(1:1000000)
+        for t in tt
+            Random.seed!(s)
+            push!(yy, Y(t, sig, A, f, y0))
+        end
+        push!(yys, yy)
+        plot!(p, tt, yy, label="", xlabel="t", ylabel="Y(t)", lw=2, alpha=0.3)
+    end
+    plot!(p, tt, sol.(tt), label="sol(t)", lw=8, color=:red)
+    plot!(p, tt, sum(yys) / length(yys), label="avg", xlabel="t", ylabel="Y(t)", lw=4, color=:blue)
+    plot!(p, title="nsim=$nsim, sig=$sig")
+    return p
+end
 
-nsims = exp10.(range(1, 4, length=100))
-errors = [norm(sum(Y(t, sig, A, f, q) for _ in 1:nsim) / nsim - sol(t)) for nsim in nsims]
-p2 = plot(nsims, errors, st=:scatter, xscale=:log10, yscale=:log10, label="error", alpha=0.5)
-plot!(p2, nsims, 5 * nsims .^ -0.5, label="\$O(nsim^{-0.5})\$", linewidth=4)
-plot!(p2, nsims, 5 * nsims .^ -1, label="\$O(nsim^{-1})\$", linewidth=4)
-xticks!(p2, xticks)  # Set xticks
-yticks!(p2, yticks)  # Set yticks
-xlabel!(p2, "nsim")
-ylabel!(p2, "norm(error)")
+begin
+    y0 = 1
+    A(t) = (t < 0.5) ? 1 : -1
+    sol(t) = (t < 0.5) ? exp(t) : exp(1 - t)
+    f(t) = 0
 
-p = plot(p1, p2,
-    layout=(1, 2),
-    size=(900, 300),
-    bottom_margin=5mm,
-    left_margin=5mm,
-    legend=:bottomleft
-)  # Combine both plots
-display(p)
-savefig(p, "latex/presentation 2 (dutch)/imgs/convergence_main_poisson.pdf")
+    Random.seed!(29)
+    p1 = plot_ex(20, 40)
+    p2 = plot_ex(200, 4)
+    p = plot(p1, p2, layout=(1, 2), size=(900, 500),
+        left_margin=5mm, right_margin=5mm, bottom_margin=5mm, top_margin=5mm)
 
+    savefig(p, "latex/presentation 2 (dutch)/imgs/convergence_main_poisson.pdf")
+end

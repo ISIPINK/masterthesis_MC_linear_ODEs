@@ -1,6 +1,5 @@
 using Plots
 using Random
-using GLM, DataFrames
 using Plots.PlotMeasures
 
 function Yplot(t, sig, A::Function, f::Function, y0)
