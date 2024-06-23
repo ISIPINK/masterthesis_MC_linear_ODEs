@@ -37,16 +37,22 @@
         y_{t} = A(t)y(t)
         .
     \end{equation}
+    \action<+->{}
     Euler:
     \begin{alignat}{2}
-        \frac{\tilde{y}(t_{k}+\Delta t)-\tilde{y}(t_{k})}{\Delta t} & = & A(t_{k})                & \tilde{y}(t_{k}) \\
-        \tilde{y}(t_{k+1})                                          & = & (I+\Delta t A(t_{k}))   & \tilde{y}(t_{k}) \\
-        Y(T_{k+1})                                                  & = & (I+\Delta t A(T_{k+1})) & Y(T_{k})
+        \action<+->{\frac{\tilde{y}(t_{k}+\Delta t)-\tilde{y}(t_{k})}{\Delta t} & = & A(t_{k})                        & \tilde{y}(t_{k}) \\
+        }
+        \action<+->{\tilde{y}(t_{k+1})                                          & = & (I+\Delta t A(t_{k}))           & \tilde{y}(t_{k}) \\
+        t_{k+1}                                                                 & = & t_{k}+\Delta            t     }                    \\
+        \action<+->{Y(T_{k+1})                                                  & = & (I+\Delta t A(T_{k+1}))         & Y(T_{k})         \\
+        T_{k+1}                                                                 & = & T_{k} + \text{Exp}(\Delta t)
+        }
     \end{alignat}
-    $T_{k+1} = T_{k} + \text{Exp}(\Delta t)$, exponentiële verdeelde stappen.
-    \begin{equation}
-        y(T_{k})=E[Y(T_{k})].
-    \end{equation}
+    \action<+->{
+        \begin{equation}
+            y(T_{k})=E[Y(T_{k})].
+        \end{equation}
+    }
 
 \end{frame}
 
@@ -57,6 +63,14 @@
 \end{frame}
 
 % 2 min
+% Ik heb 2 jaar terug een paper gelezen waardat men een WoS algoritme
+% voorstellen voor elliptisch PDEs met plaats afhankelijke coëfficiënten.
+% Het grote voordeel van dit algoritme is dat het unbiased is en 
+% werkt voor complexe domeinen. Ik ben geïntereseerd om dit probleem 
+% te veralgemenen met tijd afhankelijkheid. Er zijn papers die 
+% WoS uitbreiden via een Euler scheme in de tijd maar deze zijn biased.
+% Ik ben dan eerst gaan kijken hoe dat we Euler unbiased kunnen maken.
+
 \section{Motivatie}
 \begin{frame}
     \frametitle{Motivatie}
@@ -77,6 +91,21 @@
 \end{frame}
 
 % 2 min
+% Als ik aan MC denk, denk ik aan sommen benaderen in het geval
+% dat we niet bezitten aan de meeste termen en we veronderstellen
+% dat deze tussen 0 en 1 liggen. 
+
+% In het deterministisch geval liggen onze worst case scenarios 
+% of van een xi 1 uit elkaar dit beïnvloed onze som 1/k als we
+% k-n termen missen dan is onze som enkel afschatten met k-n/k nauwkeurigheid. 
+% Als k groot is dan is dit bijna even slecht als geen termen weten.
+
+% De willekeurige oplossing is om de som te samplen of willekeurig termen
+% weg laten (wat ik ook Russische roulette noem). Hiervoor krijgen we 
+% een vertrouwensinterval via chebychev dat significant kleinder is dan het 
+% determinitisch geval het zou zelfs geen probleem zijn als k naar oneindig
+% gaat. Dit is de essentie van MC. 
+
 \begin{frame}
     \frametitle{Random sample efficientie van optelling}
     \action<+->{
@@ -106,6 +135,17 @@
 \end{frame}
 
 % 1 min
+% Ik heb hier een numeriek voorbeeld bij gestopt
+% ik verglijk samplen met en zonder vervanging en
+% Russische Roulette. Rechtste plot is het probleem 
+% dat ik beschouw en de linkse plot is de convergentie
+% van de algoritmes met gemiddeld gezien dezelfde
+% hoeveelheid samples en realizaties van de fout 
+% ja realizaties want de algoritmes zijn willekeurig. 
+% Merk op dat zelfs voor 
+% 90% van de samples willekeurige methodes met
+% grote kans beter zijn.
+
 \begin{frame}
     \frametitle{Optelling algoritmes (plot)}
     \begin{figure}[h!]
@@ -116,6 +156,9 @@
 \end{frame}
 
 % 1 min
+% integratie is te begrijpen als sommatie
+% in de plaats van termen te samplen
+% samplen we uniform functie waarden
 \begin{frame}
     \frametitle{Monte Carlo integratie}
     Integratie $\approx$ sommatie, integreerbare $f: \mathbb{R} \rightarrow [0,1]$:
@@ -126,35 +169,45 @@
     \end{align}
 \end{frame}
 
-\begin{frame}
-    \frametitle{Overzicht integratie}
-    Beschouw $f:[0,1]^d \rightarrow [0,1]$ $k$-keer Lipschitz-differentieerbaar:
-    \begin{equation}
-        \int_{[0,1]^d} f(x) dx  .
-    \end{equation}
-    \pause
-    CVMC = Control Variate MC, $+0.5$ orde over DET algoritmes \\
-    FFT = Clenshaw-Curtis/Gauss Quadrature.
-    \pause
-    \begin{table}
-        \centering
-        \begin{tabular}{lcccc}
-                            & $k=-1$ & $0 \le k \le 2$ & $3 \le k \le 5$ & $k>5$ \\
-            $d=1$           & MC     & CVMC            & ?               & FFT   \\
-            $2 \le d \le 5$ & MC     & CVMC            & CVMC            & ?     \\
-            $d>5$           & MC     & MC              & MC              & MC    \\
-        \end{tabular}
-        \caption{Overzicht integratie algoritmes.}
-    \end{table}
-\end{frame}
+% \begin{frame}
+%     \frametitle{Overzicht integratie}
+%     Beschouw $f:[0,1]^d \rightarrow [0,1]$ $k$-keer Lipschitz-differentieerbaar:
+%     \begin{equation}
+%         \int_{[0,1]^d} f(x) dx  .
+%     \end{equation}
+%     \pause
+%     CVMC = Control Variate MC, $+0.5$ orde over DET algoritmes \\
+%     FFT = Clenshaw-Curtis/Gauss Quadrature.
+%     \pause
+%     \begin{table}
+%         \centering
+%         \begin{tabular}{lcccc}
+%                             & $k=-1$ & $0 \le k \le 2$ & $3 \le k \le 5$ & $k>5$ \\
+%             $d=1$           & MC     & CVMC            & ?               & FFT   \\
+%             $2 \le d \le 5$ & MC     & CVMC            & CVMC            & ?     \\
+%             $d>5$           & MC     & MC              & MC              & MC    \\
+%         \end{tabular}
+%         \caption{Overzicht integratie algoritmes.}
+%     \end{table}
+% \end{frame}
 
 \section{Main Poisson algoritme}
 
+% Eindelijk tijd voor het Main Poisson algoritme.
 \begin{frame}
     \tableofcontentscurrent
 \end{frame}
 
 % 2 min
+% Dus neem onze lineaire ODE en veronderstel dat A meetbaar en begrensd is over tijd.
+% Merk op dat we hier geen directe veronderstelling maken op y, ik veronderstel
+% enkel dat afgeleide zich gedraagt als een afgeleide niet dat ze bestaat.
+% Doe beide kanten + sigma y.
+% Gebruik de omgekeerde product regel.
+% Integreer beide kanten zodat we een integraal vergelijking krijgen.
+% Doe een subsitutie, voor de mensen die weten wat importance samplen is we
+% importance samplen de exponentiele term, ik herschijf ook de eerste term als
+% een integraal.
 \begin{frame}
     \frametitle{Main Poisson algoritme}
 
@@ -172,9 +225,17 @@
         + \int_{e^{-\sigma t}}^{1} \left(  I+ \frac{A(s)}{\sigma} \right)  y(s) d\tau.
         }
     \end{equation}
-    \action<+->{sample $\tau$ uniform, equivalent aan een Poisson proces te samplen.}
 \end{frame}
+
 % 2min
+% Monte Carlo integreer deze integraal,
+% de eerste term samplen is geen probleem want we weten y(0)
+% maar de tweede term is een probleem want we weten y(s) niet
+% we kunnen opnieuw lijn 17 gebruik en recursief Monte Carlo 
+% samplen tot we $y(0)$ samplen. Omdat dit een Poisson 
+% proces is weet ik hoeveel keer ik moet recursen en 
+% kan dit schrijven als een groot product.
+
 \begin{frame}
     \frametitle{Main Poisson algoritme (recursie)}
 
@@ -182,10 +243,10 @@
         y(t) = \int_{0}^{e^{-\sigma t}}  y(0) d\tau
         + \int_{e^{-\sigma t}}^{1} \left(I+   \frac{A(s)}{\sigma} \right)  y(s) d\tau.
     \end{equation}
-    sample $\tau$ uniform, equivalent aan een Poisson proces te samplen. \\
+    Monte Carlo integreer,  \\
     \action<+->{}
     \action<+->{
-        Doe dit recursief verder:
+        doe dit recursief verder:
         \begin{equation}
             Y(t)= \begin{cases}
                 y(0)                                        & \text{als }  e^{-\sigma t} \le  \tau \\
@@ -202,18 +263,38 @@
     }
 \end{frame}
 
+% We kijken naar een numeriek voorbeeld.
+% We nemen A 1 voor t<1/2 and -1 voor t>=1/2
+% en dan zijn er 2 manieren waarop het Main Poisson
+% algoritme convergeert oftwel door meer simulaties 
+% uit te middelen of door sig te verhogen over heel de tijd. Beide 
+% hebben een convergentie snelheid van een halve orde 
+% wat optimaal is onder de veronderstellingen die we 
+% gemaakt hebben. Convergentie in sigma word ook 
+% behouden voor nonlineaire problemen.
+
 \begin{frame}
     \frametitle{Main Poisson algoritme (convergentie)}
     \begin{figure}[h!]
         \centering
         \includegraphics[width=\textwidth]{imgs/convergence_main_poisson.pdf}
-        \caption{Realizaties van de norm van de fout,
-            met $nsim =1$ en $\sigma$ variabel of $nsim$ variabel en $\sigma = 1$.
-            Hoeveelheid samples van $A$ per simulatie $= \text{Poisson}(\sigma)$.
+        \caption{
+            Realisaties $Y(t)$ met $A(t) = \begin{cases}
+                    1  & \text{voor } t < 0.5,    \\
+                    -1 & \text{voor } t \geq 0.5.
+                \end{cases}$ voor verschillende $nsim$ en $sig$.
         }
         \label{fig:imgs/main poisson convergentie}
     \end{figure}
 \end{frame}
+
+% We missen de bewijzen dat de verwachtingswaarde en variantie eindig is. Dit is waarschijnlijk
+% simpel aan te tonen met de wet van de totale verwachting en variantie.
+% We missen ook een bespreking van parallelle complexiteit.
+% Ik heb redelijk lang vast gezeten om mijn tijd proces Poison te krijgen ik 
+% heb in september dit jaar een paper tegen gekomen van acebron dat dit exact 
+% deed voor een specifieke differentiaal vergelijking uiteindelijk als wat ik 
+% moest doen was dit veralgemenen.
 
 \begin{frame}
     \frametitle{Main Poisson algoritme (opmerkingen)}
@@ -221,16 +302,23 @@
         y(t) \cong Y(t) =  \prod_{k=1}^{N_{t}}\left(I + \frac{A(T_{k})}{\sigma} \right)    y(0).
     \end{equation}
     \begin{itemize}
-        \item TB: $E[Y(t)],Var[Y(t)]< \infty$
+        \item TB: $E[||Y(t)||],Var[||Y(t)||]< \infty$, wet totale verwachting/variantie
         \item Parallelle complexiteit
-        \item Volgorde matrix vermenigvuldingen $v^{T}y(t)$
         \item Inspiratie uit \cite{acebron_monte_2016}
     \end{itemize}
 \end{frame}
 
 \section{Geavanceerde methoden}
 
+\begin{frame}
+    \tableofcontentscurrent
+\end{frame}
+
 \section{Conclusie}
+
+\begin{frame}
+    \tableofcontentscurrent
+\end{frame}
 
 \begin{frame}
     \frametitle{Limitaties}

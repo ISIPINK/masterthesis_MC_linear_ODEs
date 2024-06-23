@@ -42,7 +42,7 @@ begin
     Random.seed!(29)
     p1 = plot_ex(20, 40)
     p2 = plot_ex(200, 4)
-    p = plot(p1, p2, layout=(1, 2), size=(900, 500),
+    p = plot(p1, p2, layout=(1, 2), size=(900, 350),
         left_margin=5mm, right_margin=5mm, bottom_margin=5mm, top_margin=5mm)
 
     savefig(p, "latex/presentation 2 (dutch)/imgs/convergence_main_poisson.pdf")
