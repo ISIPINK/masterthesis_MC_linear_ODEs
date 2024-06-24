@@ -13,6 +13,23 @@
 
 \usepackage[style=authoryear,backend=biber]{biblatex}
 
+
+\DeclareBibliographyDriver{article}{%
+    \printnames{author}%
+    \setunit{\addspace}%
+    \printfield{year}%
+    \setunit{\addspace}%
+    \printfield{title}%
+    \finentry}
+
+\DeclareBibliographyDriver{misc}{%
+    \printnames{author}%
+    \setunit{\addspace}%
+    \printfield{year}%
+    \setunit{\addspace}%
+    \printfield{title}%
+    \finentry}
+
 \addbibresource{bibliography3.bib} 
 \pdfmapfile{+sansmathaccent.map}
 
@@ -169,27 +186,6 @@
     \end{align}
 \end{frame}
 
-% \begin{frame}
-%     \frametitle{Overzicht integratie}
-%     Beschouw $f:[0,1]^d \rightarrow [0,1]$ $k$-keer Lipschitz-differentieerbaar:
-%     \begin{equation}
-%         \int_{[0,1]^d} f(x) dx  .
-%     \end{equation}
-%     \pause
-%     CVMC = Control Variate MC, $+0.5$ orde over DET algoritmes \\
-%     FFT = Clenshaw-Curtis/Gauss Quadrature.
-%     \pause
-%     \begin{table}
-%         \centering
-%         \begin{tabular}{lcccc}
-%                             & $k=-1$ & $0 \le k \le 2$ & $3 \le k \le 5$ & $k>5$ \\
-%             $d=1$           & MC     & CVMC            & ?               & FFT   \\
-%             $2 \le d \le 5$ & MC     & CVMC            & CVMC            & ?     \\
-%             $d>5$           & MC     & MC              & MC              & MC    \\
-%         \end{tabular}
-%         \caption{Overzicht integratie algoritmes.}
-%     \end{table}
-% \end{frame}
 
 \section{Main Poisson algoritme}
 
@@ -258,7 +254,7 @@
     }
     \action<+->{
         \begin{equation}
-            y(t) = E \left[ \prod_{k=1}^{N_{t}}\left(I + \frac{A(T_{k})}{\sigma} \right) \right]   y(0).
+            y(t) = E \left[ \prod_{k=0}^{N_{t}}\left(I + \frac{A(T_{k})}{\sigma} \right) \right]   y(0).
         \end{equation}
     }
 \end{frame}
@@ -299,7 +295,7 @@
 \begin{frame}
     \frametitle{Main Poisson algoritme (opmerkingen)}
     \begin{equation}
-        y(t) \cong Y(t) =  \prod_{k=1}^{N_{t}}\left(I + \frac{A(T_{k})}{\sigma} \right)    y(0).
+        y(t) \cong Y(t) =  \prod_{k=0}^{N_{t}}\left(I + \frac{A(T_{k})}{\sigma} \right)    y(0).
     \end{equation}
     \begin{itemize}
         \item TB: $E[||Y(t)||],Var[||Y(t)||]< \infty$, wet totale verwachting/variantie
@@ -314,6 +310,42 @@
     \tableofcontentscurrent
 \end{frame}
 
+\begin{frame}
+    \frametitle{Recursie in Recursie Monte Carlo}
+    Next flight uit \cite{sawhney_grid-free_2022}, unbiased methode, $1.5$ orde convergentie,
+    moeilijke theorie en te veel functie evaluaties.
+    \begin{center}
+        \begin{tikzpicture}
+            \draw (0,0) -- (10,0); % horizontal line
+            \foreach \x in {0,1,...,10} % loop over labels
+            \draw (\x,-0.1) -- (\x,0.1) node[above] {$t_{\x}$}; % draw tick and label
+        \end{tikzpicture}
+    \end{center}
+    \vspace{-0.5cm}
+    \begin{align}
+        y_{n}          & = \begin{cases}
+                               Y_{n-1}(t_{n},y_{n-1}) & \text{ als } n \neq 0        \\
+                               y(t_{0})               & \text{ als } n = 0 \nonumber
+                           \end{cases} \\
+        \\
+        Y_{n}(t,y_{n}) & = y_{n} + \Delta t B(t) A(S ) Y_{n}(S,y_{n})
+    \end{align}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Richting Walk on Spheres}
+    \setbeamercovered{transparent} % Make uncovered items transparent
+    \begin{itemize}
+        \item<+->{Plaats discretisatie?}
+        \item<+->{Walk on components, $P$ transitie matrix, $Py(0)$ met Monte Carlo}
+        \item<+->{Recursieve formulatie $v^{T}y(t)= v^{T}E \left[\prod_{k=0}^{N_{t}}\left(I + \frac{A(T_{k})}{\sigma} \right) \right] y(0) $}
+        \item<+->{Recursive first passage sampling}
+        \item<+->{Tijdsafhankelijke Russische roulette voor stijve problemen}
+        \item<+->{Path stitching vs WoS voor tijd/plaats onafhankelijke problemen}
+    \end{itemize}
+
+\end{frame}
+
 \section{Conclusie}
 
 \begin{frame}
@@ -321,31 +353,50 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Limitaties}
+    \frametitle{Conclusie}
+    \setbeamercovered{transparent} % Make uncovered items transparent
     \begin{itemize}
-        \item Stabiliteit $\rightarrow$ \cite{kettunen_unbiased_2021}
-              (efficiënte unbiased $e^{\int A(s) ds } y(0)$ )
-        \item Biased voor non-lineaire ODEs
+        \item<+->{Tevreden met main Poisson algoritme}
+        \item<+->{Significante stappen in veralgemenen van WoS}
+        \item<+->{Uitgangspunten voor verder onderzoek}
     \end{itemize}
+
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Bibliografie}
+    \nocite{daun_randomized_2011,ermakov_monte_2021}
+    \printbibliography
 \end{frame}
 
 \begin{frame}
-    \frametitle{Toekomstig Werk}
-    \begin{itemize}
-        \item Random ODEs
-        \item Specifieke ODEs
-    \end{itemize}
+    \frametitle{Overzicht integratie}
+    Beschouw $f:[0,1]^d \rightarrow [0,1]$ $k$-keer Lipschitz-differentieerbaar:
+    \begin{equation}
+        \int_{[0,1]^d} f(x) dx  .
+    \end{equation}
+    CVMC = Control Variate MC, $+0.5$ orde over DET algoritmes \\
+    FFT = Clenshaw-Curtis/Gauss Quadrature.
+    \begin{table}
+        \centering
+        \begin{tabular}{lcccc}
+                            & $k=-1$ & $0 \le k \le 2$ & $3 \le k \le 5$ & $k>5$ \\
+            $d=1$           & MC     & CVMC            & ?               & FFT   \\
+            $2 \le d \le 5$ & MC     & CVMC            & CVMC            & ?     \\
+            $d>5$           & MC     & MC              & MC              & MC    \\
+        \end{tabular}
+        \caption{Overzicht integratie algoritmes.}
+    \end{table}
 \end{frame}
 
-% 6 min
-% \begin{frame}
-%     \frametitle{Unbiased Non-Linearity}
-%     \begin{itemize}
-%         \item exponentiele voorbeeld + screenshot paper
-%         \item VRE
-%         \item Feynman-Kac formule
-%         \item Magnus series
-%     \end{itemize}
-% \end{frame}
+\begin{frame}
+    \frametitle{Main Poisson appendix}
+    \begin{align}
+        y(t) & = E \left[\prod_{k=0}^{N_{t}}\left( I + \frac{A(T_{k})}{\sigma} \right)    \right] y(0)                                             \\
+             & = \sum_{n=0}^{\infty}\frac{\sigma^{n} t ^{n}}{n!} E \left[\prod_{k=0}^{n}\left( I + \frac{A(T_{k})}{\sigma} \right)    \right] y(0)
+    \end{align}
+    Te vergelijken met Magnus expansie.\\
+    Voor Monte Carlo transitie matrix hebben we een reductie naar uniformizatie.
+
+\end{frame}
 
 \end{document}

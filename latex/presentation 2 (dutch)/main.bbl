@@ -75,6 +75,118 @@
       \verb https://linkinghub.elsevier.com/retrieve/pii/S0021999115006919
       \endverb
     \endentry
+    \entry{daun_randomized_2011}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=d8e4cbc639458d56282aa7b3cc7d6fe0}{%
+           family={Daun},
+           familyi={D\bibinitperiod},
+           given={Thomas},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \strng{namehash}{d8e4cbc639458d56282aa7b3cc7d6fe0}
+      \strng{fullhash}{d8e4cbc639458d56282aa7b3cc7d6fe0}
+      \strng{bibnamehash}{d8e4cbc639458d56282aa7b3cc7d6fe0}
+      \strng{authorbibnamehash}{d8e4cbc639458d56282aa7b3cc7d6fe0}
+      \strng{authornamehash}{d8e4cbc639458d56282aa7b3cc7d6fe0}
+      \strng{authorfullhash}{d8e4cbc639458d56282aa7b3cc7d6fe0}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We study the randomized solution of initial value problems for systems of ordinary differential equations \$\$ y{\textasciicircum}\{{\textbackslash}prime\}(x)=f(x, y(x)), x {\textbackslash}in[a, b], y(a)=y\_0 {\textbackslash}in {\textbackslash}mathbb\{R\}{\textasciicircum}d . \$\$ Recently S. Heinrich and B. Milla presented an order optimal randomized algorithm solving this problem for \${\textbackslash}gamma\$-smooth input data (i.e. \${\textbackslash}gamma=r+{\textbackslash}rho\$ : the \$r\$-th derivatives of \$f\$ satisfy a \${\textbackslash}rho\$-Hölder condition). This algorithm uses function values and values of derivatives of \$f\$. In this paper we present an order optimal randomized algorithm for the class of \${\textbackslash}gamma\$-smooth functions that uses only values of \$f\$. For this purpose we show how to obtain an order optimal randomized algorithm from an order (sub)optimal deterministic one.}
+      \field{issn}{0885064X}
+      \field{journaltitle}{Journal of Complexity}
+      \field{month}{6}
+      \field{number}{3-4}
+      \field{title}{On the randomized solution of initial value problems}
+      \field{urlday}{6}
+      \field{urlmonth}{3}
+      \field{urlyear}{2023}
+      \field{volume}{27}
+      \field{year}{2011}
+      \field{urldateera}{ce}
+      \true{nocite}
+      \field{pages}{300\bibrangedash 311}
+      \range{pages}{12}
+      \verb{doi}
+      \verb 10.1016/j.jco.2010.07.002
+      \endverb
+      \verb{file}
+      \verb Daun - 2011 - On the randomized solution of initial value proble.pdf:C\:\\Users\\isido\\Zotero\\storage\\NCVQFBK5\\Daun - 2011 - On the randomized solution of initial value proble.pdf:application/pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://linkinghub.elsevier.com/retrieve/pii/S0885064X1000066X
+      \endverb
+      \verb{url}
+      \verb https://linkinghub.elsevier.com/retrieve/pii/S0885064X1000066X
+      \endverb
+      \keyw{monte carlo,ODE,IBC}
+    \endentry
+    \entry{ermakov_monte_2021}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=0632d16e41646be8616d2287b1d18772}{%
+           family={Ermakov},
+           familyi={E\bibinitperiod},
+           given={S.\bibnamedelimi M.},
+           giveni={S\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=21444ad6711b5f3c70e91760bb0e2a14}{%
+           family={Smilovitskiy},
+           familyi={S\bibinitperiod},
+           given={M.\bibnamedelimi G.},
+           giveni={M\bibinitperiod\bibinitdelim G\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \strng{namehash}{7eb8bba87acb7bfac6f7a70eefbc6179}
+      \strng{fullhash}{7eb8bba87acb7bfac6f7a70eefbc6179}
+      \strng{bibnamehash}{7eb8bba87acb7bfac6f7a70eefbc6179}
+      \strng{authorbibnamehash}{7eb8bba87acb7bfac6f7a70eefbc6179}
+      \strng{authornamehash}{7eb8bba87acb7bfac6f7a70eefbc6179}
+      \strng{authorfullhash}{7eb8bba87acb7bfac6f7a70eefbc6179}
+      \field{sortinit}{E}
+      \field{sortinithash}{8da8a182d344d5b9047633dfc0cc9131}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{The Monte Carlo method to solve the Cauchy problem for large systems of linear differential equations is proposed in this paper. Firstly, a quick overview of previously obtained results from applying the approach towards the Fredholm-type integral equations is made. In the main part of the paper, the method is applied towards a linear ODE system that is transformed into an equivalent system of the Volterra-type integral equations, which makes it possible to remove the limitations due to the conditions of convergence of the majorant series. The following key theorems are stated. Theorem 1 provides the necessary compliance conditions that should be imposed upon the transition propability and initial distribution densities that initiate the corresponding Markov chain, for which equality between the mathematical expectation of the estimate and the functional of interest would hold. Theorem 2 formulates the equation that governs the estimate’s variance. Theorem 3 states the Markov chain parameters that minimize the variance of the estimate of the functional. Proofs are given for all three theorems. In the practical part of this paper, the proposed method is used to solve a linear ODE system that describes a closed queueing system of ten conventional machines and seven conventional service persons. The solutions are obtained for systems with both constant and time-dependent matrices of coefficients, where the machine breakdown intensity is time dependent. In addition, the solutions obtained by the Monte Carlo and Runge–Kutta methods are compared. The results are presented in the corresponding tables.}
+      \field{issn}{1063-4541, 1934-7855}
+      \field{journaltitle}{Vestnik St. Petersburg University, Mathematics}
+      \field{month}{1}
+      \field{number}{1}
+      \field{title}{The {Monte} {Carlo} {Method} for {Solving} {Large} {Systems} of {Linear} {Ordinary} {Differential} {Equations}}
+      \field{urlday}{20}
+      \field{urlmonth}{1}
+      \field{urlyear}{2023}
+      \field{volume}{54}
+      \field{year}{2021}
+      \field{urldateera}{ce}
+      \true{nocite}
+      \field{pages}{28\bibrangedash 38}
+      \range{pages}{11}
+      \verb{doi}
+      \verb 10.1134/S1063454121010064
+      \endverb
+      \verb{file}
+      \verb Ermakov en Smilovitskiy - 2021 - The Monte Carlo Method for Solving Large Systems o.pdf:C\:\\Users\\isido\\Zotero\\storage\\EXRTHDXP\\Ermakov en Smilovitskiy - 2021 - The Monte Carlo Method for Solving Large Systems o.pdf:application/pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://link.springer.com/10.1134/S1063454121010064
+      \endverb
+      \verb{url}
+      \verb https://link.springer.com/10.1134/S1063454121010064
+      \endverb
+      \keyw{monte carlo,linear systems}
+    \endentry
     \entry{heinrich_optimal_2001}{misc}{}
       \name{author}{2}{}{%
         {{un=0,uniquepart=base,hash=d2366e969003a688a9301ca3e3117f0b}{%
@@ -128,78 +240,6 @@
       \verb http://arxiv.org/abs/quant-ph/0105114
       \endverb
       \keyw{Mathematics - Numerical Analysis,Quantum Physics,integration,IBC}
-    \endentry
-    \entry{kettunen_unbiased_2021}{article}{}
-      \name{author}{4}{}{%
-        {{un=0,uniquepart=base,hash=23afc84944b4c7d301421491babaf2c2}{%
-           family={Kettunen},
-           familyi={K\bibinitperiod},
-           given={Markus},
-           giveni={M\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=2a671231ec21eed769319df74f07e924}{%
-           family={d'Eon},
-           familyi={d\bibinitperiod},
-           given={Eugene},
-           giveni={E\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=0a6b526649063fb6ed8b508d4e46442c}{%
-           family={Pantaleoni},
-           familyi={P\bibinitperiod},
-           given={Jacopo},
-           giveni={J\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=abeaf2fa24d42762b83c477b49325192}{%
-           family={Novak},
-           familyi={N\bibinitperiod},
-           given={Jan},
-           giveni={J\bibinitperiod},
-           givenun=0}}%
-      }
-      \list{language}{1}{%
-        {en}%
-      }
-      \strng{namehash}{c20a94d70428e39e76c3cd512e39971a}
-      \strng{fullhash}{a0bb3bf88989f8cfe94f40a00a102949}
-      \strng{bibnamehash}{c20a94d70428e39e76c3cd512e39971a}
-      \strng{authorbibnamehash}{c20a94d70428e39e76c3cd512e39971a}
-      \strng{authornamehash}{c20a94d70428e39e76c3cd512e39971a}
-      \strng{authorfullhash}{a0bb3bf88989f8cfe94f40a00a102949}
-      \field{sortinit}{K}
-      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{abstract}{We present an in-depth analysis of the sources of variance in state-of-the-art unbiased volumetric transmittance estimators, and propose several new methods for improving their efficiency. These combine to produce a single estimator that is universally optimal relative to prior work, with up to several orders of magnitude lower variance at the same cost, and has zero variance for any ray with non-varying extinction. We first reduce the variance of truncated power-series estimators using a novel efficient application of U-statistics. We then greatly reduce the average expansion order of the power series and redistribute density evaluations to filter the optical depth estimates with an equidistant sampling comb. Combined with the use of an online control variate built from a sampled mean density estimate, the resulting estimator effectively performs ray marching most of the time while using rarely-sampled higher order terms to correct the bias.}
-      \field{annotation}{Comment: 20 pages}
-      \field{issn}{0730-0301, 1557-7368}
-      \field{journaltitle}{ACM Transactions on Graphics}
-      \field{month}{8}
-      \field{note}{arXiv:2102.10294 [cs]}
-      \field{number}{4}
-      \field{title}{An unbiased ray-marching transmittance estimator}
-      \field{urlday}{18}
-      \field{urlmonth}{6}
-      \field{urlyear}{2023}
-      \field{volume}{40}
-      \field{year}{2021}
-      \field{urldateera}{ce}
-      \field{pages}{1\bibrangedash 20}
-      \range{pages}{20}
-      \verb{doi}
-      \verb 10.1145/3450626.3459937
-      \endverb
-      \verb{file}
-      \verb Kettunen e.a. - 2021 - An unbiased ray-marching transmittance estimator.pdf:C\:\\Users\\isido\\Zotero\\storage\\6276WE78\\Kettunen e.a. - 2021 - An unbiased ray-marching transmittance estimator.pdf:application/pdf
-      \endverb
-      \verb{urlraw}
-      \verb http://arxiv.org/abs/2102.10294
-      \endverb
-      \verb{url}
-      \verb http://arxiv.org/abs/2102.10294
-      \endverb
-      \keyw{Computer Science - Graphics,rendering,exponential integrators}
     \endentry
     \entry{sawhney_grid-free_2022}{article}{}
       \name{author}{4}{}{%
