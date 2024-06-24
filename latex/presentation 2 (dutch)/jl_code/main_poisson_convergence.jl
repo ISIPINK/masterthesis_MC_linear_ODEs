@@ -1,5 +1,6 @@
 using Plots
 using Random
+using Plots.PlotMeasures
 
 function Y(t, sig, A::Function, f::Function, y0)
     (s = -log(rand()) / sig; sol = y0)
@@ -12,7 +13,7 @@ end
 
 
 function plot_ex(sig, nsim)
-    tt = 0:0.002:1
+    tt = 0:0.002:3
     yys = []
     p = plot()
 
@@ -35,8 +36,11 @@ end
 
 begin
     y0 = 1
-    A(t) = (t < 0.5) ? 1 : -1
-    sol(t) = (t < 0.5) ? exp(t) : exp(1 - t)
+    Ap(t) = (t < 0.5) ? 1 : -1
+    A(t) = Ap(t - floor(t))
+    solp(t) = (t < 0.5) ? exp(t) : exp(1 - t)
+    sol(t) = solp(t - floor(t))
+
     f(t) = 0
 
     Random.seed!(29)
@@ -44,6 +48,6 @@ begin
     p2 = plot_ex(200, 4)
     p = plot(p1, p2, layout=(1, 2), size=(900, 350),
         left_margin=5mm, right_margin=5mm, bottom_margin=5mm, top_margin=5mm)
-
+    display(p)
     savefig(p, "latex/presentation 2 (dutch)/imgs/convergence_main_poisson.pdf")
 end

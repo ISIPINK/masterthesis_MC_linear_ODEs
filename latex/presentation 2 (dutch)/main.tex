@@ -57,11 +57,11 @@
     \action<+->{}
     Euler:
     \begin{alignat}{2}
-        \action<+->{\frac{\tilde{y}(t_{k}+\Delta t)-\tilde{y}(t_{k})}{\Delta t} & = & A(t_{k})                        & \tilde{y}(t_{k}) \\
+        \action<+->{\frac{\tilde{y}(t_{k}+\Delta t)-\tilde{y}(t_{k})}{\Delta t} & = & A(t_{k})                     & \tilde{y}(t_{k}) \\
         }
-        \action<+->{\tilde{y}(t_{k+1})                                          & = & (I+\Delta t A(t_{k}))           & \tilde{y}(t_{k}) \\
-        t_{k+1}                                                                 & = & t_{k}+\Delta            t     }                    \\
-        \action<+->{Y(T_{k+1})                                                  & = & (I+\Delta t A(T_{k+1}))         & Y(T_{k})         \\
+        \action<+->{\tilde{y}(t_{k+1})                                          & = & (I+\Delta t A(t_{k}))        & \tilde{y}(t_{k}) \\
+        t_{k+1}                                                                 & = & t_{k}+\Delta            t                       \\ }
+        \action<+->{Y(T_{k+1})                                                  & = & (I+\Delta t A(T_{k+1}))      & Y(T_{k})         \\
         T_{k+1}                                                                 & = & T_{k} + \text{Exp}(\Delta t)
         }
     \end{alignat}
@@ -127,12 +127,10 @@
     \frametitle{Random sample efficientie van optelling}
     \action<+->{
         Probleem: benader $\bar{x} = \frac{1}{k}\sum_{i=1}^{k} x_{i}$ met $n<<k$ van $x_{i}$'s $\in [0,1]$\\
-        (symmetrisch in $x_{i}$) \\
         \vspace{0.2cm}
     }
     \action<+->{
         Vertrouwensinterval kans $=1$  $\sim \frac{k-n}{k}= 1-\frac{n}{k} \approx 1$ \\
-        (worst case $\frac{1}{k}$ uit elkaar) \\
         \vspace{0.2cm}
     }
     \action<+->{
@@ -146,7 +144,7 @@
     }
     \action<+->{
         Variantie = RMSE $\sim O\left(\frac{1}{\sqrt{n}}\right)$ en ook vertrouwensintervallen kans $<1$\\
-        (CLT of Chebychev's ongelijkheid)\footcitetext{heinrich_optimal_2001}\\
+        (Chebychev's ongelijkheid)
     }
 
 \end{frame}
@@ -275,10 +273,7 @@
         \centering
         \includegraphics[width=\textwidth]{imgs/convergence_main_poisson.pdf}
         \caption{
-            Realisaties $Y(t)$ met $A(t) = \begin{cases}
-                    1  & \text{voor } t < 0.5,    \\
-                    -1 & \text{voor } t \geq 0.5.
-                \end{cases}$ voor verschillende $nsim$ en $sig$.
+            Realisaties $Y(t)$ met $A(t) = \text{sgn}\left(0.5-t+\left\lfloor t \right\rfloor \right)$ voor verschillende $nsim$ en $sig$.
         }
         \label{fig:imgs/main poisson convergentie}
     \end{figure}
@@ -304,33 +299,12 @@
     \end{itemize}
 \end{frame}
 
-\section{Geavanceerde methoden}
+\section{Richting Walk on Spheres}
 
 \begin{frame}
     \tableofcontentscurrent
 \end{frame}
 
-\begin{frame}
-    \frametitle{Recursie in Recursie Monte Carlo}
-    Next flight uit \cite{sawhney_grid-free_2022}, unbiased methode, $1.5$ orde convergentie,
-    moeilijke theorie en te veel functie evaluaties.
-    \begin{center}
-        \begin{tikzpicture}
-            \draw (0,0) -- (10,0); % horizontal line
-            \foreach \x in {0,1,...,10} % loop over labels
-            \draw (\x,-0.1) -- (\x,0.1) node[above] {$t_{\x}$}; % draw tick and label
-        \end{tikzpicture}
-    \end{center}
-    \vspace{-0.5cm}
-    \begin{align}
-        y_{n}          & = \begin{cases}
-                               Y_{n-1}(t_{n},y_{n-1}) & \text{ als } n \neq 0        \\
-                               y(t_{0})               & \text{ als } n = 0 \nonumber
-                           \end{cases} \\
-        \\
-        Y_{n}(t,y_{n}) & = y_{n} + \Delta t B(t) A(S ) Y_{n}(S,y_{n})
-    \end{align}
-\end{frame}
 
 \begin{frame}
     \frametitle{Richting Walk on Spheres}
@@ -364,7 +338,7 @@
 \end{frame}
 
 \begin{frame}[allowframebreaks]{Bibliografie}
-    \nocite{daun_randomized_2011,ermakov_monte_2021}
+    \nocite{daun_randomized_2011,ermakov_monte_2021,heinrich_optimal_2001}
     \printbibliography
 \end{frame}
 
@@ -397,6 +371,28 @@
     Te vergelijken met Magnus expansie.\\
     Voor Monte Carlo transitie matrix hebben we een reductie naar uniformizatie.
 
+\end{frame}
+
+\begin{frame}
+    \frametitle{Recursie in Recursie Monte Carlo}
+    Next flight uit \cite{sawhney_grid-free_2022}, unbiased methode, $1.5$ orde convergentie,
+    moeilijke theorie en te veel functie evaluaties. Gestopt door paper \cite{daun_randomized_2011}.
+    \begin{center}
+        \begin{tikzpicture}
+            \draw (0,0) -- (10,0); % horizontal line
+            \foreach \x in {0,1,...,10} % loop over labels
+            \draw (\x,-0.1) -- (\x,0.1) node[above] {$t_{\x}$}; % draw tick and label
+        \end{tikzpicture}
+    \end{center}
+    \vspace{-0.5cm}
+    \begin{align}
+        y_{n}          & = \begin{cases}
+                               Y_{n-1}(t_{n},y_{n-1}) & \text{ als } n \neq 0        \\
+                               y(t_{0})               & \text{ als } n = 0 \nonumber
+                           \end{cases} \\
+        \\
+        Y_{n}(t,y_{n}) & = y_{n} + \Delta t B(t) A(S ) Y_{n}(S,y_{n})
+    \end{align}
 \end{frame}
 
 \end{document}

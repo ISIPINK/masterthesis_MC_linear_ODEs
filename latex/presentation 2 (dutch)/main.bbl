@@ -111,7 +111,6 @@
       \field{volume}{27}
       \field{year}{2011}
       \field{urldateera}{ce}
-      \true{nocite}
       \field{pages}{300\bibrangedash 311}
       \range{pages}{12}
       \verb{doi}
@@ -230,6 +229,7 @@
       \field{urlyear}{2023}
       \field{year}{2001}
       \field{urldateera}{ce}
+      \true{nocite}
       \verb{file}
       \verb Heinrich en Novak - 2001 - Optimal Summation and Integration by Deterministic.pdf:C\:\\Users\\isido\\Zotero\\storage\\LK6RKYIX\\Heinrich en Novak - 2001 - Optimal Summation and Integration by Deterministic.pdf:application/pdf
       \endverb
