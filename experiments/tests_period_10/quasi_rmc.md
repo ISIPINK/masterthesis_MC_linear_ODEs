@@ -218,7 +218,7 @@ display(p)
 
 ```
 
-![alt](./plts/convergence_nsim_condition_on_N.svg) <br>
+![convergence nsim condition N](./plts/convergence_nsim_condition_on_N.svg) <br>
 Stratifying the N is definitely a thing. <br>  
 The same plot for sig would be interesting.
 
@@ -278,7 +278,7 @@ Random.seed!(21)
 # Call the function
 convergence_compare(sig_values, nsim_values, t, y0, A, sol,k)
 
-
 ```
 
-![alt](./plts/convergence_sig_condition_on_N.svg)
+Ok conditioning on N also helps convergence on sig
+![convergence sig condition on N](./plts/convergence_sig_condition_on_N.svg)
