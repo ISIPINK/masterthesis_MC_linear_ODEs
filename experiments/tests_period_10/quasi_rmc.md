@@ -271,7 +271,9 @@ A(t) = [1 + cos(t) -cos(t); cos(t) 1 - cos(t)]
 sol(t) = [exp(t); exp(t)]
 t = 2
 sig_values = Int.(round.(10 .^(1.0:0.02:3.5)))
+# sig_values = Int.(round.(10 .^(1.0:0.1:2)))
 nsim_values = [1, 100]
+# nsim_values = [1, 100,10000]
 k = 1
 
 Random.seed!(21)
@@ -282,3 +284,5 @@ convergence_compare(sig_values, nsim_values, t, y0, A, sol,k)
 
 Ok conditioning on N also helps convergence on sig
 ![convergence sig condition on N](./plts/convergence_sig_condition_on_N.svg)
+
+![convergence sig condition on N 2](./plts/convergence_sig_condition_on_N2.svg)
