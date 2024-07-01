@@ -69,9 +69,11 @@ $$
 
 # Generating sorted n uniform QMC
 
-We tries this but cant make it work
+We tried this but cant make it work
 we are reading a book on quasi monte carlo
-now.
+now. There is a section on Poisson processes
+Strategies for Quasi-Monte Carlo but
+were not sure we are going to try that.
 
 ```julia
 
