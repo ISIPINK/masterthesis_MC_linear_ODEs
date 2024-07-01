@@ -151,7 +151,7 @@ function qqtimes(t,sig,sobol_gen2)
 Ns = quantile.(Poisson(t*sig/2),next!(sobol_gen2) )
 u1 = rand(Ns[1])
 u2 = 1 .+ rand(Ns[2])
-sort!(vcat(u1,u2)) .*t
+sort!(vcat(u1,u2)) .*t/2
 end
 
 function times(t,sig)
@@ -178,8 +178,8 @@ println(rsol)
 # Initialize variable
 sig = 10.0 # Assuming a fixed sig value for demonstration
 t = 0.5
-nsim_values = Int.(round.(10 .^ (1.0:0.01:5))) # Denser sampling up to fifth order
-nsim_values = unique(vcat(nsim_values, Int.(round.(10 .^(5:0.5:6))))) # Combine and ensure uniqueness
+nsim_values = Int.(round.(10 .^ (1.0:0.02:4))) # Denser sampling up to fifth order
+nsim_values = unique(vcat(nsim_values, Int.(round.(10 .^(4:0.5:6))))) # Combine and ensure uniqueness
 
 qsol_values = []
 qqsol_values = []
@@ -218,5 +218,67 @@ display(p)
 
 ```
 
-![alt](./plts/convergence_condition_on_N.svg) <br>
-Stratifying the N is definitely a thing.
+![alt](./plts/convergence_nsim_condition_on_N.svg) <br>
+Stratifying the N is definitely a thing. <br>  
+The same plot for sig would be interesting.
+
+```julia
+using Random, Sobol, Distributions, Plots, LinearAlgebra
+
+function Y(tt, sig, A::Function, y0)
+    sol = y0
+    for s in tt
+        sol += A(s) * sol ./ sig
+    end
+    sol
+end
+
+function times(t,sig)
+N = quantile(Poisson(t*sig),rand() )[1]
+sort!(rand(N)) .*t
+end
+
+function qtimes(t, sig, sobol_gen, k)
+    Ns = quantile.(Poisson(t * sig / k), next!(sobol_gen))
+    sort!(vcat([rand(Ns[i]) .+ i .- 1 for i in 1:k]...)) .* t / k
+end
+
+function convergence_compare(sig_values, nsim_values, t, y0, A, sol,k)
+    p = plot()
+    for nsim in nsim_values
+        qsol_values = []
+        rsol_values = []
+        for sig in sig_values
+            sobol_gen = SobolSeq(k)
+            qsol = sum(Y(qtimes(t, sig, sobol_gen, k), sig, A, y0) for _ in 1:nsim) / nsim
+            rsol = sum(Y(times(t,sig), sig, A, y0) for _ in 1:nsim) / nsim
+            push!(qsol_values, qsol)
+            push!(rsol_values, rsol)
+        end
+        qerror = [norm(s - sol(t)) for s in qsol_values]
+        rerror = [norm(s - sol(t)) for s in rsol_values]
+        plot!(p,sig_values, qerror, label="Q-Solution nsim=$nsim", title="Convergence Plot", xlabel="sig", ylabel="Error", xscale=:log10, yscale=:log10)
+        plot!(p, sig_values, rerror, label="R-Solution nsim=$nsim", xscale=:log10, yscale=:log10)
+    end
+    plot!(p,sig_values, sig_values .^(-0.5),label="-0.5",linestyle=:dash)
+    plot!(p,sig_values, sig_values .^(-1),label="-1",linestyle=:dash)
+    display(p)
+end
+
+# Define parameters
+y0 = [1; 1]
+A(t) = [1 + cos(t) -cos(t); cos(t) 1 - cos(t)]
+sol(t) = [exp(t); exp(t)]
+t = 2
+sig_values = Int.(round.(10 .^(1.0:0.02:3.5)))
+nsim_values = [1, 100]
+k = 1
+
+Random.seed!(21)
+# Call the function
+convergence_compare(sig_values, nsim_values, t, y0, A, sol,k)
+
+
+```
+
+![alt](./plts/convergence_sig_condition_on_N.svg)
