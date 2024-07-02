@@ -159,12 +159,28 @@ N = quantile(Poisson(t*sig),rand() )[1]
 sort!(rand(N)) .*t
 end
 
-y0 = [1; 1]
-A(t) = [1+cos(t) -cos(t); cos(t) 1-cos(t)]
-sol(t) = [exp(t); exp(t)]
-sig = 10.0
+# y0 = [1; 1]
+# A(t) = [1+cos(t) -cos(t); cos(t) 1-cos(t)]
+# sol(t) = [exp(t); exp(t)]
+# sig = 10.0
+# nsim = 10^2
+# t = 2
+
+# y0 = 1
+# Ap(t) = (t < 0.5) ? 1 : -1
+# A(t) = Ap(t - floor(t))
+# solp(t) = (t < 0.5) ? exp(t) : exp(1 - t)
+# sol(t) = solp(t - floor(t))
+# nsim = 10^2
+# sig = 10.0
+# t=3
+
+y0 = 1
+A(t) = 2*t
+sol(t) = exp(t^2)
 nsim = 10^2
-t = 2
+sig = 10.0
+t=1
 
 Random.seed!(24)
 sobol_gen = SobolSeq(1)
@@ -177,7 +193,7 @@ println(rsol)
 
 # Initialize variable
 sig = 10.0 # Assuming a fixed sig value for demonstration
-t = 0.5
+t = 1
 nsim_values = Int.(round.(10 .^ (1.0:0.02:4))) # Denser sampling up to fifth order
 nsim_values = unique(vcat(nsim_values, Int.(round.(10 .^(4:0.5:6))))) # Combine and ensure uniqueness
 
@@ -266,11 +282,28 @@ function convergence_compare(sig_values, nsim_values, t, y0, A, sol,k)
 end
 
 # Define parameters
-y0 = [1; 1]
-A(t) = [1 + cos(t) -cos(t); cos(t) 1 - cos(t)]
-sol(t) = [exp(t); exp(t)]
-t = 2
-sig_values = Int.(round.(10 .^(1.0:0.02:3.5)))
+# y0 = [1; 1]
+# A(t) = [1 + cos(t) -cos(t); cos(t) 1 - cos(t)]
+# sol(t) = [exp(t); exp(t)]
+# t = 2
+
+
+# y0 = 1
+# Ap(t) = (t < 0.5) ? 1 : -1
+# A(t) = Ap(t - floor(t))
+# solp(t) = (t < 0.5) ? exp(t) : exp(1 - t)
+# sol(t) = solp(t - floor(t))
+# t=3
+
+y0 = 1
+A(t) = 2*t
+sol(t) = exp(t^2)
+nsim = 10^2
+sig = 10.0
+t=0.2
+
+
+sig_values = Int.(round.(10 .^(1.0:0.05:3.5)))
 # sig_values = Int.(round.(10 .^(1.0:0.1:2)))
 nsim_values = [1, 100]
 # nsim_values = [1, 100,10000]
@@ -286,3 +319,65 @@ Ok conditioning on N also helps convergence on sig
 ![convergence sig condition on N](./plts/convergence_sig_condition_on_N.svg)
 
 ![convergence sig condition on N 2](./plts/convergence_sig_condition_on_N2.svg)
+
+the better convergence when simply conditioning on N is works probably
+for only for constant coefficient problems <br>
+
+test parallel complexity:
+
+```julia
+using Profile
+using PProf
+using Plots, Distributions, Sobol
+
+# Define the function max_qpois as per your selection
+
+function max_qpois(sig, sobol_gen, nsim)
+    mm = zeros(nsim + 1)  # Preallocate array with zeros
+    icdf(x) = quantile(Poisson(sig),x)[1]
+    for i in 1:nsim
+        mm[i+1] = max(icdf( next!(sobol_gen)),mm[i])
+    end
+    mm
+end
+
+using BenchmarkTools
+# Setup for profiling
+sig = 1.0  # Example value for sig
+sobol_gen = SobolSeq(1)  # Initialize a Sobol sequence generator
+nsim = 10000  # Example value for nsim
+
+b = @btime max_qpois($sig, $sobol_gen, $nsim)
+summary(b)
+# Profile the function call
+Profile.clear()
+@profile max_qpois(sig, sobol_gen, nsim)
+pprof()
+# Generate and view the flame graph
+ProfileView.view()
+
+sobg = SobolSeq(1)
+
+mm = max_qpois(10.0,sobg,10^6)
+plot(mm , xscale=:log10 )
+
+
+
+
+using Distributions, Plots
+
+# Define the Poisson distribution with λ (mean rate)
+λ = 1000.0
+dist = Poisson(λ)
+
+# Define probabilities for which to calculate quantiles
+probabilities = 0.01:0.0001:0.99999999  # From 1% to 99%
+
+# Calculate quantiles for these probabilities
+quantiles = [quantile(dist, p) for p in probabilities]
+
+# Plot the quantiles
+plot(probabilities, quantiles, title="Quantiles of Poisson Distribution", xlabel="Probability", ylabel="Quantile", legend=false)
+```
+
+![max N nsim](./plts/max_N_nsim.svg)
