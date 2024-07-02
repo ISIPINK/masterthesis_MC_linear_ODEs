@@ -1,29 +1,50 @@
 # Quasi MC example
 
 ```julia
-using Sobol, Plots, Random
+using QuasiMonteCarlo, Random, Distributions
+using Plots;
+f1(𝐱) = prod(1 + √(12) / 5 * (xⱼ - 1 / 2) for xⱼ in 𝐱)
+μ_exact = 1 # = ∫ f₁(𝐱) d⁵𝐱
+default(fontfamily = "Computer Modern");
+Random.seed!(1234)
+d = 5 # Dimension (= prime base for Faure net)
+b = 2 # Base for Sobol net
+m_max = 19
+m_max_Faure = 8
+N = b^m_max
 
-function integrate_f_qmc(N)
-    sobol = SobolSeq(2)
-    integral = sum([next!(sobol)...] |> p -> p[1]^2 + p[2]^2 for _ in 1:N) / N
-    return integral
-end
+# Generate sequences
+seq_MC = QuasiMonteCarlo.sample(N, d, Uniform()) # Monte Carlo i.i.d. Uniform sampling
+seq_QMC_Sobol = QuasiMonteCarlo.sample(N, d, SobolSample()) # Sobol net
+seq_RQMC_Sobol = QuasiMonteCarlo.sample(N,
+    d,
+    SobolSample(R = OwenScramble(base = b, pad = 32))) # Randomized version of Sobol net
+seq_RQMC_Faure = QuasiMonteCarlo.sample(d^m_max_Faure,
+    d,
+    FaureSample(R = OwenScramble(base = d, pad = 32))) # Randomized version of Faure net
 
-function integrate_f_mc(N)
-    integral = sum([rand(), rand()] |> p -> p[1]^2 + p[2]^2 for _ in 1:N) / N
-    return integral
-end
+# Estimate the integral for different n with different estimator μ̂ₙ
+μ_MC = [mean(f1(x) for x in eachcol(seq_MC[:, 1:(b^m)])) for m in 1:m_max]
+μ_QMC_Sobol = [mean(f1(x) for x in eachcol(seq_QMC_Sobol[:, 1:(b^m)])) for m in 1:m_max]
+μ_RQMC_Sobol = [mean(f1(x) for x in eachcol(seq_RQMC_Sobol[:, 1:(b^m)])) for m in 1:m_max]
+μ_RQMC_Faure = [mean(f1(x) for x in eachcol(seq_RQMC_Faure[:, 1:(d^m)]))
+                for m in 1:m_max_Faure]
 
-Ns = round.(Int, 10 .^ (0:0.05:5))
-
-exact_integral = 2 / 3
-errors_qmc = [abs(integrate_f_qmc(N) - exact_integral) for N in Ns]
-errors_mc = [abs(integrate_f_mc(N) - exact_integral) for N in Ns]
-
-p = plot(Ns, errors_qmc, label="QMC Error", xscale=:log10, yscale=:log10, xlabel="Number of Points", ylabel="Error", title="QMC vs MC Integration Error")
-plot!(p,Ns, Ns.^(-0.5)/10, label="O(N^(-0.5))")
-plot!(p,Ns, Ns.^(-1), label="O(N^(-1))")
-plot!(p,Ns, errors_mc, label="MC Error", xscale=:log10, yscale=:log10)
+# Plot the error |μ̂-μ| vs n
+plot(b .^ (1:m_max), abs.(μ_MC .- μ_exact), label = "MC")
+plot!(b .^ (1:m_max), abs.(μ_QMC_Sobol .- μ_exact), label = "QMC Sobol")
+plot!(b .^ (1:m_max), abs.(μ_RQMC_Sobol .- μ_exact), label = "RQMC Sobol")
+plot!(d .^ (1:m_max_Faure), abs.(μ_RQMC_Faure .- μ_exact), label = "RQMC Faure")
+plot!(n -> n^(-1 / 2), b .^ (1:m_max), c = :black, s = :dot, label = "n^(-1/2)")
+plot!(n -> n^(-1), b .^ (1:m_max), c = :black, s = :dot, label = "n^(-1)")
+plot!(n -> n^(-3 / 2), b .^ (1:m_max), c = :black, s = :dash, label = "n^(-3/2)")
+# n^(-3/2) is the theoretical scaling for scrambled nets e.g. Theorem 17.5. in https://artowen.su.domains/mc/qmcstuff.pdf
+xlims!(1, 1e6)
+ylims!(1e-9, 1)
+xaxis!(:log10)
+yaxis!(:log10)
+xlabel!("n", legend = :bottomleft)
+ylabel!("|μ̂-μ|")
 ```
 
 ![alt](./plts/qmc_convergence.svg)
