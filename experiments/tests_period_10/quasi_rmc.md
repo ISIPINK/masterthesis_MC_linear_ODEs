@@ -9,9 +9,10 @@ default(fontfamily = "Computer Modern");
 Random.seed!(1234)
 d = 5 # Dimension (= prime base for Faure net)
 b = 2 # Base for Sobol net
-m_max = 19
+m_max = 6
 m_max_Faure = 8
 N = b^m_max
+println(N)
 
 # Generate sequences
 seq_MC = QuasiMonteCarlo.sample(N, d, Uniform()) # Monte Carlo i.i.d. Uniform sampling
@@ -19,6 +20,9 @@ seq_QMC_Sobol = QuasiMonteCarlo.sample(N, d, SobolSample()) # Sobol net
 seq_RQMC_Sobol = QuasiMonteCarlo.sample(N,
     d,
     SobolSample(R = OwenScramble(base = b, pad = 32))) # Randomized version of Sobol net
+println(size(seq_RQMC_Sobol))
+scatter(seq_RQMC_Sobol[1,:], zeros(N))
+scatter!(seq_RQMC_Sobol[1,:], ones(N))
 seq_RQMC_Faure = QuasiMonteCarlo.sample(d^m_max_Faure,
     d,
     FaureSample(R = OwenScramble(base = d, pad = 32))) # Randomized version of Faure net
