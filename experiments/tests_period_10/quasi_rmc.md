@@ -220,7 +220,7 @@ println(rsol)
 sig = 10.0 # Assuming a fixed sig value for demonstration
 t = 1
 nsim_values = Int.(round.(10 .^ (1.0:0.02:4))) # Denser sampling up to fifth order
-nsim_values = unique(vcat(nsim_values, Int.(round.(10 .^(4:0.5:6))))) # Combine and ensure uniqueness
+# nsim_values = unique(vcat(nsim_values, Int.(round.(10 .^(4:0.5:6))))) # Combine and ensure uniqueness
 
 qsol_values = []
 qqsol_values = []
