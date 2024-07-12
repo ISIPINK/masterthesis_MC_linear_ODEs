@@ -4,14 +4,15 @@ using Plots
 # solve y' = f(t,y) , f smooth, y(0) = y0
 # explicit euler y_{n+1} = y_n + h f(t_n, y_n) 
 
-# euler_step(y, t0, t, f) = y + (t - t0) * f(t, y)
+euler_step(y, t0, t, f) = y + (t - t0) * f(t, y)
 
 using Roots
 
-function euler_step(y0, t0, t, f)
-    g(y) = y - y0 - (t - t0) * f(t, y)
-    find_zero(g, y0)
-end
+# function euler_step(y0, t0, t, f)
+#     g(y) = y - y0 - (t - t0) * f(t, y)
+#     find_zero(g, y0)
+# end
+
 
 function euler_steps(n, y, t0, t, f)
     h = (t - t0) / n
@@ -20,6 +21,28 @@ function euler_steps(n, y, t0, t, f)
     end
     y
 end
+
+
+function reuler_step(y0, t0, t, f, pp)
+    x = euler_step(y0, t0, t, f)
+    if rand() < pp
+        z = reuler_step(y0, t0, (t + t0) / 2, f, pp)
+        z = reuler_step(z, (t + t0) / 2, t, f, pp)
+        x = z / pp + x * (pp - 1) / pp
+    end
+    x
+end
+
+
+function reuler_steps(n, y, t0, t, f, pp)
+    h = (t - t0) / n
+    for j in 1:n
+        y = reuler_step(y, t0 + (j - 1) * h, t0 + j * h, f, pp)
+    end
+    y
+end
+
+
 
 p(k, r) = r * (1 - r)^k
 d(k, y, t0, t, f) = euler_steps(2^(k + 1), y, t0, t, f) - euler_steps(2^k, y, t0, t, f)
@@ -83,6 +106,7 @@ begin
     t0 = 0.0
     T = 0.5  # Final time to evaluate the solution
     nsim = 1
+    pp = 0.25
 
     # Test convergence for different numbers of steps
     nn = Int.(round.(10 .^ (1:0.001:3)))
@@ -94,7 +118,8 @@ begin
 
     for n in nn
         global f_call_count = 0
-        error_de = abs(debiased_euler_steps_avg(n, nsim, y0, t0, T, f) - exact_sol(T))
+        # error_de = abs(debiased_euler_steps_avg(n, nsim, y0, t0, T, f) - exact_sol(T))
+        error_de = abs(reuler_steps(n, y0, t0, T, f, pp) - exact_sol(T))
         push!(errors_de, error_de)
         push!(calls_de, f_call_count)
 
