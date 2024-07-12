@@ -4,8 +4,14 @@ using Plots
 # solve y' = f(t,y) , f smooth, y(0) = y0
 # explicit euler y_{n+1} = y_n + h f(t_n, y_n) 
 
-euler_step(y, t0, t, f) = y + (t - t0) * f(t, y)
+# euler_step(y, t0, t, f) = y + (t - t0) * f(t, y)
 
+using Roots
+
+function euler_step(y0, t0, t, f)
+    g(y) = y - y0 - (t - t0) * f(t, y)
+    find_zero(g, y0)
+end
 
 function euler_steps(n, y, t0, t, f)
     h = (t - t0) / n
@@ -49,13 +55,13 @@ function debiased_euler_steps_avg(n, nsim, y, t0, t, f)
 end
 
 y0 = 1.0
-f(t, y) = y + sin(y) - sin(exp(t))
-exact_sol(t) = exp(t)
+f(t, y) = -10y + 5 * sin(y) - 5 * sin(exp(-10 * t))
+exact_sol(t) = exp(-10 * t)
 
 t0 = 0.0
 T = 2  # Final time to evaluate the solution
-nsim = 10^5
-println(debiased_euler_steps_avg(1, nsim, y0, t0, T, f) - exact_sol(T))
+nsim = 10^2
+println(debiased_euler_steps_avg(2, nsim, y0, t0, T, f) - exact_sol(T))
 
 
 # tests convergence in steps 
