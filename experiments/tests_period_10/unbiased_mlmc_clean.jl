@@ -2,6 +2,7 @@ using Plots
 using Roots
 
 euler_step(y, t0, t, f) = y + (t - t0) * f(t, y)
+
 function midpoint_step(y, t0, t, f)
     z = y + (t - t0) * f(t0, y) / 2
     y + (t - t0) * f((t + t0) / 2, z)
@@ -26,15 +27,15 @@ function multi_steps_avg(n, nsim, step, y, t0, t, f)
 end
 
 function rec_debiaser(step, l)
-    (l > 0.45) ? error("p must be less than 0.45") : nothing
+    (l > 0.45) ? error("l must be less than 0.45") : nothing
     function dstep(y, t0, t, f)
-        x = step(y, t0, t, f)
         if rand() < l
             z = dstep(y, t0, (t + t0) / 2, f)
             z = dstep(z, (t + t0) / 2, t, f)
-            x = z / l + x * (l - 1) / l
+            return (z + step(y, t0, t, f) * (l - 1)) / l
+        else
+            return step(y, t0, t, f)
         end
-        x
     end
     dstep
 end
@@ -49,7 +50,7 @@ function convergence_plot(y, t0, t, f, sol, step, label, plt, orderlines=[])
         push!(errors, error)
         push!(f_calls, f_call_count)
     end
-    scatter!(plt, f_calls, min.(errors, 100), label=label, alpha=0.5)
+    scatter!(plt, f_calls, min.(errors, 10^5), label=label, alpha=0.5)
     ff = range(minimum(f_calls), maximum(f_calls), length=100)
     for o in orderlines
         plot!(plt, ff, ff .^ (-o), label="o(n^{-$o})", linestyle=:dash)
@@ -66,7 +67,9 @@ begin
         # y + sin(y / 2) - sin(exp(t) / 2)
         # y +  sin(10 * y) -  sin(10 *exp(t))
         # y
-        5 * y - 4 * exp(t)
+        # sin(2 * pi * t) * y + (1 - sin(2 * pi * t)) * exp(t)
+        (1 + t^2) * y + (1 - (1 + t^2)) * exp(t)
+        # 5 * y - 4 * exp(t)
     end
 
     sol(t) = exp(t)
@@ -139,7 +142,9 @@ begin
         # y + b(t)*sin(y) - b(t)*sin(exp(t))
         # y + sin(y / 2) - sin(exp(t) / 2)
         # y +  sin(10 * y) -  sin(10 *exp(t))
-        y
+        # sin(2 * pi * t) * y + (1 - sin(2 * pi * t)) * exp(t)
+        (1 + t^2) * y + (1 - (1 + t^2)) * exp(t)
+        # y
     end
 
     sol(t) = exp(t)
@@ -184,3 +189,4 @@ begin
     convergence_plot_nsim(y0, t0, t, f, sol, rec_debiaser(implicit_euler_step, limpl), steps, "debiased implicit Euler", plt, [0.5], 4.5)
     display(plt)
 end
+
