@@ -97,8 +97,8 @@ begin
         global f_call_count += 1
         # y + b(t)*sin(y) - b(t)*sin(exp(t))
         # y + sin(y / 2) - sin(exp(t) / 2)
-        # -100 * y + 101 * exp(t)
-        3 * y - 2 * exp(t)
+        -100 * y + 101 * exp(t)
+        # 3 * y - 2 * exp(t)
         # y + sin(10 * y) - sin(10 * exp(t))
         # y
     end
@@ -107,9 +107,9 @@ begin
     global f_call_count = 0
     y0 = 1.0
     t0 = 0.0
-    t = 2  # Final time to evaluate the solution
+    t = 1  # Final time to evaluate the solution
     leuler = 0.2
-    limpl = 0.2
+    limpl = 0.25
 
     plt = plot(xscale=:log10, yscale=:log10, legend=:topright)
     # convergence_plot(y0, t0, t, f, sol, euler_step, "Euler", plt, [])
@@ -172,7 +172,8 @@ begin
         # y + b(t)*sin(y) - b(t)*sin(exp(t))
         # y + sin(y / 2) - sin(exp(t) / 2)
         # y +  sin(10 * y) -  sin(10 *exp(t))
-        -100 * y + 101 * exp(t)
+        # -100 * y + 101 * exp(t)
+        (1 + t^2 / 2) * y + (1 - (1 + t^2 / 2)) * exp(t)
         # y
     end
 
@@ -182,7 +183,7 @@ begin
     y0 = 1.0
     t0 = 0.0
     t = 2  # Final time to evaluate the solution
-    steps = 4
+    steps = 10
     limpl = 0.2
 
     plt = plot(xscale=:log10, yscale=:log10)
