@@ -29,10 +29,10 @@ end
 
 function rec_debiaser(step, l)
     (l > 0.45) ? error("l must be less than 0.45") : nothing
-    function dstep(y, t0, t, f)
-        if rand() < l
-            z = dstep(y, t0, (t + t0) / 2, f)
-            z = dstep(z, (t + t0) / 2, t, f)
+    function dstep(y, t0, t, f, depth=0)
+        if rand() < l  #&& depth <= 3
+            z = dstep(y, t0, (t + t0) / 2, f, depth + 1)
+            z = dstep(z, (t + t0) / 2, t, f, depth + 1)
             return (z + step(y, t0, t, f) * (l - 1)) / l
         else
             return step(y, t0, t, f)
@@ -42,7 +42,8 @@ function rec_debiaser(step, l)
 end
 
 function convergence_plot(y, t0, t, f, sol, step, label, plt, orderlines=[])
-    nn = Int.(round.(10 .^ (1:0.1:4)))
+    nn = Int.(round.(10 .^ (0.5:0.1:2)))
+    nn = vcat(nn, Int.(round.(10 .^ (2:0.5:5))))
     # nn = Int.(round.(10 .^ (1:0.001:4)))
     errors = []
     variances = []
@@ -50,7 +51,7 @@ function convergence_plot(y, t0, t, f, sol, step, label, plt, orderlines=[])
     for n in nn
         global f_call_count = 0
         # nsim = (n <= 100) ? 1000 : ((n <= 1000) ? 100 : 10)
-        nsim = 16
+        nsim = (n <= 1000) ? 16 : 4
         appsols = [multi_steps(n, step, y, t0, t, f) for _ in 1:nsim]
         error = sum((sol(t) - appsol)^2 for appsol in appsols) / nsim
         # error = (sol(t) - multi_steps(n, step, y, t0, t, f))^2 
@@ -60,10 +61,10 @@ function convergence_plot(y, t0, t, f, sol, step, label, plt, orderlines=[])
         push!(variances, varr)
         # push!(f_calls, f_call_count )
     end
-    scatter!(plt, f_calls, min.(errors, 10^17), label=label, alpha=0.5)
+    scatter!(plt, f_calls, min.(errors, 10^17) .+ eps(), label=label, alpha=0.5)
 
-    if abs(variances[1] - eps()) > 0.0001
-        plot!(plt, f_calls, sqrt.(variances), label="std $label", linestyle=:dash)
+    if sqrt(variances[end]) > 10 * eps()
+        plot!(plt, f_calls, sqrt.(variances) .+ eps(), label="std $label", linestyle=:dash)
     end
 
     ff = range(minimum(f_calls), maximum(f_calls), length=100)
@@ -76,15 +77,15 @@ end
 println(eps())
 # explicit convergence test
 begin
-    # b(t) = (t < 0.5) ? 1 : 0
-    b(t) = (3 * t - round(3 * t) < 0.5) ? 1 : 0
+    b(t) = (t < 0.5) ? 1 : 0
+    # b(t) = (3 * t - round(3 * t) < 0.5) ? 1 : 0
     function f(t, y)
         global f_call_count += 1
         # y + b(t)*sin(y) - b(t)*sin(exp(t))
-        (1 + b(t)) * y - b(t) * exp(t)
+        # (1 + b(t)) * y - b(t) * exp(t)
         # y + sin(y / 2) - sin(exp(t) / 2)
         # y +  sin(10 * y) -  sin(10 *exp(t))
-        # y
+        y
         # sin(2 * pi * (t + 1)^2) * y + (1 - sin(2 * pi * (t + 1)^2)) * exp(t)
         # (1 + t^2) * y + (1 - (1 + t^2)) * exp(t)
         # 5 * y - 4 * exp(t)
@@ -139,7 +140,7 @@ begin
     t0 = 0.0
     t = 1  # Final time to evaluate the solution
     leuler = 0.2
-    limpl = 0.25
+    limpl = 0.1
 
     plt = plot(xscale=:log10, yscale=:log10, legend=:topright)
     # convergence_plot(y0, t0, t, f, sol, euler_step, "Euler", plt, [])
@@ -187,7 +188,6 @@ begin
     steps = 4
     leuler = 0.2
     lmid = 0.1
-    limpl = 0.2
 
     plt = plot(xscale=:log10, yscale=:log10)
     convergence_plot_nsim(y0, t0, t, f, sol, rec_debiaser(euler_step, leuler), steps, "debiased Euler", plt, [0.5])
