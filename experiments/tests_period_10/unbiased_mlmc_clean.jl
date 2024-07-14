@@ -42,29 +42,35 @@ function rec_debiaser(step, l)
 end
 
 function convergence_plot(y, t0, t, f, sol, step, label, plt, orderlines=[])
-    nn = Int.(round.(10 .^ (0.5:0.1:2)))
-    nn = vcat(nn, Int.(round.(10 .^ (2:0.5:5))))
+    nn = Int.(round.(10 .^ (0.5:0.05:2.5)))
+    # nn = vcat(nn, Int.(round.(10 .^ (2:0.1:3))))
     # nn = Int.(round.(10 .^ (1:0.001:4)))
     errors = []
+    errors_avg = []
     variances = []
     f_calls = []
+    nsim = 100
     for n in nn
         global f_call_count = 0
         # nsim = (n <= 100) ? 1000 : ((n <= 1000) ? 100 : 10)
-        nsim = (n <= 1000) ? 16 : 4
+        # nsim = (n <= 1000) ? 16 : 4
         appsols = [multi_steps(n, step, y, t0, t, f) for _ in 1:nsim]
         error = sum((sol(t) - appsol)^2 for appsol in appsols) / nsim
+        error_avg = abs(sol(t) - mean(appsols))
         # error = (sol(t) - multi_steps(n, step, y, t0, t, f))^2 
         varr = var(appsols)
         push!(errors, sqrt(error))
+        push!(errors_avg, error_avg)
         push!(f_calls, f_call_count / nsim)
         push!(variances, varr)
         # push!(f_calls, f_call_count )
     end
     scatter!(plt, f_calls, min.(errors, 10^17) .+ eps(), label=label, alpha=0.5)
+    scatter!(plt, f_calls, min.(errors_avg, 10^17) .+ eps(), label="avg $label", alpha=0.5)
 
-    if sqrt(variances[end]) > 10 * eps()
+    if sqrt(variances[end]) > 100 * eps()
         plot!(plt, f_calls, sqrt.(variances) .+ eps(), label="std $label", linestyle=:dash)
+        plot!(plt, f_calls, sqrt.(variances ./ nsim) .+ eps(), label="std $label", linestyle=:dash)
     end
 
     ff = range(minimum(f_calls), maximum(f_calls), length=100)
@@ -85,9 +91,9 @@ begin
         # (1 + b(t)) * y - b(t) * exp(t)
         # y + sin(y / 2) - sin(exp(t) / 2)
         # y +  sin(10 * y) -  sin(10 *exp(t))
-        y
+        # y
         # sin(2 * pi * (t + 1)^2) * y + (1 - sin(2 * pi * (t + 1)^2)) * exp(t)
-        # (1 + t^2) * y + (1 - (1 + t^2)) * exp(t)
+        (1 + t^2) * y + (1 - (1 + t^2)) * exp(t)
         # 5 * y - 4 * exp(t)
     end
 
@@ -107,7 +113,7 @@ begin
     global f_call_count = 0
     y0 = 1.0
     t0 = 0.0
-    t = 4  # Final time to evaluate the solution
+    t = 2  # Final time to evaluate the solution
     leuler = 0.25
     lmid = 0.1
 
@@ -138,7 +144,7 @@ begin
     global f_call_count = 0
     y0 = 1.0
     t0 = 0.0
-    t = 1  # Final time to evaluate the solution
+    t = 2  # Final time to evaluate the solution
     leuler = 0.2
     limpl = 0.1
 
@@ -146,7 +152,7 @@ begin
     # convergence_plot(y0, t0, t, f, sol, euler_step, "Euler", plt, [])
     # convergence_plot(y0, t0, t, f, sol, rec_debiaser(euler_step, leuler), "debiased Euler", plt, [])
     convergence_plot(y0, t0, t, f, sol, implicit_euler_step, "implicit Euler", plt, [])
-    convergence_plot(y0, t0, t, f, sol, rec_debiaser(implicit_euler_step, limpl), "debiased implicit Euler", plt, [1, 1.5])
+    convergence_plot(y0, t0, t, f, sol, rec_debiaser(implicit_euler_step, limpl), "debiased implicit Euler", plt)
     display(plt)
 end
 
