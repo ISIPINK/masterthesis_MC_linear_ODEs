@@ -2,7 +2,9 @@ using Plots
 using Roots
 using Statistics
 
-euler_step(y, t0, t, f) = y + (t - t0) * f(t, y)
+euler_step(y, t0, t, f) = y + (t - t0) * f(t0, y)
+
+randomized_euler_step(y, t0, t, f) = y + (t - t0) * f(t0 + (t - t0) * rand(), y)
 
 function midpoint_step(y, t0, t, f)
     z = y + (t - t0) * f(t0, y) / 2
@@ -43,7 +45,7 @@ end
 
 function convergence_plot(y, t0, t, f, sol, step, label, plt, orderlines=[])
     nn = Int.(round.(10 .^ (0.5:0.05:2.5)))
-    nn = vcat(nn, Int.(round.(10 .^ (2.5:0.2:4))))
+    # nn = vcat(nn, Int.(round.(10 .^ (2.5:0.2:4))))
     # nn = Int.(round.(10 .^ (1:0.001:4)))
     errors = []
     errors_avg = []
@@ -83,15 +85,15 @@ end
 println(eps())
 # explicit convergence test
 begin
-    b(t) = (t < 0.5) ? 1 : 0
-    # b(t) = (3 * t - round(3 * t) < 0.5) ? 1 : 0
+    # b(t) = (t < 0.5) ? 1 : 0
+    b(t) = (4 * t - round(4 * t) < 0.5) ? 2 : 0
     function f(t, y)
         global f_call_count += 1
-        # y + b(t)*sin(y) - b(t)*sin(exp(t))
+        y + b(t) * sin(y) - b(t) * sin(exp(t))
         # (1 + b(t)) * y - b(t) * exp(t)
         # y + sin(y / 2) - sin(exp(t) / 2)
         # y +  2*sin(5*(t+1) * y) -  2*sin(5*(t+1) *exp(t))
-        y + 15 * log(5 * (sin(4 * t) + 1) * abs(y)) - 15 * log(5 * (sin(4 * t) + 1) * exp(t))
+        # y + 15 * log(5 * (sin(4 * t) + 1) * abs(y)) - 15 * log(5 * (sin(4 * t) + 1) * exp(t))
         # y
         # sin(2 * pi * (t + 1)^2) * y + (1 - sin(2 * pi * (t + 1)^2)) * exp(t)
         # (1 + t^2) * y + (1 - (1 + t^2)) * exp(t)
@@ -119,10 +121,12 @@ begin
     lmid = 0.1
 
     plt = plot(title="convergence in steps", ylabel="RMSE", xlabel="amount of functions calls", xscale=:log10, yscale=:log10, legend=:bottomleft)
-    # convergence_plot(y0, t0, t, f, sol, euler_step, "Euler", plt, [])
-    # convergence_plot(y0, t0, t, f, sol, rec_debiaser(euler_step, leuler), "debiased Euler", plt, [])
-    convergence_plot(y0, t0, t, f, sol, midpoint_step, "midpoint", plt, [2])
-    convergence_plot(y0, t0, t, f, sol, rec_debiaser(midpoint_step, lmid), "debiased midpoint", plt, [2.5])
+    convergence_plot(y0, t0, t, f, sol, euler_step, "Euler", plt, [])
+    convergence_plot(y0, t0, t, f, sol, rec_debiaser(euler_step, leuler), "debiased Euler", plt, [])
+    convergence_plot(y0, t0, t, f, sol, randomized_euler_step, "rand Euler", plt, [])
+    convergence_plot(y0, t0, t, f, sol, rec_debiaser(randomized_euler_step, leuler), "debiased randomized Euler", plt, [])
+    # convergence_plot(y0, t0, t, f, sol, midpoint_step, "midpoint", plt, [2])
+    # convergence_plot(y0, t0, t, f, sol, rec_debiaser(midpoint_step, lmid), "debiased midpoint", plt, [2.5])
     display(plt)
 end
 # implicit convergence test
