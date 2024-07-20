@@ -21,6 +21,15 @@ function implicit_euler_step(y0, t0, t, f)
     find_zero(y -> y - y0 - (t - t0) * f(t, y), y0)
 end
 
+function implicit_midpoint_step(y0, t0, t, f)
+    find_zero(y -> y - y0 - (t - t0) * f((t + t0) / 2, (y0 + y) / 2), y0)
+end
+
+function implicit_rand_midpoint_step(y0, t0, t, f)
+    u = rand()
+    find_zero(y -> y - y0 - (t - t0) * f(t0 + (t - t0) * u, (1 - u) * y0 + u * y), y0)
+end
+
 
 function multi_steps(n, step, y, t0, t, f)
     h = (t - t0) / n
@@ -180,7 +189,7 @@ end
 # implicit convergence test
 # implicit euler uses extra function calls to solve an equation
 # which messes with the convergence
-# acceleration by a better guess should be significant
+# acceleration by reusing outer recursion for a better guess should be significant
 begin
     # ivp = IVP_lin_const_coef(alpha=1)
     # ivp = IVP_lin_var_coef(alpha=1)
@@ -191,9 +200,26 @@ begin
     leuler = 0.2
     limpl = 0.1
 
-    plt = plot(xscale=:log10, yscale=:log10, legend=:topright)
+    plt = plot(xscale=:log10, yscale=:log10, legend=:bottomleft, legendfontsize=7)
     convergence_plot(ivp, implicit_euler_step, "implicit Euler", plt, [])
     convergence_plot(ivp, rec_debiaser(implicit_euler_step, limpl), "debiased implicit Euler", plt, [1.5], true)
+    convergence_plot(ivp, implicit_rand_midpoint_step, "rand implicit midpoint", plt, [1.5], true)
+    display(plt)
+end
+
+# implicit midpoint
+begin
+    # ivp = IVP_lin_const_coef(alpha=1)
+    # ivp = IVP_lin_var_coef(alpha=1)
+    # ivp = IVP_nonlinear(alpha=1.5)
+    ivp = IVP_stiff(alpha=50)
+
+    global f_call_count = 0
+    limpl = 0.1
+
+    plt = plot(xscale=:log10, yscale=:log10, legend=:bottomleft, legendfontsize=7)
+    convergence_plot(ivp, implicit_midpoint_step, "implicit midpoint", plt, [2])
+    convergence_plot(ivp, rec_debiaser(implicit_midpoint_step, limpl), "debiased implicit midpoint", plt, [2.5], true)
     display(plt)
 end
 
