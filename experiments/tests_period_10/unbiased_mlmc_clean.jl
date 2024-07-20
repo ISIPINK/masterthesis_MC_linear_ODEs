@@ -43,7 +43,7 @@ end
 
 function convergence_plot(y, t0, t, f, sol, step, label, plt, orderlines=[])
     nn = Int.(round.(10 .^ (0.5:0.05:2.5)))
-    # nn = vcat(nn, Int.(round.(10 .^ (2:0.1:3))))
+    nn = vcat(nn, Int.(round.(10 .^ (2.5:0.2:4))))
     # nn = Int.(round.(10 .^ (1:0.001:4)))
     errors = []
     errors_avg = []
@@ -76,7 +76,7 @@ function convergence_plot(y, t0, t, f, sol, step, label, plt, orderlines=[])
     ff = range(minimum(f_calls), maximum(f_calls), length=100)
 
     for o in orderlines
-        plot!(plt, ff, ff .^ (-o), label="o(n^{-$o})", linestyle=:dash)
+        plot!(plt, ff, ff .^ (-o) .* errors[end] / ff[end]^(-o), label="o(n^{-$o})", linestyle=:dashdot)
     end
 end
 
@@ -90,10 +90,11 @@ begin
         # y + b(t)*sin(y) - b(t)*sin(exp(t))
         # (1 + b(t)) * y - b(t) * exp(t)
         # y + sin(y / 2) - sin(exp(t) / 2)
-        # y +  sin(10 * y) -  sin(10 *exp(t))
+        # y +  2*sin(5*(t+1) * y) -  2*sin(5*(t+1) *exp(t))
+        y + 15 * log(5 * (sin(4 * t) + 1) * abs(y)) - 15 * log(5 * (sin(4 * t) + 1) * exp(t))
         # y
         # sin(2 * pi * (t + 1)^2) * y + (1 - sin(2 * pi * (t + 1)^2)) * exp(t)
-        (1 + t^2) * y + (1 - (1 + t^2)) * exp(t)
+        # (1 + t^2) * y + (1 - (1 + t^2)) * exp(t)
         # 5 * y - 4 * exp(t)
     end
 
@@ -120,8 +121,8 @@ begin
     plt = plot(title="convergence in steps", ylabel="RMSE", xlabel="amount of functions calls", xscale=:log10, yscale=:log10, legend=:bottomleft)
     # convergence_plot(y0, t0, t, f, sol, euler_step, "Euler", plt, [])
     # convergence_plot(y0, t0, t, f, sol, rec_debiaser(euler_step, leuler), "debiased Euler", plt, [])
-    convergence_plot(y0, t0, t, f, sol, midpoint_step, "midpoint", plt, [])
-    convergence_plot(y0, t0, t, f, sol, rec_debiaser(midpoint_step, lmid), "debiased midpoint", plt, [])
+    convergence_plot(y0, t0, t, f, sol, midpoint_step, "midpoint", plt, [2])
+    convergence_plot(y0, t0, t, f, sol, rec_debiaser(midpoint_step, lmid), "debiased midpoint", plt, [2.5])
     display(plt)
 end
 # implicit convergence test
