@@ -195,13 +195,14 @@ begin
     global f_call_count = 0
     y0 = 1.0
     t0 = 0.0
-    t = 2  # Final time to evaluate the solution
+    t = 1  # Final time to evaluate the solution
     steps = 4
     leuler = 0.2
     lmid = 0.1
 
     plt = plot(xscale=:log10, yscale=:log10)
     convergence_plot_nsim(y0, t0, t, f, sol, rec_debiaser(euler_step, leuler), steps, "debiased Euler", plt, [0.5])
+    convergence_plot_nsim(y0, t0, t, f, sol, rec_debiaser(randomized_euler_step, leuler), steps, "debiased randomized Euler", plt, [0.5])
     convergence_plot_nsim(y0, t0, t, f, sol, rec_debiaser(midpoint_step, lmid), steps, "debiased midpoint", plt, [0.5])
 
     display(plt)
