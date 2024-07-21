@@ -2,6 +2,28 @@ using Plots
 using Roots
 using Statistics
 
+# proposed euler algorithm for linear IVPs
+begin
+    function euler_exp_steps(dt, y0, t0, t, f)
+        while true
+            t0 -= dt * log(rand())
+            (t0 < t) || break
+            y0 += dt * f(t0, y0)
+        end
+        y0
+    end
+    nsim = 10^4
+    t0 = 0
+    t = 2
+    f = (t, y) -> y
+    y0 = 1
+    dt = 0.1
+    tmp = sum(euler_exp_steps(dt, y0, t0, t, f) for _ in 1:nsim) / nsim
+    println(rpad("euler_exp_steps_avg($t):", 24), tmp)
+    println(rpad("exp($t):", 24), exp(t))
+    println(rpad("Difference:", 24), tmp - exp(t))
+end
+
 euler_step(y, t0, t, f) = y + (t - t0) * f(t0, y)
 
 rand_euler_step(y, t0, t, f) = y + (t - t0) * f(t0 + (t - t0) * rand(), y)
